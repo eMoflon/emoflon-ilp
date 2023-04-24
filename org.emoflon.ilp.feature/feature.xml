@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.emoflon.ilp.feature"
-      label="eMoflon ILP"
+      label="eMoflon-ILP"
       version="0.0.1.qualifier">
 
    <description url="http://www.example.com/description">
@@ -15,5 +15,12 @@
    <license url="http://www.example.com/license">
       [Enter License Description here.]
    </license>
+
+   <plugin
+         id="org.emoflon.ilp"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
