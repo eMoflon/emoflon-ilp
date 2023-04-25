@@ -5,7 +5,7 @@
    </feature>
    <category-def name="emoflon-ilp" label="eMoflon-ILP">
       <description>
-         eMoflon ILP plugin
+         eMoflon-ILP plugin
       </description>
    </category-def>
 </site>
