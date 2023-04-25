@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ilp
+Bundle-SymbolicName: org.emoflon.ilp
+Bundle-Version: 0.0.1.qualifier
+Automatic-Module-Name: org.emoflon.ilp
+Bundle-RequiredExecutionEnvironment: JavaSE-17
