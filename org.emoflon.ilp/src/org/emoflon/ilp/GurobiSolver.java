@@ -1,10 +1,14 @@
 package org.emoflon.ilp;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import gurobi.GRB;
 import gurobi.GRB.DoubleParam;
 import gurobi.GRB.IntParam;
+import gurobi.GRBLinExpr;
+import gurobi.GRBQuadExpr;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import gurobi.GRBModel;
@@ -61,9 +65,104 @@ public class GurobiSolver extends Solver {
 	}
 
 	@Override
-	public void buildILPProbelm() {
-		// TODO Auto-generated method stub
+	public void buildILPProblem(Objective objective) {
+		try {
+			// Initialize decision variables and objective
+			// Translate Variables
+			Set<Variable<?>> vars = objective.getVariables();
+			GRBVar temp = null;
+			for (Variable<?> var : vars) {
+				switch (var.getType()) {
+				case BINARY:
+					temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
+							GRB.BINARY, var.getString());
+					break;
+				case INTEGER:
+					temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
+							GRB.INTEGER, var.getString());
+					break;
+				case REAL:
+					temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
+							GRB.CONTINUOUS, var.getString());
+					break;
+				}
+				grbVars.put(var.getString(), temp);
+			}
 
+			// Translate Objective to GRB
+			// TODO: add support for quadratic objective functions
+			LinearFunction obj = objective.getObjective();
+			GRBLinExpr expr = new GRBLinExpr();
+
+			// Add Terms
+			for (Term term : obj.terms()) {
+				expr.addTerm(term.getWeight(), grbVars.get(term.getVar().getString()));
+			}
+
+			// Add Constant (sum of constants)
+			double constant = 0.0;
+			for (Constant cons : obj.constantTerms()) {
+				constant += cons.weight();
+			}
+			expr.addConstant(constant);
+
+			// Translate objective sense
+			int sense = GRB.MINIMIZE;
+			if (objective.getType().equals(ObjectiveType.MAX)) {
+				sense = GRB.MAXIMIZE;
+			}
+
+			// Set model objective
+			model.setObjective(expr, sense);
+
+			// Translate Constraints
+			for (Constraint constraint : objective.getConstraints()) {
+				List<Term> lhs = constraint.getLhsTerms();
+				char op = translateOp(constraint.getOp());
+				double rhs = constraint.getRhs();
+				
+				switch (constraint.getType()) {
+				case LINEAR:
+					GRBLinExpr tempLin = new GRBLinExpr();
+					for (Term term : lhs) {
+						tempLin.addTerm(term.getWeight(), grbVars.get(term.getVar().getString()));
+					}
+					model.addConstr(tempLin, op, rhs, constraint.toString());
+					break;
+				case QUADRATIC:
+					GRBQuadExpr tempQuad = new GRBQuadExpr();
+					for (Term term : lhs) {
+						tempQuad.addTerm(term.getWeight(), grbVars.get(term.getVar().getString()));
+					}
+					model.addQConstr(tempQuad, op, rhs, constraint.toString());
+					break;
+				case SOS:
+					// TODO: add SOS constraints
+					throw new Error("Not yet implemented!");
+				}
+			}
+
+		} catch (GRBException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private char translateOp(Operator op) {
+		switch(op) {
+		case LESS:
+			throw new Error("Not yet implemented!");
+		case LESS_OR_EQUAL:
+			return GRB.LESS_EQUAL;
+		case EQUAL:
+			return GRB.EQUAL;
+		case GREATER_OR_EQUAL:
+			return GRB.GREATER_EQUAL;
+		case GREATER:
+			throw new Error("Not yet implemented!");
+		default: // NOT_EQUAL
+			throw new Error("Not yet implemented!");
+		}
 	}
 
 	@Override
@@ -120,10 +219,9 @@ public class GurobiSolver extends Solver {
 	@Override
 	public void updateValuesFromSolution() {
 		// TODO Auto-generated method stub
-		/* Notizen Besprechung:
-		 * generische Lösung
-		 * -> lambda übergeben
-		 * -> lambda auf alle Werte anwenden
+		/*
+		 * Notizen Besprechung: generische Lösung -> lambda übergeben -> lambda auf alle
+		 * Werte anwenden
 		 */
 	}
 
