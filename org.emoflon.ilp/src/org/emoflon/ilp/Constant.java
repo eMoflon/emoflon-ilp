@@ -1,19 +1,19 @@
 package org.emoflon.ilp;
 
-public class Constant {
+/**
+ * public class Constant {
+ * 
+ * private double weight;
+ * 
+ * public Constant(double weight) { this.setWeight(weight); }
+ * 
+ * public double getWeight() { return weight; }
+ * 
+ * public void setWeight(double weight) { this.weight = weight; }
+ * 
+ * }
+ */
 
-	private double weight;
-
-	public Constant(double weight) {
-		this.setWeight(weight);
-	}
-
-	public double getWeight() {
-		return weight;
-	}
-
-	public void setWeight(double weight) {
-		this.weight = weight;
-	}
+public record Constant(double weight) {
 
 }

@@ -40,4 +40,9 @@ public class QuadraticConstraint implements Constraint {
 		this.rhs = rhs;
 	}
 
+	@Override
+	public ConstraintType getType() {
+		return ConstraintType.QUADRATIC;
+	}
+
 }

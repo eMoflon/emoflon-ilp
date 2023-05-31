@@ -12,5 +12,5 @@ public class LinearFunction {
 */
 
 public record LinearFunction(List<Term> terms, List<Constant> constantTerms) {
-	
+
 }
