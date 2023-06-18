@@ -4,14 +4,14 @@ public class RealVariable implements Variable<Double> {
 
 	final private String name;
 	private double value;
-	
+
 	// TODO: Add default bounds!
 	private double upperBound;
 	private double lowerBound;
-	
+
 	public RealVariable(final String name) {
 		this.name = name;
-		
+
 		// default value: 0.0
 		value = 0.0d;
 	}

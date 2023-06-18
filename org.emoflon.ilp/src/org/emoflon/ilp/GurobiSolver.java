@@ -120,7 +120,7 @@ public class GurobiSolver extends Solver {
 				List<Term> lhs = constraint.getLhsTerms();
 				char op = translateOp(constraint.getOp());
 				double rhs = constraint.getRhs();
-				
+
 				switch (constraint.getType()) {
 				case LINEAR:
 					GRBLinExpr tempLin = new GRBLinExpr();
@@ -149,7 +149,7 @@ public class GurobiSolver extends Solver {
 	}
 
 	private char translateOp(Operator op) {
-		switch(op) {
+		switch (op) {
 		case LESS:
 			throw new Error("Not yet implemented!");
 		case LESS_OR_EQUAL:

@@ -15,7 +15,7 @@ public interface Variable<T extends Number> {
 	public T getLowerBound();
 
 	public void setLowerBound(final T bound);
-	
+
 	public VarType getType();
 
 }
