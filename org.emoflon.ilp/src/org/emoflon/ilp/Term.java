@@ -35,8 +35,4 @@ public class Term {
 	public void setType(TermType type) {
 		this.type = type;
 	}
-
-	enum TermType {
-		LINEAR, QUADRATIC
-	}
 }

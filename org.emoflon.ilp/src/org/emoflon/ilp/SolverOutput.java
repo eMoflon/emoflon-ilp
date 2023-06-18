@@ -36,4 +36,13 @@ public class SolverOutput {
 	public void setSolCount(int solCount) {
 		this.solCount = solCount;
 	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("ILP problem status <");
+		sb.append(status.name());
+		sb.append(">\n Objective function value:  ");
+		sb.append(objVal);
+		return sb.toString();
+	}
 }
