@@ -8,6 +8,8 @@ public interface Constraint {
 
 	public void setLhsTerms(List<Term> lhsTerms);
 
+	public void addTerm(Term term);
+
 	public Operator getOp();
 
 	public void setOp(Operator op);

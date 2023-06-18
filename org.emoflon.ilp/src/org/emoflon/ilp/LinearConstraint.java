@@ -1,8 +1,8 @@
 package org.emoflon.ilp;
 
 import java.util.List;
-
-import org.emoflon.ilp.Term.TermType;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 public class LinearConstraint implements Constraint {
 
@@ -16,6 +16,12 @@ public class LinearConstraint implements Constraint {
 		this.setRhs(rhs);
 	}
 
+	public LinearConstraint(Operator op, double rhs) {
+		this.setLhsTerms(new ArrayList<Term>());
+		this.setOp(op);
+		this.setRhs(rhs);
+	}
+
 	public List<Term> getLhsTerms() {
 		return lhsTerms;
 	}
@@ -25,6 +31,14 @@ public class LinearConstraint implements Constraint {
 			throw new IllegalArgumentException("A linear constraint is not allowed to contain any quadratic terms.");
 		}
 		this.lhsTerms = lhsTerms;
+	}
+
+	public void addTerm(Term term) {
+		if (lhsTerms.isEmpty()) {
+			setLhsTerms(new ArrayList<Term>(Arrays.asList(term)));
+		} else {
+			this.lhsTerms.add(term);
+		}
 	}
 
 	public Operator getOp() {

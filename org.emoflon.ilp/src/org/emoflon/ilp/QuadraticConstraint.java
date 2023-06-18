@@ -1,8 +1,7 @@
 package org.emoflon.ilp;
 
 import java.util.List;
-
-import org.emoflon.ilp.Term.TermType;
+import java.util.ArrayList;
 
 public class QuadraticConstraint implements Constraint {
 
@@ -16,12 +15,23 @@ public class QuadraticConstraint implements Constraint {
 		this.setRhs(rhs);
 	}
 
+	public QuadraticConstraint(Operator op, double rhs) {
+		this.setLhsTerms(new ArrayList<Term>());
+		this.setOp(op);
+		this.setRhs(rhs);
+	}
+
 	public List<Term> getLhsTerms() {
 		return lhsTerms;
 	}
 
 	public void setLhsTerms(List<Term> lhsTerms) {
 		this.lhsTerms = lhsTerms;
+	}
+
+	@Override
+	public void addTerm(Term term) {
+		this.lhsTerms.add(term);
 	}
 
 	public Operator getOp() {

@@ -26,6 +26,12 @@ public class Objective {
 		this.type = type;
 	}
 
+	public void setConstraints(List<Constraint> constraints) {
+		for (Constraint cons : constraints) {
+			add(cons);
+		}
+	}
+
 	public List<Constraint> getConstraints() {
 		return constraints;
 	}
