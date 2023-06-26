@@ -1,8 +1,7 @@
 package org.emoflon.ilp;
 
-import java.util.List;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.List;
 
 public class LinearConstraint implements Constraint {
 
@@ -34,11 +33,11 @@ public class LinearConstraint implements Constraint {
 	}
 
 	public void addTerm(Term term) {
-		if (lhsTerms.isEmpty()) {
-			setLhsTerms(new ArrayList<Term>(Arrays.asList(term)));
-		} else {
-			this.lhsTerms.add(term);
-		}
+		this.lhsTerms.add(term);
+	}
+
+	public void addTerm(Variable<?> var, double weight, TermType type) {
+		this.addTerm(new Term(var, weight, type));
 	}
 
 	public Operator getOp() {

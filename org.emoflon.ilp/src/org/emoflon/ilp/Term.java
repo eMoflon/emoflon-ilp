@@ -6,6 +6,7 @@ public class Term {
 	private double weight;
 	private TermType type;
 
+	// TODO: var^2 möglich, aber was ist mit x*y
 	public Term(Variable<?> var, double weight, TermType type) {
 		this.setVar(var);
 		this.setWeight(weight);

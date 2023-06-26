@@ -17,7 +17,7 @@ public class RealVariable implements Variable<Double> {
 	}
 
 	@Override
-	public String getString() {
+	public String getName() {
 		return name;
 	}
 

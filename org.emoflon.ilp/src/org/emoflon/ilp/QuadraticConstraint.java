@@ -33,6 +33,10 @@ public class QuadraticConstraint implements Constraint {
 	public void addTerm(Term term) {
 		this.lhsTerms.add(term);
 	}
+	
+	public void addTerm(Variable<?> var, double weight, TermType type) {
+		this.addTerm(new Term(var, weight, type));
+	}
 
 	public Operator getOp() {
 		return op;

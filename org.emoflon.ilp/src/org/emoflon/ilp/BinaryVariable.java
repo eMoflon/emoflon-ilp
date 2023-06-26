@@ -16,7 +16,7 @@ public class BinaryVariable implements Variable<Integer> {
 	}
 
 	@Override
-	public String getString() {
+	public String getName() {
 		return name;
 	}
 

@@ -2,7 +2,7 @@ package org.emoflon.ilp;
 
 public interface Variable<T extends Number> {
 
-	public String getString();
+	public String getName();
 
 	public T getValue();
 

@@ -75,28 +75,30 @@ public class GurobiSolver extends Solver {
 				switch (var.getType()) {
 				case BINARY:
 					temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
-							GRB.BINARY, var.getString());
+							GRB.BINARY, var.getName());
 					break;
 				case INTEGER:
 					temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
-							GRB.INTEGER, var.getString());
+							GRB.INTEGER, var.getName());
 					break;
 				case REAL:
 					temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
-							GRB.CONTINUOUS, var.getString());
+							GRB.CONTINUOUS, var.getName());
 					break;
 				}
-				grbVars.put(var.getString(), temp);
+				grbVars.put(var.getName(), temp);
 			}
 
 			// Translate Objective to GRB
 			// TODO: add support for quadratic objective functions
 			LinearFunction obj = objective.getObjective();
 			GRBLinExpr expr = new GRBLinExpr();
+			
+			// TODO: nested Functions OR use "expand" in LinearFunction (not implemented yet)
 
 			// Add Terms
 			for (Term term : obj.terms()) {
-				expr.addTerm(term.getWeight(), grbVars.get(term.getVar().getString()));
+				expr.addTerm(term.getWeight(), grbVars.get(term.getVar().getName()));
 			}
 
 			// Add Constant (sum of constants)
@@ -125,22 +127,50 @@ public class GurobiSolver extends Solver {
 				case LINEAR:
 					GRBLinExpr tempLin = new GRBLinExpr();
 					for (Term term : lhs) {
-						tempLin.addTerm(term.getWeight(), grbVars.get(term.getVar().getString()));
+						tempLin.addTerm(term.getWeight(), grbVars.get(term.getVar().getName()));
 					}
 					model.addConstr(tempLin, op, rhs, constraint.toString());
 					break;
 				case QUADRATIC:
 					GRBQuadExpr tempQuad = new GRBQuadExpr();
 					for (Term term : lhs) {
-						tempQuad.addTerm(term.getWeight(), grbVars.get(term.getVar().getString()));
+						tempQuad.addTerm(term.getWeight(), grbVars.get(term.getVar().getName()));
 					}
 					model.addQConstr(tempQuad, op, rhs, constraint.toString());
 					break;
 				case SOS:
 					// TODO: add SOS constraints
 					throw new Error("Not yet implemented!");
+				case OR:
+					throw new Error("Or Constraints are general constraints!");
 				}
 			}
+			
+			// Translate General Constraints
+			for (GeneralConstraint constraint : objective.getGeneralConstraints()) {
+				List<? extends Variable<?>> var = constraint.getVariables();
+				Variable<?> res = constraint.getResult();
+
+				switch (constraint.getType()) {
+				case LINEAR:
+					throw new Error("Linear Constraints are not general constraints!");
+				case QUADRATIC:
+					throw new Error("Quadratic Constraints are not general constraints!");
+				case SOS:
+					// TODO: add SOS constraints
+					throw new Error("Not yet implemented!");
+				case OR:
+					// TODO: add OR constraints
+					GRBVar[] grbVars = new GRBVar[var.size()];
+					for (int i = 0; i < var.size(); i++) {
+						grbVars[i] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, var.get(i).getName());
+					}
+					model.addGenConstrOr(
+							model.addVar(0.0, 1.0, 0.0, GRB.BINARY, res.getName()),
+							grbVars, constraint.toString());
+				}
+			}
+			
 
 		} catch (GRBException e) {
 			e.printStackTrace();
