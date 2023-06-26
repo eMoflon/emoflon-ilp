@@ -11,6 +11,7 @@ public class Objective {
 	private LinearFunction objective;
 	private ObjectiveType type = ObjectiveType.MIN;
 	private List<Constraint> constraints = new ArrayList<Constraint>();
+	private List<GeneralConstraint> genConstraints = new ArrayList<GeneralConstraint>();
 
 	private Set<Variable<?>> variables = new HashSet<Variable<?>>();
 
@@ -35,6 +36,10 @@ public class Objective {
 	public List<Constraint> getConstraints() {
 		return constraints;
 	}
+	
+	public List<GeneralConstraint> getGeneralConstraints() {
+		return genConstraints;
+	}
 
 	public Set<Variable<?>> getVariables() {
 		return variables;
@@ -45,6 +50,10 @@ public class Objective {
 	}
 
 	public void setObjective(LinearFunction objective) {
+		// TODO: nur Konstanten auch okay?
+		if (objective.terms().isEmpty()) {
+			throw new IllegalArgumentException("An Objective has to contain terms.");
+		}
 		for (Term term : objective.terms()) {
 			variables.add(term.getVar());
 		}
@@ -59,16 +68,37 @@ public class Objective {
 	public int getConstraintCount() {
 		return constraints.size();
 	}
+	
+	public int getGenConstraintCount() {
+		return genConstraints.size();
+	}
+	
+	public int getTotalConstraintCount() {
+		return getConstraintCount() + getGenConstraintCount();
+	}
 
 	public int getVariableCount() {
 		return variables.size();
 	}
 
 	public void add(Constraint constraint) {
+		if (constraint.getLhsTerms().isEmpty()) {
+			throw new IllegalArgumentException("The left-hand side of a Constraint must not be empty!");
+		}
 		for (Term term : constraint.getLhsTerms()) {
 			variables.add(term.getVar());
 		}
 		constraints.add(constraint);
+	}
+	
+	public void add(GeneralConstraint constraint) {
+		if (constraint.getVariables().isEmpty()) {
+			throw new IllegalArgumentException("The variables of a General Constraint must not be empty!");
+		}
+		for (Variable<?> var : constraint.getVariables()) {
+			variables.add(var);
+		}
+		genConstraints.add(constraint);
 	}
 
 }

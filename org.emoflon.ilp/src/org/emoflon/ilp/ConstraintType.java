@@ -1,5 +1,5 @@
 package org.emoflon.ilp;
 
 public enum ConstraintType {
-	LINEAR, QUADRATIC, SOS
+	LINEAR, QUADRATIC, SOS, OR
 }
