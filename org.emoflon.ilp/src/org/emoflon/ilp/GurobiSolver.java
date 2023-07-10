@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Set;
 
 import gurobi.GRB;
+import gurobi.GRB.DoubleAttr;
 import gurobi.GRB.DoubleParam;
 import gurobi.GRB.IntParam;
 import gurobi.GRBLinExpr;
 import gurobi.GRBQuadExpr;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
+import gurobi.GRBExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 
@@ -91,19 +93,25 @@ public class GurobiSolver extends Solver {
 
 			// Translate Objective to GRB
 			// TODO: add support for quadratic objective functions
-			LinearFunction obj = objective.getObjective();
-			GRBLinExpr expr = new GRBLinExpr();
-			
-			// TODO: nested Functions OR use "expand" in LinearFunction (not implemented yet)
+			Function obj = objective.getObjective().expand();
+			GRBQuadExpr expr = new GRBQuadExpr();
+
+			// TODO: nested Functions OR use "expand" in LinearFunction/QuadraticFunction
 
 			// Add Terms
-			for (Term term : obj.terms()) {
-				expr.addTerm(term.getWeight(), grbVars.get(term.getVar().getName()));
+			for (Term term : obj.getTerms()) {
+				if (term instanceof LinearTerm) {
+					expr.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()));
+				} else {
+					expr.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()),
+							grbVars.get(((QuadraticTerm) term).getVar2().getName()));
+				}
+
 			}
 
 			// Add Constant (sum of constants)
 			double constant = 0.0;
-			for (Constant cons : obj.constantTerms()) {
+			for (Constant cons : obj.getConstants()) {
 				constant += cons.weight();
 			}
 			expr.addConstant(constant);
@@ -115,7 +123,16 @@ public class GurobiSolver extends Solver {
 			}
 
 			// Set model objective
-			model.setObjective(expr, sense);
+			if (obj instanceof LinearFunction) {
+				// Wenn Objective Linear, darf die GRBQuadExpr keinen quadratischen Anteil haben
+				// TODO: testen
+				if (expr.size() != 0) {
+					throw new Error();
+				}
+				model.setObjective(expr.getLinExpr(), sense);
+			} else {
+				model.setObjective(expr, sense);
+			}
 
 			// Translate Constraints
 			for (Constraint constraint : objective.getConstraints()) {
@@ -127,14 +144,19 @@ public class GurobiSolver extends Solver {
 				case LINEAR:
 					GRBLinExpr tempLin = new GRBLinExpr();
 					for (Term term : lhs) {
-						tempLin.addTerm(term.getWeight(), grbVars.get(term.getVar().getName()));
+						tempLin.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()));
 					}
 					model.addConstr(tempLin, op, rhs, constraint.toString());
 					break;
 				case QUADRATIC:
 					GRBQuadExpr tempQuad = new GRBQuadExpr();
 					for (Term term : lhs) {
-						tempQuad.addTerm(term.getWeight(), grbVars.get(term.getVar().getName()));
+						if (term instanceof LinearTerm) {
+							tempQuad.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()));
+						} else {
+							tempQuad.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()),
+									grbVars.get(((QuadraticTerm) term).getVar2().getName()));
+						}
 					}
 					model.addQConstr(tempQuad, op, rhs, constraint.toString());
 					break;
@@ -145,7 +167,7 @@ public class GurobiSolver extends Solver {
 					throw new Error("Or Constraints are general constraints!");
 				}
 			}
-			
+
 			// Translate General Constraints
 			for (GeneralConstraint constraint : objective.getGeneralConstraints()) {
 				List<? extends Variable<?>> var = constraint.getVariables();
@@ -165,12 +187,10 @@ public class GurobiSolver extends Solver {
 					for (int i = 0; i < var.size(); i++) {
 						grbVars[i] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, var.get(i).getName());
 					}
-					model.addGenConstrOr(
-							model.addVar(0.0, 1.0, 0.0, GRB.BINARY, res.getName()),
-							grbVars, constraint.toString());
+					model.addGenConstrOr(model.addVar(0.0, 1.0, 0.0, GRB.BINARY, res.getName()), grbVars,
+							constraint.toString());
 				}
 			}
-			
 
 		} catch (GRBException e) {
 			e.printStackTrace();
@@ -253,6 +273,20 @@ public class GurobiSolver extends Solver {
 		 * Notizen Besprechung: generische Lösung -> lambda übergeben -> lambda auf alle
 		 * Werte anwenden
 		 */
+
+		for (final String name : this.grbVars.keySet()) {
+
+			try {
+				// Get value of the ILP variable and round it (to eliminate small deltas)
+				double result = Math.round(this.grbVars.get(name).get(DoubleAttr.X));
+				// Save result value in specific mapping
+				// TODO
+			} catch (final GRBException e) {
+				throw new RuntimeException(e);
+			}
+
+		}
+		// Solver reset will be handled by the GipsEngine afterward
 	}
 
 	@Override

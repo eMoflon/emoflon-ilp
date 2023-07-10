@@ -1,48 +1,41 @@
 package org.emoflon.ilp;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-public class LinearFunction extends Function {
-
-	public LinearFunction(List<Term> terms, List<Constant> constantTerms, List<WeightedFunction> nestedFunctions) {
-		if (terms.stream().anyMatch(QuadraticTerm.class::isInstance)) {
-			throw new IllegalArgumentException("A linear function is not allowed to contain quadratic terms!");
-		}
+public class QuadraticFunction extends Function {
+	
+	public QuadraticFunction(List<Term> terms, List<Constant> constantTerms, List<WeightedFunction> nestedFunctions) {
 		this.terms = terms;
 		this.constantTerms = constantTerms;
 		this.nestedFunctions = nestedFunctions;
 	}
 
-	public LinearFunction() {
+	public QuadraticFunction() {
 		this.terms = new ArrayList<Term>();
 		this.constantTerms = new ArrayList<Constant>();
 		this.nestedFunctions = new ArrayList<WeightedFunction>();
 	}
 
-	public LinearFunction(List<Term> terms, List<Constant> constantTerms) {
+	public QuadraticFunction(List<Term> terms, List<Constant> constantTerms) {
 		this.terms = terms;
 		this.constantTerms = constantTerms;
 		this.nestedFunctions = new ArrayList<WeightedFunction>();
 	}
 
+	public void addTerm(Variable<?> var1, Variable<?> var2, double weight) {
+		this.terms.add(new QuadraticTerm(var1, var2, weight));
+	}
+
 	@Override
-	public Function expand() {
+	public QuadraticFunction expand() {
 		if (this.nestedFunctions.isEmpty()) {
 			// end of nesting, deepest level
 			return this;
 		} else {
-
-			Function expanded;
-			if (this.nestedFunctions.stream().anyMatch(nested -> nested.function() instanceof QuadraticFunction)) {
-				expanded = new QuadraticFunction();
-			} else {
-				expanded = new LinearFunction();
-			}
-
+			QuadraticFunction expanded = new QuadraticFunction();
 			for (WeightedFunction nested : this.nestedFunctions) {
 				double nestedWeight = nested.weight();
-
 				Function func;
 				if (nested.function() instanceof LinearFunction) {
 					func = ((LinearFunction) nested.function()).expand();
@@ -62,4 +55,5 @@ public class LinearFunction extends Function {
 			return expanded;
 		}
 	}
+
 }

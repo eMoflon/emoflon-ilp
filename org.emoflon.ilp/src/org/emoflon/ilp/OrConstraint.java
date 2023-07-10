@@ -17,7 +17,7 @@ public class OrConstraint implements GeneralConstraint {
 		this.variables = new ArrayList<BinaryVariable>();
 		this.setResult(result);
 	}
-	
+
 	@Override
 	public List<BinaryVariable> getVariables() {
 		return variables;
@@ -25,7 +25,7 @@ public class OrConstraint implements GeneralConstraint {
 
 	@Override
 	public void setVariables(List<Variable<?>> variables) {
-		for(Variable<?> var : variables) {
+		for (Variable<?> var : variables) {
 			variables.add(new BinaryVariable(var.getName()));
 		}
 	}
@@ -51,10 +51,12 @@ public class OrConstraint implements GeneralConstraint {
 
 	@Override
 	public void setResult(Variable<?> res) {
-		if((double) res.getValue() > 1 || (double) res.getValue() < 0) {
-			throw new IllegalArgumentException ("The result of an Or Constraint has to be binary.");
+		if (res.getValue().doubleValue() > 1 || res.getValue().doubleValue() < 0) {
+			throw new IllegalArgumentException("The result of an Or Constraint has to be binary.");
 		} else {
 			result = (BinaryVariable) res;
 		}
 	}
+
+	// TODO: Translate to normal constraint
 }
