@@ -5,7 +5,7 @@ public class IntegerVariable implements Variable<Integer> {
 	final private String name;
 	private int value;
 
-	// TODO: Add default bounds!
+	// TODO: Add default bounds! Gips: 10_000
 	private int upperBound;
 	private int lowerBound;
 

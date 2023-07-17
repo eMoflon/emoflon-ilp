@@ -59,4 +59,7 @@ public class OrConstraint implements GeneralConstraint {
 	}
 
 	// TODO: Translate to normal constraint
+	public List<LinearConstraint> convert() {
+		throw new Error("Not yet implemented!");
+	}
 }

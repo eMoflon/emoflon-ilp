@@ -68,6 +68,7 @@ public class GurobiSolver extends Solver {
 
 	@Override
 	public void buildILPProblem(Objective objective) {
+		// TODO: Hilfsfunktionen einfuehren? Ist etwas lang...
 		try {
 			// Initialize decision variables and objective
 			// Translate Variables
@@ -192,6 +193,25 @@ public class GurobiSolver extends Solver {
 				}
 			}
 
+			// Translate SOS Constraints
+			for (SOS1Constraint constraint : objective.getSOSConstraints()) {
+				List<Variable<?>> var = constraint.getVariables();
+				GRBVar[] grbVars = new GRBVar[var.size()];
+				for (int i = 0; i < var.size(); i++) {
+					if (var instanceof BinaryVariable) {
+						grbVars[i] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, var.get(i).getName());
+					} else if (var instanceof IntegerVariable) {
+						grbVars[i] = model.addVar(((IntegerVariable) var).getLowerBound(),
+								((IntegerVariable) var).getUpperBound(), 0.0, GRB.INTEGER, var.get(i).getName());
+					} else {
+						// RealVariable
+						grbVars[i] = model.addVar(((RealVariable) var).getLowerBound(),
+								((RealVariable) var).getUpperBound(), 0.0, GRB.CONTINUOUS, var.get(i).getName());
+					}
+				}
+				model.addSOS(grbVars, constraint.getWeights(), GRB.SOS_TYPE1);
+			}
+
 		} catch (GRBException e) {
 			e.printStackTrace();
 		}
@@ -279,7 +299,7 @@ public class GurobiSolver extends Solver {
 			try {
 				// Get value of the ILP variable and round it (to eliminate small deltas)
 				double result = Math.round(this.grbVars.get(name).get(DoubleAttr.X));
-				// Save result value in specific mapping
+				// Save result value
 				// TODO
 			} catch (final GRBException e) {
 				throw new RuntimeException(e);

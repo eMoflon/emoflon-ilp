@@ -12,6 +12,7 @@ public class Objective {
 	private ObjectiveType type = ObjectiveType.MIN;
 	private List<Constraint> constraints = new ArrayList<Constraint>();
 	private List<GeneralConstraint> genConstraints = new ArrayList<GeneralConstraint>();
+	private List<SOS1Constraint> sosConstraints = new ArrayList<SOS1Constraint>();
 
 	private Set<Variable<?>> variables = new HashSet<Variable<?>>();
 
@@ -33,12 +34,28 @@ public class Objective {
 		}
 	}
 
+	public void setGenConstraints(List<GeneralConstraint> constraints) {
+		for (GeneralConstraint cons : constraints) {
+			add(cons);
+		}
+	}
+
+	public void setSOSConstraints(List<SOS1Constraint> constraints) {
+		for (SOS1Constraint cons : constraints) {
+			add(cons);
+		}
+	}
+
 	public List<Constraint> getConstraints() {
 		return constraints;
 	}
 
 	public List<GeneralConstraint> getGeneralConstraints() {
 		return genConstraints;
+	}
+
+	public List<SOS1Constraint> getSOSConstraints() {
+		return sosConstraints;
 	}
 
 	public Set<Variable<?>> getVariables() {
@@ -76,6 +93,10 @@ public class Objective {
 		return genConstraints.size();
 	}
 
+	public int getSOSConstraintCount() {
+		return sosConstraints.size();
+	}
+
 	public int getTotalConstraintCount() {
 		return getConstraintCount() + getGenConstraintCount();
 	}
@@ -105,6 +126,18 @@ public class Objective {
 			variables.add(var);
 		}
 		genConstraints.add(constraint);
+	}
+
+	public void add(SOS1Constraint constraint) {
+		if (constraint.getVariables().isEmpty()) {
+			throw new IllegalArgumentException("The variables of a SOS Constraint must not be empty!");
+		} else if (constraint.getVariables().size() != constraint.getWeights().length) {
+			throw new IllegalArgumentException("Every variable in a SOS Constraint should be assigned with a weight!");
+		}
+		for (Variable<?> var : constraint.getVariables()) {
+			variables.add(var);
+		}
+		sosConstraints.add(constraint);
 	}
 
 }
