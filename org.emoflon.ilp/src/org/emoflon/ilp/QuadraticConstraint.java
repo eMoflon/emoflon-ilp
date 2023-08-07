@@ -3,7 +3,7 @@ package org.emoflon.ilp;
 import java.util.List;
 import java.util.ArrayList;
 
-public class QuadraticConstraint implements Constraint {
+public class QuadraticConstraint implements NormalConstraint {
 
 	private List<Term> lhsTerms;
 	private Operator op;

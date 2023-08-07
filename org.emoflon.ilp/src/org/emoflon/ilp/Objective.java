@@ -1,7 +1,9 @@
 package org.emoflon.ilp;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -10,11 +12,11 @@ public class Objective {
 	// TODO: Linear OR QUADRATIC function
 	private Function objective;
 	private ObjectiveType type = ObjectiveType.MIN;
-	private List<Constraint> constraints = new ArrayList<Constraint>();
+	private List<NormalConstraint> constraints = new ArrayList<NormalConstraint>();
 	private List<GeneralConstraint> genConstraints = new ArrayList<GeneralConstraint>();
 	private List<SOS1Constraint> sosConstraints = new ArrayList<SOS1Constraint>();
 
-	private Set<Variable<?>> variables = new HashSet<Variable<?>>();
+	private Map<String, Variable<?>> variables = new HashMap<String, Variable<?>>();
 
 	public Objective() {
 		super();
@@ -28,8 +30,8 @@ public class Objective {
 		this.type = type;
 	}
 
-	public void setConstraints(List<Constraint> constraints) {
-		for (Constraint cons : constraints) {
+	public void setConstraints(List<NormalConstraint> constraints) {
+		for (NormalConstraint cons : constraints) {
 			add(cons);
 		}
 	}
@@ -46,7 +48,7 @@ public class Objective {
 		}
 	}
 
-	public List<Constraint> getConstraints() {
+	public List<NormalConstraint> getConstraints() {
 		return constraints;
 	}
 
@@ -58,7 +60,7 @@ public class Objective {
 		return sosConstraints;
 	}
 
-	public Set<Variable<?>> getVariables() {
+	public Map<String, Variable<?>> getVariables() {
 		return variables;
 	}
 
@@ -72,9 +74,9 @@ public class Objective {
 			throw new IllegalArgumentException("An Objective has to contain terms.");
 		}
 		for (Term term : objective.getTerms()) {
-			variables.add(term.getVar1());
+			variables.put(term.getVar1().getName(), term.getVar1());
 			if (term instanceof QuadraticTerm) {
-				variables.add(((QuadraticTerm) term).getVar2());
+				variables.put(((QuadraticTerm) term).getVar2().getName(), ((QuadraticTerm) term).getVar2());
 			}
 		}
 		this.objective = objective;
@@ -105,14 +107,14 @@ public class Objective {
 		return variables.size();
 	}
 
-	public void add(Constraint constraint) {
+	public void add(NormalConstraint constraint) {
 		if (constraint.getLhsTerms().isEmpty()) {
 			throw new IllegalArgumentException("The left-hand side of a Constraint must not be empty!");
 		}
 		for (Term term : constraint.getLhsTerms()) {
-			variables.add(term.getVar1());
+			variables.put(term.getVar1().getName(), term.getVar1());
 			if (term instanceof QuadraticTerm) {
-				variables.add(((QuadraticTerm) term).getVar2());
+				variables.put(((QuadraticTerm) term).getVar2().getName(), ((QuadraticTerm) term).getVar2());
 			}
 		}
 		constraints.add(constraint);
@@ -123,7 +125,7 @@ public class Objective {
 			throw new IllegalArgumentException("The variables of a General Constraint must not be empty!");
 		}
 		for (Variable<?> var : constraint.getVariables()) {
-			variables.add(var);
+			variables.put(var.getName(), var);
 		}
 		genConstraints.add(constraint);
 	}
@@ -135,7 +137,7 @@ public class Objective {
 			throw new IllegalArgumentException("Every variable in a SOS Constraint should be assigned with a weight!");
 		}
 		for (Variable<?> var : constraint.getVariables()) {
-			variables.add(var);
+			variables.put(var.getName(), var);
 		}
 		sosConstraints.add(constraint);
 	}

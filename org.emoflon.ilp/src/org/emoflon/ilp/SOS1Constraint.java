@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
-public class SOS1Constraint {
+public class SOS1Constraint implements Constraint {
 
 	private List<Variable<?>> variables;
 	private double[] weights;
 	private List<BinaryVariable> binary;
-	private int bound = 10_000;
+	private int bound = (int) 10E4;
 
 	public SOS1Constraint(List<Variable<?>> variables, double[] weights) {
 		this.setVariables(variables);
@@ -80,29 +80,33 @@ public class SOS1Constraint {
 	public List<LinearConstraint> convert() {
 		List<LinearConstraint> substitution = new ArrayList<LinearConstraint>();
 		List<Term> binaryTerms = new ArrayList<Term>();
+		// for every variable v_i in this sos constraint there is a corresponding binary
+		// variable s_i
 		for (Variable<?> var : this.variables) {
 			BinaryVariable binVar = new BinaryVariable("sos_binary_" + var.getName());
 			this.binary.add(binVar);
 			binaryTerms.add(new LinearTerm(binVar, 1));
 		}
-		// at most one binary variable is non-zero
+		// at most one binary variable s_i is non-zero -> the sum of all binary
+		// variables is <= 1
 		substitution.add(new LinearConstraint(binaryTerms, Operator.LESS_OR_EQUAL, 1.0));
 
 		// match variable to take non-zero value
-		// TODO
 		int i = 0;
 		for (Variable<?> var : this.variables) {
-			// -b_i * K <= a_i
+			// v_i <= c * s_i
+			LinearConstraint linRight = new LinearConstraint(Operator.GREATER_OR_EQUAL, 0.0);
+			linRight.addTerm(var, -1);
+			linRight.addTerm(this.binary.get(i), bound);
+			substitution.add(linRight);
+
+			// v_i >= -c * s_i
 			LinearConstraint linLeft = new LinearConstraint(Operator.LESS_OR_EQUAL, 0.0);
 			linLeft.addTerm(this.binary.get(i), -bound);
 			linLeft.addTerm(var, -1);
 			substitution.add(linLeft);
 
-			// a_i <= b_i * K
-			LinearConstraint linRight = new LinearConstraint(Operator.LESS_OR_EQUAL, 0.0);
-			linRight.addTerm(var, 1);
-			linRight.addTerm(this.binary.get(i), -bound);
-			substitution.add(linRight);
+			i++;
 		}
 
 		return substitution;

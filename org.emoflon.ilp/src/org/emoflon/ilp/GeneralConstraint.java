@@ -2,7 +2,7 @@ package org.emoflon.ilp;
 
 import java.util.List;
 
-public interface GeneralConstraint {
+public interface GeneralConstraint extends Constraint {
 	public List<? extends Variable<?>> getVariables();
 
 	public void setVariables(List<Variable<?>> variables);
