@@ -54,21 +54,21 @@ public class BasicTest {
 		obj.add(c2);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(false, 0.0, true, 42, false, 0.0, SolverType.GUROBI, false, false, null,
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, false, null,
 				false, null);
 		try {
-			Solver solver = new GurobiSolver(config);
+			Solver solver = (new SolverHelper(config)).getSolver();
 			solver.buildILPProblem(obj);
 			SolverOutput out = solver.solve();
 			System.out.println(out.toString());
-			solver.updateValuesFromSolution();
+			Objective result = solver.updateValuesFromSolution();
 
-			/**
-			 * System.out.println("==================="); System.out.println("Computation
-			 * Result:"); System.out.println("Value for x: " + x.getValue());
-			 * System.out.println("Value for y: " + y.getValue()); System.out.println("Value
-			 * for z: " + z.getValue()); System.out.println("===================");
-			 */
+			System.out.println("===================");
+			System.out.println("Computation Result:");
+			System.out.println("Value for x: " + result.getVariables().get("x").getValue());
+			System.out.println("Value for y: " + result.getVariables().get("y").getValue());
+			System.out.println("Value for z: " + result.getVariables().get("z").getValue());
+			System.out.println("===================");
 
 			solver.terminate();
 		} catch (GRBException e) {
@@ -97,7 +97,7 @@ public class BasicTest {
 
 		// Constraints
 		// x | y
-		OrConstraint c1 = new OrConstraint(z);
+		OrVarsConstraint c1 = new OrVarsConstraint(z);
 		c1.addVariable(x);
 		c1.addVariable(y);
 
@@ -106,10 +106,10 @@ public class BasicTest {
 		obj.add(c1);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(false, 0.0, true, 42, false, 0.0, SolverType.GUROBI, false, false, null,
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, false, null,
 				false, null);
 		try {
-			Solver solver = new GurobiSolver(config);
+			Solver solver = (new SolverHelper(config)).getSolver();
 			solver.buildILPProblem(obj);
 			SolverOutput out = solver.solve();
 			System.out.println(out.toString());

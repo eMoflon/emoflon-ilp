@@ -1,7 +1,7 @@
 package org.emoflon.ilp;
 
-public record SolverConfig(boolean timeoutEnabled, double timeout, boolean randomSeedEnabled, int randomSeed,
-		boolean toleranceEnabled, double tolerance, SolverType solver, boolean presolveEnabled,
+public record SolverConfig(SolverType solver, boolean timeoutEnabled, double timeout, boolean randomSeedEnabled, int randomSeed,
+		boolean toleranceEnabled, double tolerance, boolean presolveEnabled,
 		boolean debugOutputEnabled, String debugOutputPath, boolean outputEnabled, String outputPath) {
 
 	/*

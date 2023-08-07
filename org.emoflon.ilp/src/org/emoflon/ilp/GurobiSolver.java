@@ -16,13 +16,14 @@ import gurobi.GRBExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 
-public class GurobiSolver extends Solver {
+public class GurobiSolver implements Solver {
 
 	private GRBEnv env;
 	private GRBModel model;
 	private String outputPath;
 	final private SolverConfig config;
 	private final HashMap<String, GRBVar> grbVars = new HashMap<>();
+	private Objective objective;
 
 	public GurobiSolver(final SolverConfig config) throws GRBException {
 		this.config = config;
@@ -69,6 +70,7 @@ public class GurobiSolver extends Solver {
 	@Override
 	public void buildILPProblem(Objective objective) {
 		// TODO: Hilfsfunktionen einfuehren? Ist etwas lang...
+		this.objective = objective;
 		try {
 			// Initialize decision variables and objective
 			// Translate Variables
@@ -136,7 +138,7 @@ public class GurobiSolver extends Solver {
 			}
 
 			// Translate Constraints
-			for (Constraint constraint : objective.getConstraints()) {
+			for (NormalConstraint constraint : objective.getConstraints()) {
 				List<Term> lhs = constraint.getLhsTerms();
 				char op = translateOp(constraint.getOp());
 				double rhs = constraint.getRhs();
@@ -287,26 +289,41 @@ public class GurobiSolver extends Solver {
 	}
 
 	@Override
-	public void updateValuesFromSolution() {
+	public Objective updateValuesFromSolution() {
 		// TODO Auto-generated method stub
 		/*
 		 * Notizen Besprechung: generische Lösung -> lambda übergeben -> lambda auf alle
 		 * Werte anwenden
 		 */
+		Map<String, Variable<?>> objVars = this.objective.getVariables();
 
 		for (final String name : this.grbVars.keySet()) {
 
 			try {
-				// Get value of the ILP variable and round it (to eliminate small deltas)
-				double result = Math.round(this.grbVars.get(name).get(DoubleAttr.X));
 				// Save result value
-				// TODO
+				// TODO: runden konfigurierbar machen?!
+				Variable<?> objVar = objVars.get(name);
+				if (objVar instanceof BinaryVariable) {
+					long val = Math.round(this.grbVars.get(name).get(DoubleAttr.X));
+					if (val >= 1) {
+						((BinaryVariable) objVar).setValue(1);
+					} else {
+						((BinaryVariable) objVar).setValue(0);
+					}
+				} else if (objVar instanceof IntegerVariable) {
+					((IntegerVariable) objVar).setValue((int) Math.round(this.grbVars.get(name).get(DoubleAttr.X)));
+				} else if (objVar instanceof RealVariable) {
+					((RealVariable) objVar).setValue(this.grbVars.get(name).get(DoubleAttr.X));
+				} else {
+					throw new Error("This variable type is not implemented!");
+				}
 			} catch (final GRBException e) {
 				throw new RuntimeException(e);
 			}
 
 		}
-		// Solver reset will be handled by the GipsEngine afterward
+
+		return this.objective;
 	}
 
 	@Override
@@ -328,6 +345,10 @@ public class GurobiSolver extends Solver {
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public Objective getObjective() {
+		return this.objective;
 	}
 
 }
