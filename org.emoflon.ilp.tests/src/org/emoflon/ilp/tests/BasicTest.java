@@ -82,6 +82,60 @@ public class BasicTest {
 	}
 
 	@Test
+	public void testQuadraticNestedFunctionException() {
+		// Create variables
+		BinaryVariable x = new BinaryVariable("x");
+		BinaryVariable y = new BinaryVariable("y");
+
+		// Function x + y^2 + 42
+		QuadraticFunction f_x_y = new QuadraticFunction();
+		f_x_y.addTerm(x, 1.0);
+		f_x_y.addTerm(y, y, 1.0);
+		f_x_y.addConstant(42);
+
+		// Function f(x, y) + 2z
+		LinearFunction g_f_z = new LinearFunction();
+		assertThrows(IllegalArgumentException.class, () -> {
+			g_f_z.addNestedFunction(f_x_y, 1);
+		});
+	}
+
+	@Test
+	public void testQuadraticFunctionExpand() {
+		// Create variables
+		BinaryVariable x = new BinaryVariable("x");
+		BinaryVariable y = new BinaryVariable("y");
+		BinaryVariable z = new BinaryVariable("z");
+
+		// Function x + y^2 + 42
+		QuadraticFunction f_x_y = new QuadraticFunction();
+		f_x_y.addTerm(x, 1.0);
+		f_x_y.addTerm(y, y, 1.0);
+		f_x_y.addConstant(42);
+
+		// Function f(x, y) + 2z
+		QuadraticFunction g_f_z = new QuadraticFunction();
+		g_f_z.addNestedFunction(f_x_y, 1);
+		g_f_z.addTerm(new LinearTerm(z, 2.0));
+
+		// Function 2*g(f(x,y), z)
+		QuadraticFunction lin = new QuadraticFunction();
+		lin.addNestedFunction(g_f_z, 2);
+		lin.addTerm(y, 1.0);
+		lin.addTerm(y, y, 2);
+
+		assertEquals(1, lin.getNestedFunctions().size());
+		assertEquals(42, f_x_y.getConstants().get(0).weight(), 0.01);
+
+		QuadraticFunction expanded = (QuadraticFunction) lin.expand();
+
+		assertEquals(84, expanded.getConstants().get(0).weight(), 0.01);
+		assertEquals(0, expanded.getNestedFunctions().size());
+		assertEquals(5, expanded.getTerms().size());
+
+	}
+
+	@Test
 	public void testOrSubtitution() {
 		// Create variables
 		BinaryVariable x = new BinaryVariable("x");

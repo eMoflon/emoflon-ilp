@@ -17,4 +17,15 @@ public class QuadraticTerm extends Term {
 		this.var2 = var;
 	}
 
+	// @Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getWeight());
+		sb.append("*");
+		sb.append(this.getVar1().getName());
+		sb.append("*");
+		sb.append(this.getVar2().getName());
+		return sb.toString();
+	}
+
 }

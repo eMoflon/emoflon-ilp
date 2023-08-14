@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuadraticFunction extends Function {
-	
+
 	public QuadraticFunction(List<Term> terms, List<Constant> constantTerms, List<WeightedFunction> nestedFunctions) {
 		this.terms = terms;
 		this.constantTerms = constantTerms;
@@ -33,7 +33,7 @@ public class QuadraticFunction extends Function {
 			// end of nesting, deepest level
 			return this;
 		} else {
-			QuadraticFunction expanded = new QuadraticFunction();
+			QuadraticFunction expanded = new QuadraticFunction(this.terms, this.constantTerms);
 			for (WeightedFunction nested : this.nestedFunctions) {
 				double nestedWeight = nested.weight();
 				Function func;
@@ -49,11 +49,38 @@ public class QuadraticFunction extends Function {
 				}
 				// add terms multiplied with weight
 				for (Term term : func.terms) {
-					expanded.addTerm(term.getVar1(), term.getWeight() * nestedWeight);
+					if (term instanceof LinearTerm) {
+						expanded.addTerm(term.getVar1(), term.getWeight() * nestedWeight);
+					} else {
+						expanded.addTerm(term.getVar1(), ((QuadraticTerm) term).getVar2(),
+								term.getWeight() * nestedWeight);
+					}
 				}
 			}
 			return expanded;
 		}
 	}
 
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		int i = 1;
+		for (Term term : this.terms) {
+			sb.append(term.toString());
+			if (i++ != this.terms.size()) {
+				sb.append(" + ");
+			}
+		}
+
+		for (Constant constant : this.constantTerms) {
+			sb.append(" + ");
+			sb.append(constant.weight());
+		}
+
+		for (WeightedFunction func : this.nestedFunctions) {
+			sb.append(" + ");
+			sb.append(func.toString());
+		}
+
+		return sb.toString();
+	}
 }

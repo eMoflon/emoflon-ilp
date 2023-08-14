@@ -35,11 +35,11 @@ public class QuadraticConstraint implements NormalConstraint {
 	public void addTerm(Term term) {
 		this.lhsTerms.add(term);
 	}
-	
+
 	public void addTerm(Variable<?> var, double weight) {
 		this.lhsTerms.add(new LinearTerm(var, weight));
 	}
-	
+
 	public void addTerm(Variable<?> var1, Variable<?> var2, double weight) {
 		this.lhsTerms.add(new QuadraticTerm(var1, var2, weight));
 	}

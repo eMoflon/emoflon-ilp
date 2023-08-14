@@ -6,4 +6,12 @@ public class LinearTerm extends Term {
 		super(var, weight);
 	}
 
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getWeight());
+		sb.append("*");
+		sb.append(getVar1().getName());
+		return sb.toString();
+	}
+
 }

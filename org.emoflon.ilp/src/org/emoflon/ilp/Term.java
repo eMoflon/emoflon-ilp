@@ -9,12 +9,12 @@ public abstract class Term {
 		this.var1 = var;
 		this.weight = weight;
 	}
-	
+
 	public Term(Variable<?> var1, Variable<?> var2, double weight) {
 		this.var1 = var1;
 		this.weight = weight;
 	}
-	
+
 	public Variable<?> getVar1() {
 		return var1;
 	}
