@@ -56,7 +56,7 @@ public class LinearFunction extends Function {
 			// end of nesting, deepest level
 			return this;
 		} else {
-			LinearFunction expanded = new LinearFunction();
+			LinearFunction expanded = new LinearFunction(this.terms, this.constantTerms);
 
 			for (WeightedFunction nested : this.nestedFunctions) {
 				double nestedWeight = nested.weight();
@@ -73,5 +73,30 @@ public class LinearFunction extends Function {
 			}
 			return expanded;
 		}
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		int i = 1;
+		for (Term term : this.terms) {
+			sb.append(term.getWeight());
+			sb.append(" * ");
+			sb.append(term.getVar1().getName());
+			if (i++ != this.terms.size()) {
+				sb.append(" + ");
+			}
+		}
+
+		for (Constant constant : this.constantTerms) {
+			sb.append(" + ");
+			sb.append(constant.weight());
+		}
+
+		for (WeightedFunction func : this.nestedFunctions) {
+			sb.append(" + ");
+			sb.append(func.toString());
+		}
+
+		return sb.toString();
 	}
 }

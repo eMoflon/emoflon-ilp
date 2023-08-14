@@ -8,7 +8,7 @@ public class SOS1Constraint implements Constraint {
 
 	private List<Variable<?>> variables;
 	private double[] weights;
-	private List<BinaryVariable> binary;
+	private List<BinaryVariable> binary = new ArrayList<BinaryVariable>();
 	private int bound = (int) 10E4;
 
 	public SOS1Constraint(List<Variable<?>> variables, double[] weights) {
@@ -19,11 +19,13 @@ public class SOS1Constraint implements Constraint {
 	// If no values for the weights are given, all of the weights are set to 1
 	public SOS1Constraint(List<Variable<?>> variables) {
 		this.setVariables(variables);
+		this.weights = new double[variables.size()];
 		Arrays.fill(this.weights, 1);
 	}
 
 	public SOS1Constraint() {
 		this.setVariables(new ArrayList<Variable<?>>());
+		this.weights = new double[variables.size()];
 		Arrays.fill(this.weights, 1);
 	}
 
@@ -36,12 +38,14 @@ public class SOS1Constraint implements Constraint {
 	// If no values for the weights are given, all of the weights are set to 1
 	public SOS1Constraint(List<Variable<?>> variables, int bound) {
 		this.setVariables(variables);
+		this.weights = new double[variables.size()];
 		Arrays.fill(this.weights, 1);
 		this.setBound(bound);
 	}
 
 	public SOS1Constraint(int bound) {
 		this.setVariables(new ArrayList<Variable<?>>());
+		this.weights = new double[variables.size()];
 		Arrays.fill(this.weights, 1);
 		this.setBound(bound);
 	}

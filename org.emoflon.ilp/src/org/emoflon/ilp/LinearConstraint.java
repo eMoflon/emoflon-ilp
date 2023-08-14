@@ -122,7 +122,6 @@ public class LinearConstraint implements NormalConstraint {
 		// a != b => a > b || a < b
 		// f_i != k_i <=> (f_i + psi_i >= k_i) /\ (f_i - psi'_i <= k_i)
 		case NOT_EQUAL:
-			// TODO: Implement this!
 			// 1: psi_i + psi'_i >= epsilon
 			LinearConstraint one = new LinearConstraint(Operator.GREATER_OR_EQUAL, this.epsilon);
 			RealVariable psi = new RealVariable("psi_".concat(copy.toString()));

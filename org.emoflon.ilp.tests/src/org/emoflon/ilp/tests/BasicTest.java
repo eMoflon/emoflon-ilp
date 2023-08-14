@@ -1,136 +1,17 @@
 package org.emoflon.ilp.tests;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import gurobi.GRBException;
-
-import java.util.List;
-
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.emoflon.ilp.*;
-import org.emoflon.ilp.SolverConfig.SolverType;
+import org.junit.jupiter.api.Test;
 
 public class BasicTest {
-	
-	@Test
-	public void testAddTwoNumbersZeroTest() {
-		Assertions.assertEquals(0, 0+0);
-	}
-}
-
-/*
-
-public class BasicTest {
-
-	@Test
-	public void testBasicProblem() {
-		// Gurobi Mip1 example
-
-		// Create variables
-		BinaryVariable x = new BinaryVariable("x");
-		BinaryVariable y = new BinaryVariable("y");
-		BinaryVariable z = new BinaryVariable("z");
-
-		// Objective
-		// maximize x + y + 2z
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
-
-		LinearFunction lin = new LinearFunction();
-		lin.addTerm(x, 1.0);
-		lin.addTerm(new LinearTerm(y, 1.0));
-		lin.addTerm(new LinearTerm(z, 2.0));
-
-		// Constraints
-		// x + 2y + 3z <= 4
-		List<Term> c1_terms = new ArrayList<Term>();
-		c1_terms.add(new LinearTerm(x, 1.0));
-		c1_terms.add(new LinearTerm(y, 2.0));
-		c1_terms.add(new LinearTerm(z, 3.0));
-		LinearConstraint c1 = new LinearConstraint(c1_terms, Operator.LESS_OR_EQUAL, 4.0);
-
-		// x + y >= 1
-		LinearConstraint c2 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 1.0);
-		c2.addTerm(x, 1.0);
-		c2.addTerm(new LinearTerm(y, 1.0));
-
-		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
-
-		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, false, null,
-				false, null);
-		try {
-			Solver solver = (new SolverHelper(config)).getSolver();
-			solver.buildILPProblem(obj);
-			SolverOutput out = solver.solve();
-			System.out.println(out.toString());
-			Objective result = solver.updateValuesFromSolution();
-
-			System.out.println("===================");
-			System.out.println("Computation Result:");
-			System.out.println("Value for x: " + result.getVariables().get("x").getValue());
-			System.out.println("Value for y: " + result.getVariables().get("y").getValue());
-			System.out.println("Value for z: " + result.getVariables().get("z").getValue());
-			System.out.println("===================");
-
-			solver.terminate();
-		} catch (GRBException e) {
-			System.out.println("Error code: " + e.getErrorCode() + ". " + e.getMessage());
-		}
-		assertTrue(true);
-	}
-
-	@Test
-	public void testBasicOrProblem() {
-		// TODO: minimal Or Constraint example
-		// Create variables
-		BinaryVariable x = new BinaryVariable("x");
-		BinaryVariable y = new BinaryVariable("y");
-		BinaryVariable z = new BinaryVariable("z");
-
-		// Objective
-		// maximize x + y + z
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MIN);
-
-		LinearFunction lin = new LinearFunction();
-		lin.addTerm(x, 1.0);
-		lin.addTerm(y, 1.0);
-		lin.addTerm(z, 1.0);
-
-		// Constraints
-		// x | y
-		OrVarsConstraint c1 = new OrVarsConstraint(z);
-		c1.addVariable(x);
-		c1.addVariable(y);
-
-		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-
-		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, false, null,
-				false, null);
-		try {
-			Solver solver = (new SolverHelper(config)).getSolver();
-			solver.buildILPProblem(obj);
-			SolverOutput out = solver.solve();
-			System.out.println(out.toString());
-			solver.updateValuesFromSolution();
-			solver.terminate();
-		} catch (GRBException e) {
-			System.out.println("Error code: " + e.getErrorCode() + ". " + e.getMessage());
-		}
-		assertTrue(true);
-	}
 
 	@Test
 	public void testLinearTermsException() {
@@ -157,7 +38,7 @@ public class BasicTest {
 		c1_terms.add(new QuadraticTerm(z, z, 3.0));
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			LinearConstraint c1 = new LinearConstraint(c1_terms, Operator.LESS_OR_EQUAL, 4.0);
+			new LinearConstraint(c1_terms, Operator.LESS_OR_EQUAL, 4.0);
 		});
 	}
 
@@ -168,27 +49,121 @@ public class BasicTest {
 		BinaryVariable y = new BinaryVariable("y");
 		BinaryVariable z = new BinaryVariable("z");
 
-		// Objective
-		// maximize x + y + 2z
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		// Function x + y + 42
+		LinearFunction f_x_y = new LinearFunction();
+		f_x_y.addTerm(x, 1.0);
+		f_x_y.addTerm(new LinearTerm(y, 1.0));
+		f_x_y.addConstant(42);
 
+		// Function f(x, y) + 2z
+		LinearFunction g_f_z = new LinearFunction();
+		g_f_z.addNestedFunction(f_x_y, 1);
+		g_f_z.addTerm(new LinearTerm(z, 2.0));
+
+		// Function 2*g(f(x,y), z)
+		LinearFunction h_g_z = new LinearFunction();
+		h_g_z.addNestedFunction(g_f_z, 2);
+
+		// Function h(g) + 17
+		// -> 2*((x + y + 42) + 2*z) + 17
+		// -> 2*x + 2*y + 4*z + 17 + 84
 		LinearFunction lin = new LinearFunction();
-		lin.addTerm(x, 1.0);
-		lin.addTerm(new LinearTerm(y, 1.0));
-		lin.addTerm(new LinearTerm(z, 2.0));
+		lin.addNestedFunction(h_g_z, 1);
+		lin.addConstant(17);
+
+		assertEquals(1, lin.getNestedFunctions().size());
+		assertEquals(42, f_x_y.getConstants().get(0).weight(), 0.01);
+
+		LinearFunction expanded = (LinearFunction) lin.expand();
+		assertEquals(17, expanded.getConstants().get(0).weight(), 0.01);
+		assertEquals(84, expanded.getConstants().get(1).weight(), 0.01);
+		assertEquals(0, expanded.getNestedFunctions().size());
+		assertEquals(3, expanded.getTerms().size());
+	}
+
+	@Test
+	public void testOrSubtitution() {
+		// Create variables
+		BinaryVariable x = new BinaryVariable("x");
+		BinaryVariable y = new BinaryVariable("y");
 
 		// Constraints
-		// x + 2y + 3z <= 4
-		List<Term> c1_terms = new ArrayList<Term>();
-		c1_terms.add(new LinearTerm(x, 1.0));
-		c1_terms.add(new LinearTerm(y, 2.0));
-		c1_terms.add(new QuadraticTerm(z, z, 3.0));
+		// x + 2y <= 4
+		LinearConstraint c1 = new LinearConstraint(Operator.LESS_OR_EQUAL, 4.0);
+		c1.addTerm(x, 1.0);
+		c1.addTerm(y, 2.0);
 
-		assertThrows(IllegalArgumentException.class, () -> {
-			LinearConstraint c1 = new LinearConstraint(c1_terms, Operator.LESS_OR_EQUAL, 4.0);
-		});
+		// x - 2y <= 4
+		LinearConstraint c2 = new LinearConstraint(Operator.LESS_OR_EQUAL, 4.0);
+		c2.addTerm(x, 1.0);
+		c2.addTerm(y, 2.0);
+
+		BinaryVariable z = new BinaryVariable("z");
+		OrConstraint or = new OrConstraint(z);
+
+		or.addConstraint(c1);
+		or.addConstraint(c2);
+
+		List<Constraint> substitution = or.convert();
+
+		// <= -> 7 substitution constraints (5 linear, 2 SOS)
+		// 2*7 + 1 substitution constraints total
+		assertEquals(15, substitution.size());
+
+		// TODO: mehr Tests
+	}
+
+	@Test
+	public void testSOS1Substitution() {
+		// Create variables
+		BinaryVariable x = new BinaryVariable("x");
+		BinaryVariable y = new BinaryVariable("y");
+		BinaryVariable z = new BinaryVariable("z");
+
+		// SOS1(x, y, z)
+		SOS1Constraint sos = new SOS1Constraint();
+		sos.setVariables(Arrays.asList(x, y, z));
+
+		List<LinearConstraint> substitution = sos.convert();
+
+		// 2 substitution constraints for each variable
+		// -> 3*2 + 1 substitution constraints total
+		assertEquals(7, substitution.size());
+
+		// TODO: mehr Tests
+	}
+
+	@Test
+	public void testOperatorSubstitution() {
+		// Create variables
+		BinaryVariable x = new BinaryVariable("x");
+		BinaryVariable y = new BinaryVariable("y");
+
+		// Create constraints
+		// <
+		LinearConstraint less = new LinearConstraint(Operator.LESS, 5, 1.0);
+		less.addTerm(x, 1.0);
+		less.addTerm(y, 2.0);
+		List<Constraint> sub_less = less.convertOperator();
+		assertEquals(1, sub_less.size());
+		assertEquals(4, ((LinearConstraint) sub_less.get(0)).getRhs(), 0.00001);
+		assertEquals(less.getLhsTerms(), ((LinearConstraint) sub_less.get(0)).getLhsTerms());
+
+		// >
+		LinearConstraint greater = new LinearConstraint(Operator.GREATER, 4, 1.0);
+		greater.addTerm(x, 10);
+		greater.addTerm(y, 1);
+		List<Constraint> sub_greater = greater.convertOperator();
+		assertEquals(1, sub_greater.size());
+		assertEquals(5, ((LinearConstraint) sub_greater.get(0)).getRhs(), 0.00001);
+		assertEquals(greater.getLhsTerms(), ((LinearConstraint) sub_greater.get(0)).getLhsTerms());
+
+		// !=
+		LinearConstraint not_equal = new LinearConstraint(Operator.NOT_EQUAL, 11, 1.0);
+		not_equal.addTerm(x, 3);
+		not_equal.addTerm(y, 9);
+		List<Constraint> sub_neq = not_equal.convertOperator();
+		assertEquals(2, sub_neq.size());
+		assertTrue(sub_neq.get(1) instanceof SOS1Constraint);
 	}
 }
-
-*/
