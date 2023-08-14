@@ -71,10 +71,11 @@ public class OrConstraint {
 		this.epsilon = epsilon;
 	}
 
-	// TODO: Translate to normal constraints
+	// Translate to normal (incl. SOS1) constraints
+	// TODO: negation of constraints?
 	public List<Constraint> convert() {
 		List<Constraint> substitute = new ArrayList<Constraint>();
-		List<BinaryVariable> binaryS = new ArrayList<BinaryVariable>();
+		LinearConstraint binary_sub = new LinearConstraint(Operator.GREATER_OR_EQUAL, 0.0);
 
 		for (LinearConstraint lin : this.constraints) {
 			switch (lin.getOp()) {
@@ -83,6 +84,8 @@ public class OrConstraint {
 				BinaryVariable s_geq = new BinaryVariable("s_".concat(this.toString()).concat(lin.toString()));
 				BinaryVariable s_prime_geq = new BinaryVariable(
 						"s_prime_".concat(this.toString()).concat(lin.toString()));
+				binary_sub.addTerm(s_geq, 1.0);
+
 				// (1) s_i + s'_i = 1
 				LinearConstraint geq1 = new LinearConstraint(Operator.EQUAL, 1.0);
 				geq1.addTerm(s_geq, 1.0);
@@ -135,6 +138,8 @@ public class OrConstraint {
 				BinaryVariable s_gr = new BinaryVariable("s_".concat(this.toString()).concat(lin.toString()));
 				BinaryVariable s_prime_gr = new BinaryVariable(
 						"s_prime_".concat(this.toString()).concat(lin.toString()));
+				binary_sub.addTerm(s_gr, 1.0);
+
 				// (1) s_i + s'_i = 1
 				LinearConstraint gr1 = new LinearConstraint(Operator.EQUAL, 1.0);
 				gr1.addTerm(s_gr, 1.0);
@@ -182,9 +187,84 @@ public class OrConstraint {
 
 				break;
 			case EQUAL:
+				// (1) s_i element {0,1}
+				BinaryVariable s_eq = new BinaryVariable("s_".concat(this.toString()).concat(lin.toString()));
+				binary_sub.addTerm(s_eq, 1.0);
+
+				// (2) phi_i element R+, f_i + phi_i >= k_i
+				RealVariable phi_eq = new RealVariable("phi_".concat(this.toString().concat(lin.toString())));
+				phi_eq.setLowerBound(0.0);
+				LinearConstraint eq1 = new LinearConstraint(lin.getLhsTerms(), Operator.GREATER_OR_EQUAL, lin.getRhs());
+				eq1.addTerm(phi_eq, 1.0);
+				substitute.add(eq1);
+
+				// (3) phi'_i element R+, f_i - phi'_i <= k_i
+				RealVariable phi_prime_eq = new RealVariable(
+						"phi_prime_".concat(this.toString().concat(lin.toString())));
+				phi_prime_eq.setLowerBound(0.0);
+				LinearConstraint eq2 = new LinearConstraint(lin.getLhsTerms(), Operator.LESS_OR_EQUAL, lin.getRhs());
+				eq2.addTerm(phi_prime_eq, -1.0);
+				substitute.add(eq2);
+
+				// (4) SOS1(phi_i, phi'_i, s_i)
+				List<Variable<?>> sosVars_eq3 = new ArrayList<Variable<?>>();
+				sosVars_eq3.add(phi_eq);
+				sosVars_eq3.add(phi_prime_eq);
+				sosVars_eq3.add(s_eq);
+				SOS1Constraint eq3 = new SOS1Constraint(sosVars_eq3);
+				substitute.add(eq3);
+
+				// (5) phi_i + phi'_i + s_i > e, e element R+\{0}
+				LinearConstraint eq4 = new LinearConstraint(Operator.GREATER, this.epsilon);
+				eq4.addTerm(phi_eq, 1.0);
+				eq4.addTerm(phi_prime_eq, 1.0);
+				eq4.addTerm(s_eq, 1.0);
+				substitute.add(eq4);
 
 				break;
 			case NOT_EQUAL:
+				// (1) s_i, s'_i element {0,1}
+				BinaryVariable s_neq = new BinaryVariable("s_".concat(this.toString()).concat(lin.toString()));
+				BinaryVariable s_prime_neq = new BinaryVariable(
+						"s_prime_".concat(this.toString()).concat(lin.toString()));
+				binary_sub.addTerm(s_neq, 1.0);
+
+				// (2) s_i = 1 - s'_i <=> s_i + s'_i = 1
+				LinearConstraint neq1 = new LinearConstraint(Operator.EQUAL, 1.0);
+				neq1.addTerm(s_neq, 1.0);
+				neq1.addTerm(s_prime_neq, 1.0);
+				substitute.add(neq1);
+
+				// (3) phi_i element R+, f_i + phi_i >= k_i
+				RealVariable phi_neq = new RealVariable("phi_".concat(this.toString().concat(lin.toString())));
+				phi_neq.setLowerBound(0.0);
+				LinearConstraint neq2 = new LinearConstraint(lin.getLhsTerms(), Operator.GREATER_OR_EQUAL,
+						lin.getRhs());
+				neq2.addTerm(phi_neq, 1.0);
+				substitute.add(neq2);
+
+				// (3) phi'_i element R+, f_i - phi'_i <= k_i
+				RealVariable phi_prime_neq = new RealVariable(
+						"phi_prime_".concat(this.toString().concat(lin.toString())));
+				phi_prime_neq.setLowerBound(0.0);
+				LinearConstraint neq3 = new LinearConstraint(lin.getLhsTerms(), Operator.LESS_OR_EQUAL, lin.getRhs());
+				neq3.addTerm(phi_prime_neq, -1.0);
+				substitute.add(neq3);
+
+				// (4) SOS1(phi_i, phi'_i, s'_i)
+				List<Variable<?>> sosVars_neq4 = new ArrayList<Variable<?>>();
+				sosVars_neq4.add(phi_neq);
+				sosVars_neq4.add(phi_prime_neq);
+				sosVars_neq4.add(s_prime_neq);
+				SOS1Constraint neq4 = new SOS1Constraint(sosVars_neq4);
+				substitute.add(neq4);
+
+				// (5) phi_i + phi'_i + s'_i > e, e element R+\{0}
+				LinearConstraint neq5 = new LinearConstraint(Operator.GREATER, this.epsilon);
+				neq5.addTerm(phi_neq, 1.0);
+				neq5.addTerm(phi_prime_neq, 1.0);
+				neq5.addTerm(s_prime_neq, 1.0);
+				substitute.add(neq5);
 
 				break;
 			case LESS:
@@ -192,6 +272,8 @@ public class OrConstraint {
 				BinaryVariable s_le = new BinaryVariable("s_".concat(this.toString()).concat(lin.toString()));
 				BinaryVariable s_prime_le = new BinaryVariable(
 						"s_prime_".concat(this.toString()).concat(lin.toString()));
+				binary_sub.addTerm(s_le, 1.0);
+
 				// (1) s_i + s'_i = 1
 				LinearConstraint le1 = new LinearConstraint(Operator.EQUAL, 1.0);
 				le1.addTerm(s_le, 1.0);
@@ -239,15 +321,65 @@ public class OrConstraint {
 
 				break;
 			case LESS_OR_EQUAL:
+				// (1) s_i, s'_i element {0,1}
+				BinaryVariable s_leq = new BinaryVariable("s_".concat(this.toString()).concat(lin.toString()));
+				BinaryVariable s_prime_leq = new BinaryVariable(
+						"s_prime_".concat(this.toString()).concat(lin.toString()));
+				binary_sub.addTerm(s_leq, 1.0);
+
+				// (1) s_i + s'_i = 1
+				LinearConstraint leq1 = new LinearConstraint(Operator.EQUAL, 1.0);
+				leq1.addTerm(s_leq, 1.0);
+				leq1.addTerm(s_prime_leq, 1.0);
+				substitute.add(leq1);
+
+				// (2) phi_i element R, f_i - phi_i <= k_i
+				RealVariable phi_leq = new RealVariable("phi_".concat(this.toString().concat(lin.toString())));
+				LinearConstraint leq2 = new LinearConstraint(lin.getLhsTerms(), Operator.LESS_OR_EQUAL, lin.getRhs());
+				leq2.addTerm(phi_leq, -1.0);
+				substitute.add(leq2);
+
+				// (3) phi'_i element R, f_i + phi'_i > k_i
+				RealVariable phi_prime_leq = new RealVariable(
+						"phi_prime_".concat(this.toString()).concat(lin.toString()));
+				LinearConstraint leq3 = new LinearConstraint(lin.getLhsTerms(), Operator.GREATER, lin.getRhs());
+				leq3.addTerm(phi_prime_leq, 1.0);
+				substitute.add(leq3);
+
+				// (4) phi_i + s_i >= 2*e und e element R+\{0}
+				LinearConstraint leq4 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 2 * this.epsilon);
+				leq4.addTerm(phi_leq, 1.0);
+				leq4.addTerm(s_leq, 1.0);
+				substitute.add(leq4);
+
+				// (5) phi'_i + s'_i >= 2*e
+				LinearConstraint leq5 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 2 * this.epsilon);
+				leq5.addTerm(phi_prime_leq, 1.0);
+				leq5.addTerm(s_prime_leq, 1.0);
+				substitute.add(leq5);
+
+				// (6) SOS1(phi_i, s_i)
+				List<Variable<?>> sosVars_leq6 = new ArrayList<Variable<?>>();
+				sosVars_leq6.add(phi_leq);
+				sosVars_leq6.add(s_leq);
+				SOS1Constraint leq6 = new SOS1Constraint(sosVars_leq6);
+				substitute.add(leq6);
+
+				// (7) SOS1(phi'_i, s'_i)
+				List<Variable<?>> sosVars_leq7 = new ArrayList<Variable<?>>();
+				sosVars_leq7.add(phi_prime_leq);
+				sosVars_leq7.add(s_prime_leq);
+				SOS1Constraint leq7 = new SOS1Constraint(sosVars_leq7);
+				substitute.add(leq7);
 
 				break;
 			default:
-				break;
-
+				throw new IllegalArgumentException(
+						"The or substitution for the operator of the following constraint is not implemented: "
+								.concat(lin.toString()));
 			}
 		}
-
-		throw new Error("Not yet implemented!");
-
+		substitute.add(binary_sub);
+		return substitute;
 	}
 }
