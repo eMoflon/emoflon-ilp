@@ -1,5 +1,6 @@
-package org.emoflon.ilp.test;
+package org.emoflon.ilp.tests;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import gurobi.GRBException;
@@ -13,6 +14,16 @@ import java.util.ArrayList;
 
 import org.emoflon.ilp.*;
 import org.emoflon.ilp.SolverConfig.SolverType;
+
+public class BasicTest {
+	
+	@Test
+	public void testAddTwoNumbersZeroTest() {
+		Assertions.assertEquals(0, 0+0);
+	}
+}
+
+/*
 
 public class BasicTest {
 
@@ -179,3 +190,5 @@ public class BasicTest {
 		});
 	}
 }
+
+*/

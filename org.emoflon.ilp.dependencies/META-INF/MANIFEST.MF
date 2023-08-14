@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Dependencies
+Bundle-SymbolicName: org.emoflon.ilp.dependencies
+Bundle-Version: 0.0.1.qualifier
+Bundle-ClassPath: gurobi.jar
+Export-Package: gurobi;version="10.0.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-18
+Automatic-Module-Name: org.emoflon.ilp.dependencies

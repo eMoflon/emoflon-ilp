@@ -2,18 +2,17 @@ package org.emoflon.ilp;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import gurobi.GRB;
 import gurobi.GRB.DoubleAttr;
 import gurobi.GRB.DoubleParam;
 import gurobi.GRB.IntParam;
-import gurobi.GRBLinExpr;
-import gurobi.GRBQuadExpr;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
-import gurobi.GRBExpr;
+import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
+import gurobi.GRBQuadExpr;
 import gurobi.GRBVar;
 
 public class GurobiSolver implements Solver {
@@ -74,9 +73,9 @@ public class GurobiSolver implements Solver {
 		try {
 			// Initialize decision variables and objective
 			// Translate Variables
-			Set<Variable<?>> vars = objective.getVariables();
+			Map<String, Variable<?>> vars = objective.getVariables();
 			GRBVar temp = null;
-			for (Variable<?> var : vars) {
+			for (Variable<?> var : vars.values()) {
 				switch (var.getType()) {
 				case BINARY:
 					temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
