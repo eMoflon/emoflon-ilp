@@ -101,6 +101,7 @@ public class LinearConstraint implements NormalConstraint {
 	// Use for converting the operator from < to <=, from > to >= and from != to ???
 	// returns the new LinearConstraint for < and >
 	// returns the new Constraint for !=
+	@Override
 	public List<Constraint> convertOperator() {
 		List<Constraint> substitute = new ArrayList<Constraint>();
 		LinearConstraint copy = new LinearConstraint(this);
@@ -142,6 +143,16 @@ public class LinearConstraint implements NormalConstraint {
 			sosVars.add(psiPrime);
 			SOS1Constraint sos = new SOS1Constraint(sosVars);
 			substitute.add(sos);
+
+			// 4: f_i + psi_i >= k_i
+			LinearConstraint left = new LinearConstraint(this.getLhsTerms(), Operator.GREATER_OR_EQUAL, this.getRhs());
+			left.addTerm(psi, 1.0);
+			substitute.add(left);
+
+			// 5: f_i - psi'_i <= k_i
+			LinearConstraint right = new LinearConstraint(this.getLhsTerms(), Operator.LESS_OR_EQUAL, this.getRhs());
+			right.addTerm(psiPrime, 1.0);
+			substitute.add(right);
 
 			return substitute;
 

@@ -21,4 +21,6 @@ public interface NormalConstraint extends Constraint {
 
 	public ConstraintType getType();
 
+	public List<Constraint> convertOperator();
+
 }
