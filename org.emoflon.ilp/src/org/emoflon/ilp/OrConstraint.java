@@ -3,7 +3,7 @@ package org.emoflon.ilp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrConstraint {
+public class OrConstraint implements Constraint {
 
 	private List<LinearConstraint> constraints;
 	private BinaryVariable result;
@@ -104,6 +104,7 @@ public class OrConstraint {
 						"phi_prime_".concat(this.toString()).concat(lin.toString()));
 				LinearConstraint geq3 = new LinearConstraint(lin.getLhsTerms(), Operator.LESS, lin.getRhs());
 				geq3.addTerm(phi_prime_geq, -1.0);
+				geq3.convertOperator();
 				substitute.add(geq3);
 
 				// (4) phi_i + s_i >= 2*e und e element R+\{0}
@@ -150,6 +151,7 @@ public class OrConstraint {
 				RealVariable phi_gr = new RealVariable("phi_".concat(this.toString().concat(lin.toString())));
 				LinearConstraint gr2 = new LinearConstraint(lin.getLhsTerms(), Operator.GREATER, lin.getRhs());
 				gr2.addTerm(phi_gr, 1.0);
+				gr2.convertOperator();
 				substitute.add(gr2);
 
 				// (3) phi'_i element R, f_i - phi'_i <= k_i
@@ -219,6 +221,7 @@ public class OrConstraint {
 				eq4.addTerm(phi_eq, 1.0);
 				eq4.addTerm(phi_prime_eq, 1.0);
 				eq4.addTerm(s_eq, 1.0);
+				eq4.convertOperator();
 				substitute.add(eq4);
 
 				break;
@@ -264,6 +267,7 @@ public class OrConstraint {
 				neq5.addTerm(phi_neq, 1.0);
 				neq5.addTerm(phi_prime_neq, 1.0);
 				neq5.addTerm(s_prime_neq, 1.0);
+				neq5.convertOperator();
 				substitute.add(neq5);
 
 				break;
@@ -284,6 +288,7 @@ public class OrConstraint {
 				RealVariable phi_le = new RealVariable("phi_".concat(this.toString().concat(lin.toString())));
 				LinearConstraint le2 = new LinearConstraint(lin.getLhsTerms(), Operator.LESS, lin.getRhs());
 				le2.addTerm(phi_le, -1.0);
+				le2.convertOperator();
 				substitute.add(le2);
 
 				// (3) phi'_i element R, f_i + phi'_i >= k_i
@@ -344,6 +349,7 @@ public class OrConstraint {
 						"phi_prime_".concat(this.toString()).concat(lin.toString()));
 				LinearConstraint leq3 = new LinearConstraint(lin.getLhsTerms(), Operator.GREATER, lin.getRhs());
 				leq3.addTerm(phi_prime_leq, 1.0);
+				leq3.convertOperator();
 				substitute.add(leq3);
 
 				// (4) phi_i + s_i >= 2*e und e element R+\{0}

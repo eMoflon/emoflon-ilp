@@ -13,6 +13,7 @@ public class Objective {
 	private List<NormalConstraint> constraints = new ArrayList<NormalConstraint>();
 	private List<GeneralConstraint> genConstraints = new ArrayList<GeneralConstraint>();
 	private List<SOS1Constraint> sosConstraints = new ArrayList<SOS1Constraint>();
+	private List<OrConstraint> orConstraints = new ArrayList<OrConstraint>();
 
 	private Map<String, Variable<?>> variables = new HashMap<String, Variable<?>>();
 
@@ -46,6 +47,12 @@ public class Objective {
 		}
 	}
 
+	public void setOrConstraints(List<OrConstraint> constraints) {
+		for (OrConstraint cons : constraints) {
+			add(cons);
+		}
+	}
+
 	public List<NormalConstraint> getConstraints() {
 		return constraints;
 	}
@@ -56,6 +63,10 @@ public class Objective {
 
 	public List<SOS1Constraint> getSOSConstraints() {
 		return sosConstraints;
+	}
+
+	public List<OrConstraint> getOrConstraints() {
+		return orConstraints;
 	}
 
 	public Map<String, Variable<?>> getVariables() {
@@ -97,8 +108,12 @@ public class Objective {
 		return sosConstraints.size();
 	}
 
+	public int getOrConstraintCount() {
+		return orConstraints.size();
+	}
+
 	public int getTotalConstraintCount() {
-		return getConstraintCount() + getGenConstraintCount();
+		return getConstraintCount() + getGenConstraintCount() + getSOSConstraintCount() + getOrConstraintCount();
 	}
 
 	public int getVariableCount() {
@@ -138,6 +153,18 @@ public class Objective {
 			variables.put(var.getName(), var);
 		}
 		sosConstraints.add(constraint);
+	}
+
+	public void add(OrConstraint constraint) {
+		if (constraint.getConstraints().isEmpty()) {
+			throw new IllegalArgumentException("The constraints of a Or Constraint must not be empty!");
+		}
+		for (LinearConstraint lin : constraint.getConstraints()) {
+			for (Term term : lin.getLhsTerms()) {
+				variables.put(term.getVar1().getName(), term.getVar1());
+			}
+		}
+		orConstraints.add(constraint);
 	}
 
 }

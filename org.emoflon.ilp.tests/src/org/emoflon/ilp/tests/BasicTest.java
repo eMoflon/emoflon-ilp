@@ -217,7 +217,7 @@ public class BasicTest {
 		not_equal.addTerm(x, 3);
 		not_equal.addTerm(y, 9);
 		List<Constraint> sub_neq = not_equal.convertOperator();
-		assertEquals(2, sub_neq.size());
+		assertEquals(4, sub_neq.size());
 		assertTrue(sub_neq.get(1) instanceof SOS1Constraint);
 	}
 }

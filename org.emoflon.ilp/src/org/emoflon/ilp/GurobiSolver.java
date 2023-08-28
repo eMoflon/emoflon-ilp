@@ -3,6 +3,7 @@ package org.emoflon.ilp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import gurobi.GRB;
 import gurobi.GRB.DoubleAttr;
@@ -24,9 +25,14 @@ public class GurobiSolver implements Solver {
 	private final HashMap<String, GRBVar> grbVars = new HashMap<>();
 	private Objective objective;
 
-	public GurobiSolver(final SolverConfig config) throws GRBException {
-		this.config = config;
-		init();
+	public GurobiSolver(final SolverConfig config) {
+		try {
+			this.config = config;
+			init();
+		} catch (final GRBException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 
 	private void init() throws GRBException {
@@ -94,11 +100,9 @@ public class GurobiSolver implements Solver {
 			}
 
 			// Translate Objective to GRB
-			// TODO: add support for quadratic objective functions
+			// TODO: nested Functions OR use "expand" in LinearFunction/QuadraticFunction
 			Function obj = objective.getObjective().expand();
 			GRBQuadExpr expr = new GRBQuadExpr();
-
-			// TODO: nested Functions OR use "expand" in LinearFunction/QuadraticFunction
 
 			// Add Terms
 			for (Term term : obj.getTerms()) {
@@ -137,7 +141,32 @@ public class GurobiSolver implements Solver {
 			}
 
 			// Translate Constraints
-			for (NormalConstraint constraint : objective.getConstraints()) {
+			List<NormalConstraint> normalConstraints = objective.getConstraints();
+			List<SOS1Constraint> sosConstraints = objective.getSOSConstraints();
+
+			// Or Constraints
+			// Substitute Or Constraints with Linear Constraints and SOS1 Constraints
+			for (OrConstraint constraint : objective.getOrConstraints()) {
+				List<Constraint> converted = constraint.convert();
+				normalConstraints.addAll(converted.stream().filter(NormalConstraint.class::isInstance)
+						.map(LinearConstraint.class::cast).collect(Collectors.toList()));
+				sosConstraints.addAll(converted.stream().filter(SOS1Constraint.class::isInstance)
+						.map(SOS1Constraint.class::cast).collect(Collectors.toList()));
+			}
+
+			// Substitute <, >, !=
+			for (NormalConstraint constraint : normalConstraints) {
+				List<Constraint> substitution = constraint.convertOperator();
+				normalConstraints.addAll(substitution.stream().filter(LinearConstraint.class::isInstance)
+						.map(LinearConstraint.class::cast).collect(Collectors.toList()));
+				normalConstraints.addAll(substitution.stream().filter(QuadraticConstraint.class::isInstance)
+						.map(QuadraticConstraint.class::cast).collect(Collectors.toList()));
+				sosConstraints.addAll(substitution.stream().filter(SOS1Constraint.class::isInstance)
+						.map(SOS1Constraint.class::cast).collect(Collectors.toList()));
+			}
+
+			// Translate Normal Constraints
+			for (NormalConstraint constraint : normalConstraints) {
 				List<Term> lhs = constraint.getLhsTerms();
 				char op = translateOp(constraint.getOp());
 				double rhs = constraint.getRhs();
@@ -163,14 +192,14 @@ public class GurobiSolver implements Solver {
 					model.addQConstr(tempQuad, op, rhs, constraint.toString());
 					break;
 				case SOS:
-					// TODO: add SOS constraints
-					throw new Error("Not yet implemented!");
+					throw new Error("SOS Constraints are a different subclass of constraints!");
 				case OR:
 					throw new Error("Or Constraints are general constraints!");
 				}
 			}
 
 			// Translate General Constraints
+			// TODO: rausnehmen? -> OrVarsConstraint
 			for (GeneralConstraint constraint : objective.getGeneralConstraints()) {
 				List<? extends Variable<?>> var = constraint.getVariables();
 				Variable<?> res = constraint.getResult();
@@ -181,8 +210,7 @@ public class GurobiSolver implements Solver {
 				case QUADRATIC:
 					throw new Error("Quadratic Constraints are not general constraints!");
 				case SOS:
-					// TODO: add SOS constraints
-					throw new Error("Not yet implemented!");
+					throw new Error("SOS Constraints are not general constraints!");
 				case OR:
 					// TODO: add OR constraints
 					GRBVar[] grbVars = new GRBVar[var.size()];
@@ -195,7 +223,7 @@ public class GurobiSolver implements Solver {
 			}
 
 			// Translate SOS Constraints
-			for (SOS1Constraint constraint : objective.getSOSConstraints()) {
+			for (SOS1Constraint constraint : sosConstraints) {
 				List<Variable<?>> var = constraint.getVariables();
 				GRBVar[] grbVars = new GRBVar[var.size()];
 				for (int i = 0; i < var.size(); i++) {
@@ -222,7 +250,7 @@ public class GurobiSolver implements Solver {
 	private char translateOp(Operator op) {
 		switch (op) {
 		case LESS:
-			throw new Error("Not yet implemented!");
+			throw new Error("All constraints with this operator should already have been converted!");
 		case LESS_OR_EQUAL:
 			return GRB.LESS_EQUAL;
 		case EQUAL:
@@ -230,9 +258,9 @@ public class GurobiSolver implements Solver {
 		case GREATER_OR_EQUAL:
 			return GRB.GREATER_EQUAL;
 		case GREATER:
-			throw new Error("Not yet implemented!");
+			throw new Error("All constraints with this operator should already have been converted!");
 		default: // NOT_EQUAL
-			throw new Error("Not yet implemented!");
+			throw new Error("All constraints with this operator should already have been converted!");
 		}
 	}
 

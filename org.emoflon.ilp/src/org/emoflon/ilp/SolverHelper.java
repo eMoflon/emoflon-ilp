@@ -1,12 +1,10 @@
 package org.emoflon.ilp;
 
-import gurobi.GRBException;
-
 public class SolverHelper {
 	// TODO
 	private Solver solver;
 
-	public SolverHelper(SolverConfig config) throws GRBException {
+	public SolverHelper(SolverConfig config) {
 		switch (config.solver()) {
 		case GUROBI:
 			this.solver = new GurobiSolver(config);
