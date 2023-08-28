@@ -2,6 +2,7 @@ package org.emoflon.ilp;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -77,6 +78,46 @@ public class GurobiSolver implements Solver {
 		// TODO: Hilfsfunktionen einfuehren? Ist etwas lang...
 		this.objective = objective;
 		try {
+			// Translate Constraints
+			List<NormalConstraint> normalConstraints = new ArrayList<NormalConstraint>();
+			normalConstraints.addAll(objective.getConstraints());
+			List<SOS1Constraint> sosConstraints = new ArrayList<SOS1Constraint>();
+
+			// Or Constraints
+			// Substitute Or Constraints with Linear Constraints and SOS1 Constraints
+			for (OrConstraint constraint : objective.getOrConstraints()) {
+				List<Constraint> converted = constraint.convert();
+				converted.forEach(it -> System.out.println(it.toString()));
+				normalConstraints.addAll(converted.stream().filter(NormalConstraint.class::isInstance)
+						.map(LinearConstraint.class::cast).collect(Collectors.toList()));
+				sosConstraints.addAll(converted.stream().filter(SOS1Constraint.class::isInstance)
+						.map(SOS1Constraint.class::cast).collect(Collectors.toList()));
+			}
+
+			// Substitute <, >, !=
+			List<NormalConstraint> opSubstitution = new ArrayList<NormalConstraint>();
+			List<NormalConstraint> delete = new ArrayList<NormalConstraint>();
+			for (NormalConstraint constraint : normalConstraints) {
+				List<Constraint> substitution = constraint.convertOperator();
+				if (!substitution.isEmpty()) {
+					delete.add(constraint);
+				}
+				opSubstitution.addAll(substitution.stream().filter(LinearConstraint.class::isInstance)
+						.map(LinearConstraint.class::cast).collect(Collectors.toList()));
+				opSubstitution.addAll(substitution.stream().filter(QuadraticConstraint.class::isInstance)
+						.map(QuadraticConstraint.class::cast).collect(Collectors.toList()));
+				sosConstraints.addAll(substitution.stream().filter(SOS1Constraint.class::isInstance)
+						.map(SOS1Constraint.class::cast).collect(Collectors.toList()));
+			}
+			// delete converted constraints
+			normalConstraints.removeAll(delete);
+			// add substitutions
+			normalConstraints.addAll(opSubstitution);
+
+			// Add substitutions to objective
+			normalConstraints.forEach(constraint -> objective.add(constraint));
+			sosConstraints.forEach(constraint -> objective.add(constraint));
+
 			// Initialize decision variables and objective
 			// Translate Variables
 			Map<String, Variable<?>> vars = objective.getVariables();
@@ -138,31 +179,6 @@ public class GurobiSolver implements Solver {
 				model.setObjective(expr.getLinExpr(), sense);
 			} else {
 				model.setObjective(expr, sense);
-			}
-
-			// Translate Constraints
-			List<NormalConstraint> normalConstraints = objective.getConstraints();
-			List<SOS1Constraint> sosConstraints = objective.getSOSConstraints();
-
-			// Or Constraints
-			// Substitute Or Constraints with Linear Constraints and SOS1 Constraints
-			for (OrConstraint constraint : objective.getOrConstraints()) {
-				List<Constraint> converted = constraint.convert();
-				normalConstraints.addAll(converted.stream().filter(NormalConstraint.class::isInstance)
-						.map(LinearConstraint.class::cast).collect(Collectors.toList()));
-				sosConstraints.addAll(converted.stream().filter(SOS1Constraint.class::isInstance)
-						.map(SOS1Constraint.class::cast).collect(Collectors.toList()));
-			}
-
-			// Substitute <, >, !=
-			for (NormalConstraint constraint : normalConstraints) {
-				List<Constraint> substitution = constraint.convertOperator();
-				normalConstraints.addAll(substitution.stream().filter(LinearConstraint.class::isInstance)
-						.map(LinearConstraint.class::cast).collect(Collectors.toList()));
-				normalConstraints.addAll(substitution.stream().filter(QuadraticConstraint.class::isInstance)
-						.map(QuadraticConstraint.class::cast).collect(Collectors.toList()));
-				sosConstraints.addAll(substitution.stream().filter(SOS1Constraint.class::isInstance)
-						.map(SOS1Constraint.class::cast).collect(Collectors.toList()));
 			}
 
 			// Translate Normal Constraints
@@ -227,15 +243,17 @@ public class GurobiSolver implements Solver {
 				List<Variable<?>> var = constraint.getVariables();
 				GRBVar[] grbVars = new GRBVar[var.size()];
 				for (int i = 0; i < var.size(); i++) {
-					if (var instanceof BinaryVariable) {
+					if (var.get(i) instanceof BinaryVariable) {
 						grbVars[i] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, var.get(i).getName());
-					} else if (var instanceof IntegerVariable) {
-						grbVars[i] = model.addVar(((IntegerVariable) var).getLowerBound(),
-								((IntegerVariable) var).getUpperBound(), 0.0, GRB.INTEGER, var.get(i).getName());
-					} else {
+					} else if (var.get(i) instanceof IntegerVariable) {
+						grbVars[i] = model.addVar(((IntegerVariable) var.get(i)).getLowerBound(),
+								((IntegerVariable) var.get(i)).getUpperBound(), 0.0, GRB.INTEGER, var.get(i).getName());
+					} else if (var.get(i) instanceof RealVariable) {
 						// RealVariable
-						grbVars[i] = model.addVar(((RealVariable) var).getLowerBound(),
-								((RealVariable) var).getUpperBound(), 0.0, GRB.CONTINUOUS, var.get(i).getName());
+						grbVars[i] = model.addVar(((RealVariable) var.get(i)).getLowerBound(),
+								((RealVariable) var.get(i)).getUpperBound(), 0.0, GRB.CONTINUOUS, var.get(i).getName());
+					} else {
+						throw new Error("This variable type should not be possible!");
 					}
 				}
 				model.addSOS(grbVars, constraint.getWeights(), GRB.SOS_TYPE1);
@@ -362,7 +380,7 @@ public class GurobiSolver implements Solver {
 		} catch (final GRBException e) {
 			e.printStackTrace();
 		}
-		env.release();
+		// env.release();
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class LinearConstraint implements NormalConstraint {
 
-	private List<Term> lhsTerms;
+	private List<Term> lhsTerms = new ArrayList<Term>();
 	private Operator op;
 	private double rhs;
 	private double epsilon = 1.0E-4;
@@ -53,7 +53,7 @@ public class LinearConstraint implements NormalConstraint {
 		if (lhsTerms.stream().filter(t -> t instanceof QuadraticTerm).count() != 0) {
 			throw new IllegalArgumentException("A linear constraint is not allowed to contain any quadratic terms.");
 		}
-		this.lhsTerms = lhsTerms;
+		this.lhsTerms.addAll(lhsTerms);
 	}
 
 	@Override
@@ -161,6 +161,24 @@ public class LinearConstraint implements NormalConstraint {
 			// do nothing
 			return substitute;
 		}
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		int i = 1;
+		for (Term term : this.lhsTerms) {
+			sb.append(term.getWeight());
+			sb.append(" * ");
+			sb.append(term.getVar1().getName());
+			if (i++ != this.lhsTerms.size()) {
+				sb.append(" + ");
+			}
+		}
+
+		sb.append(this.op);
+		sb.append(this.rhs);
+
+		return sb.toString();
 	}
 
 }

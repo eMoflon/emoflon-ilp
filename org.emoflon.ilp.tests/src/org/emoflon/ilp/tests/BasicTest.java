@@ -152,8 +152,7 @@ public class BasicTest {
 		c2.addTerm(x, 1.0);
 		c2.addTerm(y, 2.0);
 
-		BinaryVariable z = new BinaryVariable("z");
-		OrConstraint or = new OrConstraint(z);
+		OrConstraint or = new OrConstraint();
 
 		or.addConstraint(c1);
 		or.addConstraint(c2);

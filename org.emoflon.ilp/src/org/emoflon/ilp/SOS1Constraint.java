@@ -115,4 +115,19 @@ public class SOS1Constraint implements Constraint {
 
 		return substitution;
 	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("SOS1(");
+		int i = 1;
+		for (Variable<?> var : variables) {
+			sb.append(var.getName());
+			if (i++ != this.variables.size()) {
+				sb.append(", ");
+			}
+		}
+
+		sb.append(")");
+		return sb.toString();
+	}
 }
