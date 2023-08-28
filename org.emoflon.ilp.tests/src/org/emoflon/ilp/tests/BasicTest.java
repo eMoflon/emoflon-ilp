@@ -163,7 +163,7 @@ public class BasicTest {
 		// 2*7 + 1 substitution constraints total
 		assertEquals(15, substitution.size());
 
-		// TODO: mehr Tests
+		// TODO: mehr Tests?
 	}
 
 	@Test
@@ -180,10 +180,10 @@ public class BasicTest {
 		List<LinearConstraint> substitution = sos.convert();
 
 		// 2 substitution constraints for each variable
-		// -> 3*2 + 1 substitution constraints total
+		// -> 2*3 + 1 substitution constraints total
 		assertEquals(7, substitution.size());
 
-		// TODO: mehr Tests
+		// TODO: mehr Tests?
 	}
 
 	@Test
@@ -199,6 +199,7 @@ public class BasicTest {
 		less.addTerm(y, 2.0);
 		List<Constraint> sub_less = less.convertOperator();
 		assertEquals(1, sub_less.size());
+		assertEquals(Operator.LESS_OR_EQUAL, ((LinearConstraint) sub_less.get(0)).getOp());
 		assertEquals(4, ((LinearConstraint) sub_less.get(0)).getRhs(), 0.00001);
 		assertEquals(less.getLhsTerms(), ((LinearConstraint) sub_less.get(0)).getLhsTerms());
 
@@ -208,6 +209,7 @@ public class BasicTest {
 		greater.addTerm(y, 1);
 		List<Constraint> sub_greater = greater.convertOperator();
 		assertEquals(1, sub_greater.size());
+		assertEquals(Operator.GREATER_OR_EQUAL, ((LinearConstraint) sub_greater.get(0)).getOp());
 		assertEquals(5, ((LinearConstraint) sub_greater.get(0)).getRhs(), 0.00001);
 		assertEquals(greater.getLhsTerms(), ((LinearConstraint) sub_greater.get(0)).getLhsTerms());
 

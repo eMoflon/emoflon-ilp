@@ -140,6 +140,7 @@ public class Objective {
 		for (Variable<?> var : constraint.getVariables()) {
 			variables.put(var.getName(), var);
 		}
+		variables.put(constraint.getResult().getName(), constraint.getResult());
 		genConstraints.add(constraint);
 	}
 
@@ -165,6 +166,22 @@ public class Objective {
 			}
 		}
 		orConstraints.add(constraint);
+	}
+
+	public boolean remove(NormalConstraint constraint) {
+		return constraints.remove(constraint);
+	}
+
+	public boolean remove(GeneralConstraint constraint) {
+		return genConstraints.remove(constraint);
+	}
+
+	public boolean remove(SOS1Constraint constraint) {
+		return sosConstraints.remove(constraint);
+	}
+
+	public boolean remove(OrConstraint constraint) {
+		return orConstraints.remove(constraint);
 	}
 
 }

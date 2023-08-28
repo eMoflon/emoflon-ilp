@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class SOS1Constraint implements Constraint {
 
-	private List<Variable<?>> variables;
+	private List<Variable<?>> variables = new ArrayList<Variable<?>>();
 	private double[] weights;
 	private List<BinaryVariable> binary = new ArrayList<BinaryVariable>();
 	private int bound = (int) 10E4;
@@ -55,7 +55,7 @@ public class SOS1Constraint implements Constraint {
 	}
 
 	public void setVariables(List<Variable<?>> variables) {
-		this.variables = variables;
+		this.variables.addAll(variables);
 	}
 
 	/*
@@ -113,21 +113,17 @@ public class SOS1Constraint implements Constraint {
 			i++;
 		}
 
+		substitution.forEach(it -> System.out.println(it));
+
 		return substitution;
 	}
 
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("SOS1(");
-		int i = 1;
-		for (Variable<?> var : variables) {
-			sb.append(var.getName());
-			if (i++ != this.variables.size()) {
-				sb.append(", ");
-			}
-		}
-
-		sb.append(")");
-		return sb.toString();
-	}
+	/*
+	 * // un-comment for debugging purposes public String toString() { StringBuilder
+	 * sb = new StringBuilder(); sb.append("SOS1("); int i = 1; for (Variable<?> var
+	 * : variables) { sb.append(var.getName()); if (i++ != this.variables.size()) {
+	 * sb.append(", "); } }
+	 * 
+	 * sb.append(")"); return sb.toString(); }
+	 */
 }

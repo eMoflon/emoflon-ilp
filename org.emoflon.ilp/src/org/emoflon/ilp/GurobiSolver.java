@@ -1,8 +1,8 @@
 package org.emoflon.ilp;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -87,7 +87,6 @@ public class GurobiSolver implements Solver {
 			// Substitute Or Constraints with Linear Constraints and SOS1 Constraints
 			for (OrConstraint constraint : objective.getOrConstraints()) {
 				List<Constraint> converted = constraint.convert();
-				converted.forEach(it -> System.out.println(it.toString()));
 				normalConstraints.addAll(converted.stream().filter(NormalConstraint.class::isInstance)
 						.map(LinearConstraint.class::cast).collect(Collectors.toList()));
 				sosConstraints.addAll(converted.stream().filter(SOS1Constraint.class::isInstance)
@@ -99,7 +98,7 @@ public class GurobiSolver implements Solver {
 			List<NormalConstraint> delete = new ArrayList<NormalConstraint>();
 			for (NormalConstraint constraint : normalConstraints) {
 				List<Constraint> substitution = constraint.convertOperator();
-				if (!substitution.isEmpty()) {
+				if (substitution.size() > 0) {
 					delete.add(constraint);
 				}
 				opSubstitution.addAll(substitution.stream().filter(LinearConstraint.class::isInstance)
@@ -111,6 +110,7 @@ public class GurobiSolver implements Solver {
 			}
 			// delete converted constraints
 			normalConstraints.removeAll(delete);
+			delete.forEach(it -> objective.remove(it));
 			// add substitutions
 			normalConstraints.addAll(opSubstitution);
 
@@ -182,7 +182,7 @@ public class GurobiSolver implements Solver {
 			}
 
 			// Translate Normal Constraints
-			for (NormalConstraint constraint : normalConstraints) {
+			for (NormalConstraint constraint : objective.getConstraints()) {
 				List<Term> lhs = constraint.getLhsTerms();
 				char op = translateOp(constraint.getOp());
 				double rhs = constraint.getRhs();
@@ -239,7 +239,7 @@ public class GurobiSolver implements Solver {
 			}
 
 			// Translate SOS Constraints
-			for (SOS1Constraint constraint : sosConstraints) {
+			for (SOS1Constraint constraint : objective.getSOSConstraints()) {
 				List<Variable<?>> var = constraint.getVariables();
 				GRBVar[] grbVars = new GRBVar[var.size()];
 				for (int i = 0; i < var.size(); i++) {

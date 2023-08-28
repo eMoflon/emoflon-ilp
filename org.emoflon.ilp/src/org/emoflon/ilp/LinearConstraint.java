@@ -163,22 +163,16 @@ public class LinearConstraint implements NormalConstraint {
 		}
 	}
 
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		int i = 1;
-		for (Term term : this.lhsTerms) {
-			sb.append(term.getWeight());
-			sb.append(" * ");
-			sb.append(term.getVar1().getName());
-			if (i++ != this.lhsTerms.size()) {
-				sb.append(" + ");
-			}
-		}
-
-		sb.append(this.op);
-		sb.append(this.rhs);
-
-		return sb.toString();
-	}
+	/*
+	 * // un-comment for debugging purposes public String toString() { StringBuilder
+	 * sb = new StringBuilder(); int i = 1; for (Term term : this.lhsTerms) {
+	 * sb.append(term.getWeight()); sb.append(" * ");
+	 * sb.append(term.getVar1().getName()); if (i++ != this.lhsTerms.size()) {
+	 * sb.append(" + "); } }
+	 * 
+	 * sb.append(this.op); sb.append(this.rhs);
+	 * 
+	 * return sb.toString(); }
+	 */
 
 }
