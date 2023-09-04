@@ -113,6 +113,17 @@ public class GlpkSolver implements Solver {
 	@Override
 	public SolverOutput solve() {
 		// TODO Auto-generated method stub
+
+		// Write the model in a file if the output was enabled
+		if (this.outputPath != null) {
+			GLPK.glp_write_lp(model, null, this.outputPath);
+		}
+
+		// Solve
+		final int ret = GLPK.glp_intopt(model, iocp);
+		final int modelStatus = GLPK.glp_get_status(model);
+		final int mipModelStatus = GLPK.glp_mip_status(model);
+
 		return null;
 	}
 
@@ -130,8 +141,7 @@ public class GlpkSolver implements Solver {
 
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
-
+		init();
 	}
 
 }
