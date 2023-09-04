@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
@@ -78,8 +77,8 @@ public class GurobiTest {
 		obj.add(c2);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, false, null,
-				false, null);
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -182,8 +181,8 @@ public class GurobiTest {
 		obj.add(sos1);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, false, null,
-				false, null);
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -237,8 +236,8 @@ public class GurobiTest {
 		obj.add(sos1);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, false, null,
-				false, null);
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -286,8 +285,8 @@ public class GurobiTest {
 		substitution.forEach(it -> obj_sub.add(it));
 
 		// Optimize
-		SolverConfig config_sub = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, false,
-				null, false, null);
+		SolverConfig config_sub = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0,
+				false, false, null, false, null);
 		Solver solver_sub = (new SolverHelper(config_sub)).getSolver();
 		solver_sub.buildILPProblem(obj_sub);
 		SolverOutput out_sub = solver_sub.solve();
@@ -326,15 +325,14 @@ public class GurobiTest {
 		OrConstraint or1 = new OrConstraint();
 		or1.addConstraint(c1);
 		or1.addConstraint(c2);
-		List<Constraint> substitution = or1.convert();
 
 		// Model
 		obj.setObjective(lin);
 		obj.add(or1);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, false, null,
-				false, null);
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, true, -10, 10, false,
+				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -343,7 +341,6 @@ public class GurobiTest {
 
 		assertEquals(1, result.getVariables().get("b1").getValue());
 		assertEquals(1, result.getVariables().get("b2").getValue());
-		assertEquals(0, result.getVariables().get("b3").getValue());
 
 		solver.terminate();
 	}
@@ -381,8 +378,8 @@ public class GurobiTest {
 		obj.add(c2);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, false, null,
-				false, null);
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();

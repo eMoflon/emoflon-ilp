@@ -25,6 +25,7 @@ public class GurobiSolver implements Solver {
 	final private SolverConfig config;
 	private final HashMap<String, GRBVar> grbVars = new HashMap<>();
 	private Objective objective;
+	private SolverOutput result;
 
 	public GurobiSolver(final SolverConfig config) {
 		try {
@@ -129,12 +130,21 @@ public class GurobiSolver implements Solver {
 							GRB.BINARY, var.getName());
 					break;
 				case INTEGER:
-					temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
-							GRB.INTEGER, var.getName());
+					if (config.boundsEnabled()) {
+						temp = model.addVar(config.lowerBound(), config.upperBound(), 0, GRB.INTEGER, var.getName());
+					} else {
+						temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
+								GRB.INTEGER, var.getName());
+					}
 					break;
 				case REAL:
-					temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
-							GRB.CONTINUOUS, var.getName());
+					if (config.boundsEnabled()) {
+						temp = model.addVar(config.lowerBound(), config.upperBound(), 0, GRB.CONTINUOUS, var.getName());
+					} else {
+						temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
+								GRB.CONTINUOUS, var.getName());
+					}
+
 					break;
 				}
 				grbVars.put(var.getName(), temp);
@@ -246,12 +256,25 @@ public class GurobiSolver implements Solver {
 					if (var.get(i) instanceof BinaryVariable) {
 						grbVars[i] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, var.get(i).getName());
 					} else if (var.get(i) instanceof IntegerVariable) {
-						grbVars[i] = model.addVar(((IntegerVariable) var.get(i)).getLowerBound(),
-								((IntegerVariable) var.get(i)).getUpperBound(), 0.0, GRB.INTEGER, var.get(i).getName());
+						if (config.boundsEnabled()) {
+							grbVars[i] = model.addVar(config.lowerBound(), config.upperBound(), 0.0, GRB.INTEGER,
+									var.get(i).getName());
+						} else {
+							grbVars[i] = model.addVar(((IntegerVariable) var.get(i)).getLowerBound(),
+									((IntegerVariable) var.get(i)).getUpperBound(), 0.0, GRB.INTEGER,
+									var.get(i).getName());
+						}
 					} else if (var.get(i) instanceof RealVariable) {
 						// RealVariable
-						grbVars[i] = model.addVar(((RealVariable) var.get(i)).getLowerBound(),
-								((RealVariable) var.get(i)).getUpperBound(), 0.0, GRB.CONTINUOUS, var.get(i).getName());
+						if (config.boundsEnabled()) {
+							grbVars[i] = model.addVar(config.lowerBound(), config.upperBound(), 0.0, GRB.CONTINUOUS,
+									var.get(i).getName());
+						} else {
+							grbVars[i] = model.addVar(((RealVariable) var.get(i)).getLowerBound(),
+									((RealVariable) var.get(i)).getUpperBound(), 0.0, GRB.CONTINUOUS,
+									var.get(i).getName());
+						}
+
 					} else {
 						throw new Error("This variable type should not be possible!");
 					}
@@ -330,7 +353,8 @@ public class GurobiSolver implements Solver {
 			throw new RuntimeException(e);
 		}
 
-		return new SolverOutput(status, objVal, solCount);
+		this.result = new SolverOutput(status, objVal, solCount);
+		return this.result;
 	}
 
 	@Override
@@ -340,6 +364,10 @@ public class GurobiSolver implements Solver {
 		 * Notizen Besprechung: generische Lösung -> lambda übergeben -> lambda auf alle
 		 * Werte anwenden
 		 */
+		if (this.result.getStatus() == SolverStatus.INFEASIBLE || this.result.getStatus() == SolverStatus.INF_OR_UNBD) {
+			throw new RuntimeException(
+					"The problem status is " + this.result.getStatus() + " and therefore no values were found.");
+		}
 		Map<String, Variable<?>> objVars = this.objective.getVariables();
 
 		for (final String name : this.grbVars.keySet()) {

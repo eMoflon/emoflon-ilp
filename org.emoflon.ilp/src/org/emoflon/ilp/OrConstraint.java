@@ -55,7 +55,7 @@ public class OrConstraint implements Constraint {
 	// TODO: negation of constraints?
 	public List<Constraint> convert() {
 		List<Constraint> substitute = new ArrayList<Constraint>();
-		LinearConstraint binary_sub = new LinearConstraint(Operator.GREATER_OR_EQUAL, 1.0);
+		LinearConstraint binary_sub = new LinearConstraint(Operator.GREATER, 0.0);
 
 		for (LinearConstraint lin : this.constraints) {
 			switch (lin.getOp()) {

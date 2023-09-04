@@ -6,8 +6,8 @@ public class RealVariable implements Variable<Double> {
 	private double value;
 
 	// TODO: Add default bounds!
-	private double upperBound;
-	private double lowerBound;
+	private double upperBound = 10000;
+	private double lowerBound = -10000;
 
 	public RealVariable(final String name) {
 		this.name = name;
