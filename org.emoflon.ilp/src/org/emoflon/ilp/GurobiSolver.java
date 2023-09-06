@@ -74,182 +74,227 @@ public class GurobiSolver implements Solver {
 
 	@Override
 	public void buildILPProblem(Objective objective) {
-		// TODO: Hilfsfunktionen einfuehren? Ist etwas lang...
 		this.objective = objective;
-		try {
-			// Substitute Or Constraints
-			objective.substituteOr();
 
-			// Substitute <, >, != Operators
-			objective.substituteOperators();
+		// Substitute Or Constraints
+		objective.substituteOr();
 
-			// Initialize decision variables and objective
-			// Translate Variables
-			Map<String, Variable<?>> vars = objective.getVariables();
-			GRBVar temp = null;
-			for (Variable<?> var : vars.values()) {
-				switch (var.getType()) {
-				case BINARY:
-					temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
-							GRB.BINARY, var.getName());
-					break;
-				case INTEGER:
-					if (config.boundsEnabled()) {
-						temp = model.addVar(config.lowerBound(), config.upperBound(), 0, GRB.INTEGER, var.getName());
-					} else {
-						temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
-								GRB.INTEGER, var.getName());
-					}
-					break;
-				case REAL:
-					if (config.boundsEnabled()) {
-						temp = model.addVar(config.lowerBound(), config.upperBound(), 0, GRB.CONTINUOUS, var.getName());
-					} else {
-						temp = model.addVar(var.getLowerBound().doubleValue(), var.getUpperBound().doubleValue(), 0,
-								GRB.CONTINUOUS, var.getName());
-					}
+		// Substitute <, >, != Operators
+		objective.substituteOperators();
 
-					break;
-				}
-				grbVars.put(var.getName(), temp);
+		// Initialize decision variables and objective
+		// Translate Variables
+		translateVariables(objective.getVariables());
+
+		// Translate Objective to GRB
+		translateObjective(objective);
+
+		// Translate Normal Constraints
+		objective.getConstraints().forEach(it -> translateNormalConstraint(it));
+
+		// Translate General Constraints
+		// TODO: rausnehmen? -> OrVarsConstraint
+		objective.getGeneralConstraints().forEach(it -> translateGeneralConstraint(it));
+
+		// Translate SOS Constraints
+		objective.getSOSConstraints().forEach(it -> translateSOSConstraint(it));
+	}
+
+	private void translateVariables(Map<String, Variable<?>> vars) {
+		GRBVar temp = null;
+		for (Variable<?> var : vars.values()) {
+
+			switch (var.getType()) {
+			case BINARY:
+				temp = translateBinaryVariable((BinaryVariable) var);
+				break;
+			case INTEGER:
+				temp = translateIntegerVariable((IntegerVariable) var);
+				break;
+			case REAL:
+				temp = translateRealVariable((RealVariable) var);
+				break;
 			}
 
-			// Translate Objective to GRB
-			// TODO: nested Functions OR use "expand" in LinearFunction/QuadraticFunction
-			Function obj = objective.getObjective().expand();
-			GRBQuadExpr expr = new GRBQuadExpr();
+			grbVars.put(var.getName(), temp);
+		}
+	}
 
-			// Add Terms
-			for (Term term : obj.getTerms()) {
-				if (term instanceof LinearTerm) {
-					expr.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()));
-				} else {
-					expr.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()),
-							grbVars.get(((QuadraticTerm) term).getVar2().getName()));
-				}
+	private void translateObjective(Objective objective) {
+		// Translate Objective to GRB
+		// TODO: (future work) nested Functions OR use "expand" in
+		// LinearFunction/QuadraticFunction, which is more efficient?
+		Function obj = objective.getObjective().expand();
+		GRBQuadExpr expr = new GRBQuadExpr();
 
-			}
-
-			// Add Constant (sum of constants)
-			double constant = 0.0;
-			for (Constant cons : obj.getConstants()) {
-				constant += cons.weight();
-			}
-			expr.addConstant(constant);
-
-			// Translate objective sense
-			int sense = GRB.MINIMIZE;
-			if (objective.getType().equals(ObjectiveType.MAX)) {
-				sense = GRB.MAXIMIZE;
-			}
-
-			// Set model objective
-			if (obj instanceof LinearFunction) {
-				// Wenn Objective Linear, darf die GRBQuadExpr keinen quadratischen Anteil haben
-				// TODO: testen
-				if (expr.size() != 0) {
-					throw new Error();
-				}
-				model.setObjective(expr.getLinExpr(), sense);
+		// Add Terms
+		for (Term term : obj.getTerms()) {
+			if (term instanceof LinearTerm) {
+				expr.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()));
 			} else {
-				model.setObjective(expr, sense);
+				expr.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()),
+						grbVars.get(((QuadraticTerm) term).getVar2().getName()));
 			}
 
-			// Translate Normal Constraints
-			for (NormalConstraint constraint : objective.getConstraints()) {
-				List<Term> lhs = constraint.getLhsTerms();
-				char op = translateOp(constraint.getOp());
-				double rhs = constraint.getRhs();
-
-				switch (constraint.getType()) {
-				case LINEAR:
-					GRBLinExpr tempLin = new GRBLinExpr();
-					for (Term term : lhs) {
-						tempLin.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()));
-					}
-					model.addConstr(tempLin, op, rhs, constraint.toString());
-					break;
-				case QUADRATIC:
-					GRBQuadExpr tempQuad = new GRBQuadExpr();
-					for (Term term : lhs) {
-						if (term instanceof LinearTerm) {
-							tempQuad.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()));
-						} else {
-							tempQuad.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()),
-									grbVars.get(((QuadraticTerm) term).getVar2().getName()));
-						}
-					}
-					model.addQConstr(tempQuad, op, rhs, constraint.toString());
-					break;
-				case SOS:
-					throw new Error("SOS Constraints are a different subclass of constraints!");
-				case OR:
-					throw new Error("Or Constraints are general constraints!");
-				}
-			}
-
-			// Translate General Constraints
-			// TODO: rausnehmen? -> OrVarsConstraint
-			for (GeneralConstraint constraint : objective.getGeneralConstraints()) {
-				List<? extends Variable<?>> var = constraint.getVariables();
-				Variable<?> res = constraint.getResult();
-
-				switch (constraint.getType()) {
-				case LINEAR:
-					throw new Error("Linear Constraints are not general constraints!");
-				case QUADRATIC:
-					throw new Error("Quadratic Constraints are not general constraints!");
-				case SOS:
-					throw new Error("SOS Constraints are not general constraints!");
-				case OR:
-					// TODO: add OR constraints
-					GRBVar[] grbVars = new GRBVar[var.size()];
-					for (int i = 0; i < var.size(); i++) {
-						grbVars[i] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, var.get(i).getName());
-					}
-					model.addGenConstrOr(model.addVar(0.0, 1.0, 0.0, GRB.BINARY, res.getName()), grbVars,
-							constraint.toString());
-				}
-			}
-
-			// Translate SOS Constraints
-			for (SOS1Constraint constraint : objective.getSOSConstraints()) {
-				List<Variable<?>> var = constraint.getVariables();
-				GRBVar[] grbVars = new GRBVar[var.size()];
-				for (int i = 0; i < var.size(); i++) {
-					if (var.get(i) instanceof BinaryVariable) {
-						grbVars[i] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, var.get(i).getName());
-					} else if (var.get(i) instanceof IntegerVariable) {
-						if (config.boundsEnabled()) {
-							grbVars[i] = model.addVar(config.lowerBound(), config.upperBound(), 0.0, GRB.INTEGER,
-									var.get(i).getName());
-						} else {
-							grbVars[i] = model.addVar(((IntegerVariable) var.get(i)).getLowerBound(),
-									((IntegerVariable) var.get(i)).getUpperBound(), 0.0, GRB.INTEGER,
-									var.get(i).getName());
-						}
-					} else if (var.get(i) instanceof RealVariable) {
-						// RealVariable
-						if (config.boundsEnabled()) {
-							grbVars[i] = model.addVar(config.lowerBound(), config.upperBound(), 0.0, GRB.CONTINUOUS,
-									var.get(i).getName());
-						} else {
-							grbVars[i] = model.addVar(((RealVariable) var.get(i)).getLowerBound(),
-									((RealVariable) var.get(i)).getUpperBound(), 0.0, GRB.CONTINUOUS,
-									var.get(i).getName());
-						}
-
-					} else {
-						throw new Error("This variable type should not be possible!");
-					}
-				}
-				model.addSOS(grbVars, constraint.getWeights(), GRB.SOS_TYPE1);
-			}
-
-		} catch (GRBException e) {
-			e.printStackTrace();
 		}
 
+		// Add Constant (sum of constants)
+		double constant = 0.0;
+		for (Constant cons : obj.getConstants()) {
+			constant += cons.weight();
+		}
+		expr.addConstant(constant);
+
+		// Translate objective sense
+		int sense = GRB.MINIMIZE;
+		if (objective.getType().equals(ObjectiveType.MAX)) {
+			sense = GRB.MAXIMIZE;
+		}
+
+		// Set model objective
+		if (obj instanceof LinearFunction) {
+			// Wenn Objective Linear, darf die GRBQuadExpr keinen quadratischen Anteil haben
+			// TODO: testen
+			if (expr.size() != 0) {
+				throw new Error();
+			}
+			try {
+				model.setObjective(expr.getLinExpr(), sense);
+			} catch (GRBException e) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			try {
+				model.setObjective(expr, sense);
+			} catch (GRBException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	private void translateNormalConstraint(NormalConstraint constraint) {
+		List<Term> lhs = constraint.getLhsTerms();
+		char op = translateOp(constraint.getOp());
+		double rhs = constraint.getRhs();
+
+		switch (constraint.getType()) {
+		case LINEAR:
+			GRBLinExpr tempLin = new GRBLinExpr();
+			for (Term term : lhs) {
+				tempLin.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()));
+			}
+			try {
+				model.addConstr(tempLin, op, rhs, constraint.toString());
+			} catch (GRBException e) {
+				throw new RuntimeException(e);
+			}
+			break;
+		case QUADRATIC:
+			GRBQuadExpr tempQuad = new GRBQuadExpr();
+			for (Term term : lhs) {
+				if (term instanceof LinearTerm) {
+					tempQuad.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()));
+				} else {
+					tempQuad.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()),
+							grbVars.get(((QuadraticTerm) term).getVar2().getName()));
+				}
+			}
+			try {
+				model.addQConstr(tempQuad, op, rhs, constraint.toString());
+			} catch (GRBException e) {
+				throw new RuntimeException(e);
+			}
+			break;
+		case SOS:
+			throw new Error("SOS Constraints are a different subclass of constraints!");
+		case OR:
+			throw new Error("Or Constraints are general constraints!");
+		}
+	}
+
+	private void translateGeneralConstraint(GeneralConstraint constraint) {
+		List<? extends Variable<?>> var = constraint.getVariables();
+		Variable<?> res = constraint.getResult();
+
+		switch (constraint.getType()) {
+		case LINEAR:
+			throw new Error("Linear Constraints are not general constraints!");
+		case QUADRATIC:
+			throw new Error("Quadratic Constraints are not general constraints!");
+		case SOS:
+			throw new Error("SOS Constraints are not general constraints!");
+		case OR:
+			// TODO: add Gurobi OR constraints
+			GRBVar[] grbVars = new GRBVar[var.size()];
+			try {
+				for (int i = 0; i < var.size(); i++) {
+					grbVars[i] = translateBinaryVariable((BinaryVariable) var.get(i));
+				}
+				model.addGenConstrOr(model.addVar(0.0, 1.0, 0.0, GRB.BINARY, res.getName()), grbVars,
+						constraint.toString());
+			} catch (GRBException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	private void translateSOSConstraint(SOS1Constraint constraint) {
+		List<Variable<?>> var = constraint.getVariables();
+		GRBVar[] grbVars = new GRBVar[var.size()];
+		try {
+			for (int i = 0; i < var.size(); i++) {
+
+				if (var.get(i) instanceof BinaryVariable) {
+					grbVars[i] = translateBinaryVariable((BinaryVariable) var.get(i));
+				} else if (var.get(i) instanceof IntegerVariable) {
+					grbVars[i] = translateIntegerVariable((IntegerVariable) var.get(i));
+				} else if (var.get(i) instanceof RealVariable) {
+					grbVars[i] = translateRealVariable((RealVariable) var.get(i));
+				} else {
+					throw new Error("This variable type should not be possible!");
+				}
+			}
+
+			model.addSOS(grbVars, constraint.getWeights(), GRB.SOS_TYPE1);
+
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private GRBVar translateBinaryVariable(BinaryVariable variable) {
+		try {
+			return model.addVar(variable.getLowerBound(), variable.getUpperBound(), 0.0, GRB.BINARY,
+					variable.getName());
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private GRBVar translateIntegerVariable(IntegerVariable variable) {
+		try {
+			if (config.boundsEnabled()) {
+				return model.addVar(config.lowerBound(), config.upperBound(), 0.0, GRB.INTEGER, variable.getName());
+			} else {
+				return model.addVar(variable.getLowerBound(), variable.getUpperBound(), 0.0, GRB.INTEGER,
+						variable.getName());
+			}
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private GRBVar translateRealVariable(RealVariable variable) {
+		try {
+			if (config.boundsEnabled()) {
+				return model.addVar(config.lowerBound(), config.upperBound(), 0.0, GRB.CONTINUOUS, variable.getName());
+			} else {
+				return model.addVar(variable.getLowerBound(), variable.getUpperBound(), 0.0, GRB.CONTINUOUS,
+						variable.getName());
+			}
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private char translateOp(Operator op) {
