@@ -1,10 +1,8 @@
 package org.emoflon.ilp;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import gurobi.GRB;
 import gurobi.GRB.DoubleAttr;
@@ -79,45 +77,11 @@ public class GurobiSolver implements Solver {
 		// TODO: Hilfsfunktionen einfuehren? Ist etwas lang...
 		this.objective = objective;
 		try {
-			// Translate Constraints
-			List<NormalConstraint> normalConstraints = new ArrayList<NormalConstraint>();
-			normalConstraints.addAll(objective.getConstraints());
-			List<SOS1Constraint> sosConstraints = new ArrayList<SOS1Constraint>();
+			// Substitute Or Constraints
+			objective.substituteOr();
 
-			// Or Constraints
-			// Substitute Or Constraints with Linear Constraints and SOS1 Constraints
-			for (OrConstraint constraint : objective.getOrConstraints()) {
-				List<Constraint> converted = constraint.convert();
-				normalConstraints.addAll(converted.stream().filter(NormalConstraint.class::isInstance)
-						.map(LinearConstraint.class::cast).collect(Collectors.toList()));
-				sosConstraints.addAll(converted.stream().filter(SOS1Constraint.class::isInstance)
-						.map(SOS1Constraint.class::cast).collect(Collectors.toList()));
-			}
-
-			// Substitute <, >, !=
-			List<NormalConstraint> opSubstitution = new ArrayList<NormalConstraint>();
-			List<NormalConstraint> delete = new ArrayList<NormalConstraint>();
-			for (NormalConstraint constraint : normalConstraints) {
-				List<Constraint> substitution = constraint.convertOperator();
-				if (substitution.size() > 0) {
-					delete.add(constraint);
-				}
-				opSubstitution.addAll(substitution.stream().filter(LinearConstraint.class::isInstance)
-						.map(LinearConstraint.class::cast).collect(Collectors.toList()));
-				opSubstitution.addAll(substitution.stream().filter(QuadraticConstraint.class::isInstance)
-						.map(QuadraticConstraint.class::cast).collect(Collectors.toList()));
-				sosConstraints.addAll(substitution.stream().filter(SOS1Constraint.class::isInstance)
-						.map(SOS1Constraint.class::cast).collect(Collectors.toList()));
-			}
-			// delete converted constraints
-			normalConstraints.removeAll(delete);
-			delete.forEach(it -> objective.remove(it));
-			// add substitutions
-			normalConstraints.addAll(opSubstitution);
-
-			// Add substitutions to objective
-			normalConstraints.forEach(constraint -> objective.add(constraint));
-			sosConstraints.forEach(constraint -> objective.add(constraint));
+			// Substitute <, >, != Operators
+			objective.substituteOperators();
 
 			// Initialize decision variables and objective
 			// Translate Variables

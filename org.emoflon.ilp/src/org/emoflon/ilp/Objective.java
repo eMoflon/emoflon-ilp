@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Objective {
 
@@ -182,6 +183,62 @@ public class Objective {
 
 	public boolean remove(OrConstraint constraint) {
 		return orConstraints.remove(constraint);
+	}
+
+	public void substituteOr() {
+		List<NormalConstraint> normalConstraints = new ArrayList<NormalConstraint>();
+		normalConstraints.addAll(this.getConstraints());
+		List<SOS1Constraint> sosConstraints = new ArrayList<SOS1Constraint>();
+
+		// Or Constraints
+		// Substitute Or Constraints with Linear Constraints and SOS1 Constraints
+		for (OrConstraint constraint : this.getOrConstraints()) {
+			List<Constraint> converted = constraint.convert();
+			normalConstraints.addAll(converted.stream().filter(NormalConstraint.class::isInstance)
+					.map(LinearConstraint.class::cast).collect(Collectors.toList()));
+			sosConstraints.addAll(converted.stream().filter(SOS1Constraint.class::isInstance)
+					.map(SOS1Constraint.class::cast).collect(Collectors.toList()));
+		}
+
+		// Add substitutions to other linear and SOS constraints
+		normalConstraints.forEach(it -> this.add(it));
+		sosConstraints.forEach(it -> this.add(it));
+	}
+
+	public void substituteOperators() {
+		// Substitute <, >, !=
+		List<NormalConstraint> opSubstitution = new ArrayList<NormalConstraint>();
+		List<SOS1Constraint> sosConstraints = new ArrayList<SOS1Constraint>();
+		List<NormalConstraint> delete = new ArrayList<NormalConstraint>();
+
+		for (NormalConstraint constraint : this.getConstraints()) {
+			List<Constraint> substitution = constraint.convertOperator();
+			if (substitution.size() > 0) {
+				delete.add(constraint);
+			}
+			opSubstitution.addAll(substitution.stream().filter(LinearConstraint.class::isInstance)
+					.map(LinearConstraint.class::cast).collect(Collectors.toList()));
+			opSubstitution.addAll(substitution.stream().filter(QuadraticConstraint.class::isInstance)
+					.map(QuadraticConstraint.class::cast).collect(Collectors.toList()));
+			sosConstraints.addAll(substitution.stream().filter(SOS1Constraint.class::isInstance)
+					.map(SOS1Constraint.class::cast).collect(Collectors.toList()));
+		}
+		// delete converted constraints
+		this.constraints.removeAll(delete);
+		delete.forEach(it -> this.remove(it));
+
+		// add substitutions
+		opSubstitution.forEach(it -> this.add(it));
+		sosConstraints.forEach(it -> this.add(it));
+	}
+
+	public void substituteSOS1() {
+		// SOS1 Constraints
+		// Substitute SOS1 Constraints
+		for (SOS1Constraint constraint : this.getSOSConstraints()) {
+			List<LinearConstraint> substitution = constraint.convert();
+			substitution.forEach(it -> this.add(it));
+		}
 	}
 
 }
