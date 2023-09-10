@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
@@ -83,15 +85,15 @@ public class GurobiTest {
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
-		Objective result = solver.updateValuesFromSolution();
+		solver.updateValuesFromSolution();
 
-		assertEquals(1, result.getVariables().get("b1").getValue());
+		assertEquals(1, obj.getVariables().get("b1").getValue());
 
 		System.out.println("===================");
 		System.out.println("Computation Result:");
-		System.out.println("Value for b1: " + result.getVariables().get("b1").getValue());
-		System.out.println("Value for b2: " + result.getVariables().get("b2").getValue());
-		System.out.println("Value for b3: " + result.getVariables().get("b3").getValue());
+		System.out.println("Value for b1: " + obj.getVariables().get("b1").getValue());
+		System.out.println("Value for b2: " + obj.getVariables().get("b2").getValue());
+		System.out.println("Value for b3: " + obj.getVariables().get("b3").getValue());
 		System.out.println("===================");
 
 		solver.terminate();
@@ -187,17 +189,17 @@ public class GurobiTest {
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
-		Objective result = solver.updateValuesFromSolution();
+		solver.updateValuesFromSolution();
 
-		assertEquals(1, result.getVariables().get("b1").getValue());
-		assertEquals(0, result.getVariables().get("b2").getValue());
-		assertEquals(0, result.getVariables().get("b3").getValue());
+		assertEquals(1, obj.getVariables().get("b1").getValue());
+		assertEquals(0, obj.getVariables().get("b2").getValue());
+		assertEquals(0, obj.getVariables().get("b3").getValue());
 
 		System.out.println("===================");
 		System.out.println("Computation Result:");
-		System.out.println("Value for b1: " + result.getVariables().get("b1").getValue());
-		System.out.println("Value for b2: " + result.getVariables().get("b2").getValue());
-		System.out.println("Value for b3: " + result.getVariables().get("b3").getValue());
+		System.out.println("Value for b1: " + obj.getVariables().get("b1").getValue());
+		System.out.println("Value for b2: " + obj.getVariables().get("b2").getValue());
+		System.out.println("Value for b3: " + obj.getVariables().get("b3").getValue());
 		System.out.println("===================");
 
 		solver.terminate();
@@ -242,7 +244,7 @@ public class GurobiTest {
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
-		Objective result = solver.updateValuesFromSolution();
+		solver.updateValuesFromSolution();
 
 		solver.terminate();
 
@@ -291,11 +293,11 @@ public class GurobiTest {
 		solver_sub.buildILPProblem(obj_sub);
 		SolverOutput out_sub = solver_sub.solve();
 		System.out.println(out_sub.toString());
-		Objective result_sub = solver_sub.updateValuesFromSolution();
+		solver_sub.updateValuesFromSolution();
 
-		assertEquals(result.getVariables().get("b1").getValue(), result_sub.getVariables().get("b1_sub").getValue());
-		assertEquals(result.getVariables().get("b2").getValue(), result_sub.getVariables().get("b2_sub").getValue());
-		assertEquals(result.getVariables().get("b3").getValue(), result_sub.getVariables().get("b3_sub").getValue());
+		assertEquals(obj.getVariables().get("b1").getValue(), obj_sub.getVariables().get("b1_sub").getValue());
+		assertEquals(obj.getVariables().get("b2").getValue(), obj_sub.getVariables().get("b2_sub").getValue());
+		assertEquals(obj.getVariables().get("b3").getValue(), obj_sub.getVariables().get("b3_sub").getValue());
 
 		solver.terminate();
 	}
@@ -331,16 +333,16 @@ public class GurobiTest {
 		obj.add(or1);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, true, -10, 10, false,
-				false, null, false, null);
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, true, -10, 10,
+				false, false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
-		Objective result = solver.updateValuesFromSolution();
+		solver.updateValuesFromSolution();
 
-		assertEquals(1, result.getVariables().get("b1").getValue());
-		assertEquals(1, result.getVariables().get("b2").getValue());
+		assertEquals(1, obj.getVariables().get("b1").getValue());
+		assertEquals(1, obj.getVariables().get("b2").getValue());
 
 		solver.terminate();
 	}
@@ -384,11 +386,61 @@ public class GurobiTest {
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
-		Objective result = solver.updateValuesFromSolution();
+		solver.updateValuesFromSolution();
 
-		assertEquals(1, result.getVariables().get("b1").getValue());
-		assertEquals(1, result.getVariables().get("b2").getValue());
-		assertEquals(1, result.getVariables().get("b3").getValue());
+		assertEquals(1, obj.getVariables().get("b1").getValue());
+		assertEquals(1, obj.getVariables().get("b2").getValue());
+		assertEquals(1, obj.getVariables().get("b3").getValue());
+
+		solver.terminate();
+	}
+
+	@Test
+	public void testOperatorConversion() {
+		// Objective
+		// max b1
+		Objective obj = new Objective();
+		obj.setType(ObjectiveType.MAX);
+
+		LinearFunction lin = new LinearFunction();
+		lin.addTerm(b1, 1.0);
+
+		// Constraints
+		// i1 != 1
+		LinearConstraint c1 = new LinearConstraint(Operator.NOT_EQUAL, 1.0);
+		c1.addTerm(i1, 1.0);
+
+		// r1 > 1
+		LinearConstraint c2 = new LinearConstraint(Operator.GREATER, 1.0);
+		c2.addTerm(r1, 1.0);
+
+		// i2^2 < 4
+		QuadraticConstraint c3 = new QuadraticConstraint(Operator.LESS, 4);
+		c3.addTerm(i2, i2, 1.0);
+
+		// Model
+		obj.setObjective(lin);
+		obj.add(c1);
+		obj.add(c2);
+		obj.add(c3);
+
+		assertEquals(3, obj.getConstraintCount());
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		assertEquals(5, obj.getConstraintCount());
+
+		assertNotEquals(1, obj.getVariables().get("i1").getValue());
+		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() > 1);
+		assertTrue(obj.getVariables().get("i2").getValue().intValue() < 2
+				&& obj.getVariables().get("i2").getValue().intValue() > -2);
 
 		solver.terminate();
 	}

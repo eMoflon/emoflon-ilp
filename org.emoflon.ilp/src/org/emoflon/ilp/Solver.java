@@ -6,7 +6,7 @@ public interface Solver {
 
 	public abstract SolverOutput solve();
 
-	public abstract Objective updateValuesFromSolution();
+	public abstract void updateValuesFromSolution();
 
 	public abstract void terminate();
 

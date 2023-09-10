@@ -154,7 +154,7 @@ public class QuadraticConstraint implements NormalConstraint {
 			// 5: f_i - psi'_i <= k_i
 			QuadraticConstraint right = new QuadraticConstraint(this.getLhsTerms(), Operator.LESS_OR_EQUAL,
 					this.getRhs());
-			right.addTerm(psiPrime, 1.0);
+			right.addTerm(psiPrime, -1.0);
 			substitute.add(right);
 
 			return substitute;

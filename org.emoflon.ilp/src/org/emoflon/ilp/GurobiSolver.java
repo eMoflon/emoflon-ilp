@@ -87,7 +87,7 @@ public class GurobiSolver implements Solver {
 		translateVariables(objective.getVariables());
 
 		// Translate Objective to GRB
-		translateObjective(objective);
+		translateObjective();
 
 		// Translate Normal Constraints
 		objective.getConstraints().forEach(it -> translateNormalConstraint(it));
@@ -102,25 +102,27 @@ public class GurobiSolver implements Solver {
 
 	private void translateVariables(Map<String, Variable<?>> vars) {
 		GRBVar temp = null;
-		for (Variable<?> var : vars.values()) {
+		for (final String name : vars.keySet()) {
 
-			switch (var.getType()) {
+			switch (vars.get(name).getType()) {
 			case BINARY:
-				temp = translateBinaryVariable((BinaryVariable) var);
+				temp = translateBinaryVariable((BinaryVariable) vars.get(name));
 				break;
 			case INTEGER:
-				temp = translateIntegerVariable((IntegerVariable) var);
+				temp = translateIntegerVariable((IntegerVariable) vars.get(name));
 				break;
 			case REAL:
-				temp = translateRealVariable((RealVariable) var);
+				temp = translateRealVariable((RealVariable) vars.get(name));
 				break;
+			default:
+				throw new UnsupportedOperationException("This variable type is not known.");
 			}
 
-			grbVars.put(var.getName(), temp);
+			grbVars.put(name, temp);
 		}
 	}
 
-	private void translateObjective(Objective objective) {
+	private void translateObjective() {
 		// Translate Objective to GRB
 		// TODO: (future work) nested Functions OR use "expand" in
 		// LinearFunction/QuadraticFunction, which is more efficient?
@@ -264,6 +266,10 @@ public class GurobiSolver implements Solver {
 
 	private GRBVar translateBinaryVariable(BinaryVariable variable) {
 		try {
+			if (variable.getLowerBound() > variable.getUpperBound()) {
+				throw new IllegalArgumentException(
+						"The lower bound is not allowed to be greater than the upper bound.");
+			}
 			return model.addVar(variable.getLowerBound(), variable.getUpperBound(), 0.0, GRB.BINARY,
 					variable.getName());
 		} catch (GRBException e) {
@@ -273,6 +279,10 @@ public class GurobiSolver implements Solver {
 
 	private GRBVar translateIntegerVariable(IntegerVariable variable) {
 		try {
+			if (variable.getLowerBound() > variable.getUpperBound()) {
+				throw new IllegalArgumentException(
+						"The lower bound is not allowed to be greater than the upper bound.");
+			}
 			if (config.boundsEnabled()) {
 				return model.addVar(config.lowerBound(), config.upperBound(), 0.0, GRB.INTEGER, variable.getName());
 			} else {
@@ -286,6 +296,10 @@ public class GurobiSolver implements Solver {
 
 	private GRBVar translateRealVariable(RealVariable variable) {
 		try {
+			if (variable.getLowerBound() > variable.getUpperBound()) {
+				throw new IllegalArgumentException(
+						"The lower bound is not allowed to be greater than the upper bound.");
+			}
 			if (config.boundsEnabled()) {
 				return model.addVar(config.lowerBound(), config.upperBound(), 0.0, GRB.CONTINUOUS, variable.getName());
 			} else {
@@ -367,12 +381,7 @@ public class GurobiSolver implements Solver {
 	}
 
 	@Override
-	public Objective updateValuesFromSolution() {
-		// TODO Auto-generated method stub
-		/*
-		 * Notizen Besprechung: generische Lösung -> lambda übergeben -> lambda auf alle
-		 * Werte anwenden
-		 */
+	public void updateValuesFromSolution() {
 		if (this.result.getStatus() == SolverStatus.INFEASIBLE || this.result.getStatus() == SolverStatus.INF_OR_UNBD) {
 			throw new RuntimeException(
 					"The problem status is " + this.result.getStatus() + " and therefore no values were found.");
@@ -380,7 +389,6 @@ public class GurobiSolver implements Solver {
 		Map<String, Variable<?>> objVars = this.objective.getVariables();
 
 		for (final String name : this.grbVars.keySet()) {
-
 			try {
 				// Save result value
 				// TODO: runden konfigurierbar machen?!
@@ -402,10 +410,7 @@ public class GurobiSolver implements Solver {
 			} catch (final GRBException e) {
 				throw new RuntimeException(e);
 			}
-
 		}
-
-		return this.objective;
 	}
 
 	@Override

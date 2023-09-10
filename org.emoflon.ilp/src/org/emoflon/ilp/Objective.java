@@ -187,7 +187,6 @@ public class Objective {
 
 	public void substituteOr() {
 		List<NormalConstraint> normalConstraints = new ArrayList<NormalConstraint>();
-		normalConstraints.addAll(this.getConstraints());
 		List<SOS1Constraint> sosConstraints = new ArrayList<SOS1Constraint>();
 
 		// Or Constraints

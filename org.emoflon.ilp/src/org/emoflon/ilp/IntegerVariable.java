@@ -6,8 +6,8 @@ public class IntegerVariable implements Variable<Integer> {
 	private int value;
 
 	// TODO: Add default bounds! Gips: 10_000
-	private int upperBound;
-	private int lowerBound;
+	private int upperBound = 10_000;
+	private int lowerBound = -10_000;
 
 	public IntegerVariable(final String name) {
 		this.name = name;

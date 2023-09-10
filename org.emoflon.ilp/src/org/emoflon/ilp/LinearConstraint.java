@@ -151,7 +151,7 @@ public class LinearConstraint implements NormalConstraint {
 
 			// 5: f_i - psi'_i <= k_i
 			LinearConstraint right = new LinearConstraint(this.getLhsTerms(), Operator.LESS_OR_EQUAL, this.getRhs());
-			right.addTerm(psiPrime, 1.0);
+			right.addTerm(psiPrime, -1.0);
 			substitute.add(right);
 
 			return substitute;
