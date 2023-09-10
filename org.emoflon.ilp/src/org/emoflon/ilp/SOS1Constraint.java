@@ -113,8 +113,6 @@ public class SOS1Constraint implements Constraint {
 			i++;
 		}
 
-		substitution.forEach(it -> System.out.println(it));
-
 		return substitution;
 	}
 

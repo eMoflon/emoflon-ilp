@@ -202,6 +202,9 @@ public class Objective {
 		// Add substitutions to other linear and SOS constraints
 		normalConstraints.forEach(it -> this.add(it));
 		sosConstraints.forEach(it -> this.add(it));
+		
+		// Remove all OrConstraints
+		orConstraints.clear();
 	}
 
 	public void substituteOperators() {
@@ -238,6 +241,9 @@ public class Objective {
 			List<LinearConstraint> substitution = constraint.convert();
 			substitution.forEach(it -> this.add(it));
 		}
+		
+		// remove all SOS Constraints
+		sosConstraints.clear();
 	}
 
 }

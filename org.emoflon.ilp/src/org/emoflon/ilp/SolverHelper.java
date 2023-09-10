@@ -13,8 +13,8 @@ public class SolverHelper {
 			throw new Error("Not yet implemented!");
 		// break;
 		case GLPK:
-			throw new Error("Not yet implemented!");
-		// break;
+			this.solver = new GlpkSolver(config);
+			break;
 		default:
 			throw new IllegalArgumentException("This solver is not implemented in the tool.");
 		}

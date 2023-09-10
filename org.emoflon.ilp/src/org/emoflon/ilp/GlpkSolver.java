@@ -21,6 +21,7 @@ public class GlpkSolver implements Solver {
 
 	public GlpkSolver(final SolverConfig config) {
 		this.config = config;
+		this.indexNameMap = new HashMap<>();
 		init();
 	}
 
@@ -60,6 +61,7 @@ public class GlpkSolver implements Solver {
 
 	@Override
 	public void buildILPProblem(Objective objective) {
+		this.objective = objective;
 
 		// Quadratic Constraints or Functions are not supported by GLPK
 		if (objective.getConstraints().stream().anyMatch(QuadraticConstraint.class::isInstance)
@@ -77,7 +79,7 @@ public class GlpkSolver implements Solver {
 
 		// Substitute <, >, != Operators
 		objective.substituteOperators();
-
+		
 		// Substitute SOS1 Constraints
 		objective.substituteSOS1();
 
@@ -198,7 +200,7 @@ public class GlpkSolver implements Solver {
 		// Add rows according to the constraint count
 		GLPK.glp_add_rows(model, objective.getConstraintCount());
 
-		int counter = 0;
+		int counter = 1;
 		for (final NormalConstraint constraint : objective.getConstraints()) {
 
 			Map<Variable<?>, Double> weights = new HashMap<>();
@@ -222,6 +224,7 @@ public class GlpkSolver implements Solver {
 			GLPK.glp_set_row_bnds(model, counter, translateOp(constraint.getOp()), constraint.getRhs(),
 					constraint.getRhs());
 
+			counter++;
 		}
 	}
 

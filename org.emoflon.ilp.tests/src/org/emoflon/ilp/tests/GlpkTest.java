@@ -65,6 +65,7 @@ public class GlpkTest {
 
 	@Test
 	public void testGurobiMip1Example() {
+		System.out.println("--------- testGurobiMip1Example() ---------");
 		// Gurobi Mip1 example
 
 		// Objective
@@ -96,7 +97,7 @@ public class GlpkTest {
 		obj.add(c2);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
@@ -123,6 +124,7 @@ public class GlpkTest {
 
 	@Test
 	public void testQuadraticConstrLinearObj() {
+		System.out.println("--------- testQuadConstrLinObj() ---------");
 		// Objective
 		// maximize i1 + r1
 		Objective obj = new Objective();
@@ -148,7 +150,7 @@ public class GlpkTest {
 		obj.add(c2);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		assertThrows(IllegalArgumentException.class, () -> {
@@ -160,6 +162,7 @@ public class GlpkTest {
 
 	@Test
 	public void testLinearConstrQuadraticObj() {
+		System.out.println("--------- testLinConstrQuadObj() ---------");
 		// Objective
 		// maximize i1^2 + r1
 		Objective obj = new Objective();
@@ -185,7 +188,7 @@ public class GlpkTest {
 		obj.add(c2);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		assertThrows(IllegalArgumentException.class, () -> {
@@ -197,6 +200,7 @@ public class GlpkTest {
 
 	@Test
 	public void testQuadraticConstrQuadraticObj() {
+		System.out.println("--------- testQuadConstrQuadObj() ---------");
 		// Objective
 		// maximize i1^2 + r1
 		Objective obj = new Objective();
@@ -222,7 +226,7 @@ public class GlpkTest {
 		obj.add(c2);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		assertThrows(IllegalArgumentException.class, () -> {
@@ -234,6 +238,7 @@ public class GlpkTest {
 
 	@Test
 	public void testBasicSOS1Constraint() {
+		System.out.println("--------- testBasicSOS1Constr() ---------");
 		// TODO: write test
 		// Objective
 		Objective obj = new Objective();
@@ -266,7 +271,7 @@ public class GlpkTest {
 		obj.add(sos1);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
@@ -283,6 +288,7 @@ public class GlpkTest {
 
 	@Test
 	public void testBasicOrConstraint() {
+		System.out.println("--------- testBasicOrConstr() ---------");
 		// Objective
 		Objective obj = new Objective();
 		obj.setType(ObjectiveType.MAX);
@@ -296,7 +302,7 @@ public class GlpkTest {
 		c1.addTerm(b1, 5.0);
 		c1.addTerm(b2, 1.0);
 
-		// b2 <= 3
+		// b2 <= 0
 		LinearConstraint c2 = new LinearConstraint(Operator.LESS_OR_EQUAL, 3.0);
 		c2.addTerm(b2, 1.0);
 
@@ -310,7 +316,7 @@ public class GlpkTest {
 		obj.add(or1);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, true, -10, 10, false,
+		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, true, -10, 10, true,
 				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
@@ -319,13 +325,14 @@ public class GlpkTest {
 		solver.updateValuesFromSolution();
 
 		assertEquals(1, obj.getVariables().get("b1").getValue());
-		assertEquals(1, obj.getVariables().get("b2").getValue());
+		assertEquals(0, obj.getVariables().get("b2").getValue());
 
 		solver.terminate();
 	}
 
 	@Test
 	public void testOrVarsConstraint() {
+		System.out.println("--------- testOrVarsConstr() ---------");
 		// Objective
 		Objective obj = new Objective();
 		obj.setType(ObjectiveType.MAX);
@@ -355,7 +362,7 @@ public class GlpkTest {
 		obj.add(c2);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		assertThrows(IllegalArgumentException.class, () -> {
@@ -367,6 +374,7 @@ public class GlpkTest {
 
 	@Test
 	public void testOperatorConversion() {
+		System.out.println("--------- testOpConv() ---------");
 		// Objective
 		// max b1
 		Objective obj = new Objective();
@@ -397,15 +405,23 @@ public class GlpkTest {
 		assertEquals(3, obj.getConstraintCount());
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
+		
 
-		assertEquals(5, obj.getConstraintCount());
+		System.out.println("===================");
+		System.out.println("Computation Result:");
+		System.out.println("Value for i1: " + obj.getVariables().get("i1").getValue());
+		System.out.println("Value for r1: " + obj.getVariables().get("r1").getValue());
+		System.out.println("Value for i2: " + obj.getVariables().get("i2").getValue());
+		System.out.println("===================");
+
+		assertEquals(10, obj.getConstraintCount());
 
 		assertNotEquals(1, obj.getVariables().get("i1").getValue());
 		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() > 1);
