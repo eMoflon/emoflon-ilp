@@ -66,6 +66,11 @@ public class GlpkSolver implements Solver {
 				|| (objective.getObjective() instanceof QuadraticFunction)) {
 			throw new IllegalArgumentException("GLPK does not support quadratic constraints and quadratic functions!");
 		}
+		// General Constraints are not supported
+		// TODO: convert OrVarsConstraints to OrConstraints or remove
+		if (objective.getGenConstraintCount() != 0) {
+			throw new IllegalArgumentException("General Constraints are not supported by GLPK.");
+		}
 
 		// Substitute Or Constraints
 		objective.substituteOr();
