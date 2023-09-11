@@ -2,6 +2,7 @@ package org.emoflon.ilp.tests;
 
 //import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -388,7 +389,7 @@ public class GurobiTest {
 		// Constraints
 		// i1 != 5 (lower bound)
 		i1.setLowerBound(5);
-		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 5.0);
+		LinearConstraint c1 = new LinearConstraint(Operator.NOT_EQUAL, 5.0);
 		c1.addTerm(i1, 1.0);
 
 		// r2 != 100 (upper bound)
@@ -410,9 +411,9 @@ public class GurobiTest {
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		// assertEquals(195.0, out.getObjVal(), 0.0001);
-		assertEquals(4, obj.getVariables().get("i1").getValue());
-		assertEquals(99.0, obj.getVariables().get("r2").getValue().doubleValue(), 1.0);
+		assertEquals(193.99, out.getObjVal(), 0.01);
+		assertEquals(6, obj.getVariables().get("i1").getValue());
+		assertEquals(99.99, obj.getVariables().get("r2").getValue().doubleValue(), 0.01);
 
 		solver.terminate();
 	}
@@ -509,8 +510,10 @@ public class GurobiTest {
 	}
 
 	@Test
+	@Disabled
 	public void testNotEqualQuadraticConstraint() {
-		// TODO: Not Equal fails
+		// TODO: kein funktionierendes Beispiel eingefallen (ist nicht positiv
+		// semidefinit)
 
 		// Objective
 		// maximize i1 + 2* (i2 - i1)
@@ -530,11 +533,9 @@ public class GurobiTest {
 		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 5.0);
 		c1.addTerm(i1, 1.0);
 
-		// i2^2 != 100 (upper bound), i2 > 0
-		i2.setLowerBound(0);
-		i2.setUpperBound(100);
+		// i1 * i2 != 100, i2 > 0
 		QuadraticConstraint c2 = new QuadraticConstraint(Operator.NOT_EQUAL, 100.0);
-		c2.addTerm(i2, i2, 1.0);
+		c2.addTerm(i1, i2, 1.0);
 
 		// Model
 		obj.setObjective(lin);
@@ -602,13 +603,6 @@ public class GurobiTest {
 		assertEquals(1, obj.getVariables().get("b1").getValue());
 		assertEquals(0, obj.getVariables().get("b2").getValue());
 		assertEquals(0, obj.getVariables().get("b3").getValue());
-
-		System.out.println("===================");
-		System.out.println("Computation Result:");
-		System.out.println("Value for b1: " + obj.getVariables().get("b1").getValue());
-		System.out.println("Value for b2: " + obj.getVariables().get("b2").getValue());
-		System.out.println("Value for b3: " + obj.getVariables().get("b3").getValue());
-		System.out.println("===================");
 
 		solver.terminate();
 	}
@@ -773,8 +767,10 @@ public class GurobiTest {
 		Objective obj = new Objective();
 		obj.setType(ObjectiveType.MAX);
 
+		// max b1 + b2
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
+		lin.addTerm(b2, 1.0);
 
 		// Constraints
 		// 5*b1 + b2 >= 1
@@ -907,10 +903,10 @@ public class GurobiTest {
 		System.out.println("Value for i1: " + obj.getVariables().get("i1").getValue());
 		System.out.println("Value for r1: " + obj.getVariables().get("r1").getValue());
 		System.out.println("Value for i2: " + obj.getVariables().get("i2").getValue());
-		System.out.println(
-				"Value for psi: " + obj.getVariables().get("psi_org.emoflon.ilp.LinearConstraint@76536c53").getValue());
-		System.out.println("Value for psi_prime: "
-				+ obj.getVariables().get("psiPrime_org.emoflon.ilp.LinearConstraint@76536c53").getValue());
+		// System.out.println("Value for psi: " +
+		// obj.getVariables().get("psi_org.emoflon.ilp.LinearConstraint@76536c53").getValue());
+		// System.out.println("Value for psi_prime: " +
+		// obj.getVariables().get("psiPrime_org.emoflon.ilp.LinearConstraint@76536c53").getValue());
 		System.out.println("===================");
 
 		assertEquals(5, obj.getConstraintCount());

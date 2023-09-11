@@ -98,6 +98,7 @@ public class GlpkTest {
 		obj.add(c2);
 
 		// Optimize
+		// TODO: Anmerkung zu presolve = true
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
