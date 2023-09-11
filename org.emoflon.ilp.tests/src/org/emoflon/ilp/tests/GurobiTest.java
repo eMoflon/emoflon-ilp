@@ -303,6 +303,66 @@ public class GurobiTest {
 	}
 
 	@Test
+	public void testGurobiSOS() {
+		// Objective
+		Objective obj = new Objective();
+		obj.setType(ObjectiveType.MIN);
+
+		LinearFunction lin = new LinearFunction();
+		lin.addTerm(r1, 0);
+
+		// SOS1: x0=0 or x1=0
+		// here: SOS1(r1, r2)
+
+		List<Variable<?>> sosVars1 = new ArrayList<Variable<?>>();
+		sosVars1.add(r1);
+		sosVars1.add(r2);
+		SOS1Constraint sos1 = new SOS1Constraint(sosVars1);
+		double[] weights = { 1, 2 };
+		sos1.setWeights(weights);
+
+		// SOS1: x0=0 or x2=0
+		// here: SOS1(r1, r3)
+
+		List<Variable<?>> sosVars2 = new ArrayList<Variable<?>>();
+		sosVars2.add(r1);
+		sosVars2.add(r3);
+		SOS1Constraint sos2 = new SOS1Constraint(sosVars2);
+		sos2.setWeights(weights);
+
+		// Linear: r1 + r2 + r3 != 0
+		LinearConstraint l1 = new LinearConstraint(Operator.NOT_EQUAL, 0.0);
+		l1.addTerm(r1, 1.0);
+		l1.addTerm(r2, 1.0);
+		l1.addTerm(r3, 1.0);
+
+		// Model
+		obj.setObjective(lin);
+		obj.add(sos1);
+		obj.add(sos2);
+		obj.add(l1);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		System.out.println("===================");
+		System.out.println("Computation Result:");
+		System.out.println("Value for r1: " + obj.getVariables().get("r1").getValue());
+		System.out.println("Value for r2: " + obj.getVariables().get("r2").getValue());
+		System.out.println("Value for r3: " + obj.getVariables().get("r3").getValue());
+		System.out.println("===================");
+
+		solver.terminate();
+
+	}
+
+	@Test
 	public void testBasicOrConstraint() {
 		// TODO: minimal Or Constraint example
 
@@ -404,11 +464,15 @@ public class GurobiTest {
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
+		lin.addTerm(i1, 1.0);
+		lin.addTerm(r1, -1.0);
+		lin.addTerm(i1, 1.0);
 
 		// Constraints
-		// i1 != 1
-		LinearConstraint c1 = new LinearConstraint(Operator.NOT_EQUAL, 1.0);
+		// i1 != 10000
+		LinearConstraint c1 = new LinearConstraint(Operator.NOT_EQUAL, i1.getUpperBound());
 		c1.addTerm(i1, 1.0);
+		c1.setEpsilon(1.0);
 
 		// r1 > 1
 		LinearConstraint c2 = new LinearConstraint(Operator.GREATER, 1.0);
@@ -428,16 +492,27 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, null, true, "/Users/luise/Projektseminar/NOT_error.lp");
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
+		System.out.println("===================");
+		System.out.println("Computation Result:");
+		System.out.println("Value for i1: " + obj.getVariables().get("i1").getValue());
+		System.out.println("Value for r1: " + obj.getVariables().get("r1").getValue());
+		System.out.println("Value for i2: " + obj.getVariables().get("i2").getValue());
+		System.out.println(
+				"Value for psi: " + obj.getVariables().get("psi_org.emoflon.ilp.LinearConstraint@76536c53").getValue());
+		System.out.println("Value for psi_prime: "
+				+ obj.getVariables().get("psiPrime_org.emoflon.ilp.LinearConstraint@76536c53").getValue());
+		System.out.println("===================");
+
 		assertEquals(5, obj.getConstraintCount());
 
-		assertNotEquals(1, obj.getVariables().get("i1").getValue());
+		assertNotEquals(i1.getUpperBound(), obj.getVariables().get("i1").getValue());
 		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() > 1);
 		assertTrue(obj.getVariables().get("i2").getValue().intValue() < 2
 				&& obj.getVariables().get("i2").getValue().intValue() > -2);

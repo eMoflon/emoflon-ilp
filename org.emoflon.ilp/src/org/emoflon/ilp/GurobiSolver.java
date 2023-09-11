@@ -230,7 +230,12 @@ public class GurobiSolver implements Solver {
 			GRBVar[] grbVars = new GRBVar[var.size()];
 			try {
 				for (int i = 0; i < var.size(); i++) {
-					grbVars[i] = translateBinaryVariable((BinaryVariable) var.get(i));
+					model.update();
+					if (this.grbVars.containsKey(var.get(i).getName())) {
+						grbVars[i] = model.getVarByName(var.get(i).getName());
+					} else {
+						grbVars[i] = translateBinaryVariable((BinaryVariable) var.get(i));
+					}
 				}
 				model.addGenConstrOr(model.addVar(0.0, 1.0, 0.0, GRB.BINARY, res.getName()), grbVars,
 						constraint.toString());
@@ -242,22 +247,25 @@ public class GurobiSolver implements Solver {
 
 	private void translateSOSConstraint(SOS1Constraint constraint) {
 		List<Variable<?>> var = constraint.getVariables();
-		GRBVar[] grbVars = new GRBVar[var.size()];
+		GRBVar[] sosVars = new GRBVar[var.size()];
 		try {
 			for (int i = 0; i < var.size(); i++) {
 
-				if (var.get(i) instanceof BinaryVariable) {
-					grbVars[i] = translateBinaryVariable((BinaryVariable) var.get(i));
+				model.update();
+				if (grbVars.containsKey(var.get(i).getName())) {
+					sosVars[i] = model.getVarByName(var.get(i).getName());
+				} else if (var.get(i) instanceof BinaryVariable) {
+					sosVars[i] = translateBinaryVariable((BinaryVariable) var.get(i));
 				} else if (var.get(i) instanceof IntegerVariable) {
-					grbVars[i] = translateIntegerVariable((IntegerVariable) var.get(i));
+					sosVars[i] = translateIntegerVariable((IntegerVariable) var.get(i));
 				} else if (var.get(i) instanceof RealVariable) {
-					grbVars[i] = translateRealVariable((RealVariable) var.get(i));
+					sosVars[i] = translateRealVariable((RealVariable) var.get(i));
 				} else {
 					throw new Error("This variable type should not be possible!");
 				}
 			}
 
-			model.addSOS(grbVars, constraint.getWeights(), GRB.SOS_TYPE1);
+			model.addSOS(sosVars, constraint.getWeights(), GRB.SOS_TYPE1);
 
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
