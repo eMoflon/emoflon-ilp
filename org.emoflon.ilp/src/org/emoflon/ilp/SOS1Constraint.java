@@ -10,6 +10,7 @@ public class SOS1Constraint implements Constraint {
 	private double[] weights;
 	private List<BinaryVariable> binary = new ArrayList<BinaryVariable>();
 	private int bound = (int) 10E4;
+	private double epsilon = 1.0E-4;
 
 	public SOS1Constraint(List<Variable<?>> variables, double[] weights) {
 		this.setVariables(variables);
@@ -79,6 +80,14 @@ public class SOS1Constraint implements Constraint {
 	public void setBound(int bound) {
 		this.bound = bound;
 	}
+	
+	public void setEpsilon(double epsilon) {
+		this.epsilon = epsilon;
+	}
+	
+	public double getEpsilon() {
+		return this.epsilon;
+	}
 
 	// SOS1: at most one of the variables has a non-zero value
 	public List<LinearConstraint> convert() {
@@ -93,21 +102,21 @@ public class SOS1Constraint implements Constraint {
 		}
 		// at most one binary variable s_i is non-zero -> the sum of all binary
 		// variables is <= 1
-		substitution.add(new LinearConstraint(binaryTerms, Operator.LESS_OR_EQUAL, 1.0));
+		substitution.add(new LinearConstraint(binaryTerms, Operator.LESS_OR_EQUAL, 1.0, this.epsilon));
 
 		// match variable to take non-zero value
 		int i = 0;
 		for (Variable<?> var : this.variables) {
 			// v_i <= c * s_i
-			LinearConstraint linRight = new LinearConstraint(Operator.GREATER_OR_EQUAL, 0.0);
-			linRight.addTerm(var, -1);
-			linRight.addTerm(this.binary.get(i), bound);
+			LinearConstraint linRight = new LinearConstraint(Operator.LESS_OR_EQUAL, 0.0, this.epsilon);
+			linRight.addTerm(var, 1.0);
+			linRight.addTerm(this.binary.get(i), -bound);
 			substitution.add(linRight);
 
 			// v_i >= -c * s_i
-			LinearConstraint linLeft = new LinearConstraint(Operator.LESS_OR_EQUAL, 0.0);
-			linLeft.addTerm(this.binary.get(i), -bound);
-			linLeft.addTerm(var, -1);
+			LinearConstraint linLeft = new LinearConstraint(Operator.GREATER_OR_EQUAL, 0.0, this.epsilon);
+			linLeft.addTerm(this.binary.get(i), bound);
+			linLeft.addTerm(var, 1.0);
 			substitution.add(linLeft);
 
 			i++;

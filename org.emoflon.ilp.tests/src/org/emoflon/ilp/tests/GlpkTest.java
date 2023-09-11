@@ -365,10 +365,8 @@ public class GlpkTest {
 	}
 	
 	@Test
-	@Disabled
 	public void testNotEqualLinearConstraint() {
 		System.out.println("--------- testNotEqualLinearConstraint() ---------");
-		// TODO: fails, != conversion not correct
 		// Objective
 		// maximize i1 + 2* (r2 - i1)
 		Objective obj = new Objective();
@@ -385,13 +383,17 @@ public class GlpkTest {
 		// Constraints
 		// i1 != 5 (lower bound)
 		i1.setLowerBound(5);
-		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 5.0);
+		LinearConstraint c1 = new LinearConstraint(Operator.NOT_EQUAL, 5.0);
 		c1.addTerm(i1, 1.0);
+		
+		c1.setEpsilon(1.0);
 
 		// r2 != 100 (upper bound)
 		r2.setUpperBound(100.0);
 		LinearConstraint c2 = new LinearConstraint(Operator.NOT_EQUAL, 100.0);
 		c2.addTerm(r2, 1.0);
+		
+		c2.setEpsilon(1.0);
 
 		// Model
 		obj.setObjective(lin);
@@ -408,8 +410,8 @@ public class GlpkTest {
 		solver.updateValuesFromSolution();
 
 		// assertEquals(195.0, out.getObjVal(), 0.0001);
-		assertEquals(4, obj.getVariables().get("i1").getValue());
-		assertEquals(99.0, obj.getVariables().get("r2").getValue().doubleValue(), 1.0);
+		assertEquals(6, obj.getVariables().get("i1").getValue());
+		assertEquals(99.0, obj.getVariables().get("r2").getValue().doubleValue(), 0.9999);
 
 		solver.terminate();
 	}
@@ -474,6 +476,7 @@ public class GlpkTest {
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
+		lin.addTerm(b2, 1.0);
 
 		// Constraints
 		// 5*b1 + b2 >= 1
@@ -504,7 +507,7 @@ public class GlpkTest {
 		solver.updateValuesFromSolution();
 
 		assertEquals(1, obj.getVariables().get("b1").getValue());
-		assertEquals(0, obj.getVariables().get("b2").getValue());
+		assertEquals(1, obj.getVariables().get("b2").getValue());
 
 		solver.terminate();
 	}
@@ -552,7 +555,6 @@ public class GlpkTest {
 	}
 
 	@Test
-	@Disabled
 	public void testOperatorConversion() {
 		System.out.println("--------- testOperatorConversion() ---------");
 		// Objective
@@ -562,11 +564,17 @@ public class GlpkTest {
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
+		
+		//lin.addTerm(i1, 1.0);
+		lin.addTerm(r1, -1.0);
+		lin.addTerm(i2, 1.0);
 
 		// Constraints
 		// i1 != 5
 		LinearConstraint c1 = new LinearConstraint(Operator.NOT_EQUAL, 5.0);
 		c1.addTerm(i1, 1.0);
+		
+		c1.setEpsilon(1.0);
 
 		// r1 > 1
 		LinearConstraint c2 = new LinearConstraint(Operator.GREATER, 1.0);
@@ -585,7 +593,7 @@ public class GlpkTest {
 		assertEquals(3, obj.getConstraintCount());
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
+		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, true, 1.0E-4, false, 0, 0, true,
 				false, null, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);

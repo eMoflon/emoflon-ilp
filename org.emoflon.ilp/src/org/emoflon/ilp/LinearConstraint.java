@@ -124,7 +124,7 @@ public class LinearConstraint implements NormalConstraint {
 		// f_i != k_i <=> (f_i + psi_i >= k_i) /\ (f_i - psi'_i <= k_i)
 		case NOT_EQUAL:
 			// 1: psi_i + psi'_i >= 2 * epsilon
-			LinearConstraint one = new LinearConstraint(Operator.GREATER_OR_EQUAL, 2 * this.epsilon);
+			LinearConstraint one = new LinearConstraint(Operator.GREATER_OR_EQUAL, 2 * this.epsilon, this.epsilon);
 			RealVariable psi = new RealVariable("psi_".concat(copy.toString()));
 			RealVariable psiPrime = new RealVariable("psiPrime_".concat(copy.toString()));
 
@@ -142,17 +142,18 @@ public class LinearConstraint implements NormalConstraint {
 			sosVars.add(psi);
 			sosVars.add(psiPrime);
 			SOS1Constraint sos = new SOS1Constraint(sosVars);
+			sos.setEpsilon(this.epsilon);
 			substitute.add(sos);
 
 			// 4: f_i + psi_i > k_i -> f_i + psi_i >= k_i + epsilon
 			LinearConstraint left = new LinearConstraint(this.getLhsTerms(), Operator.GREATER_OR_EQUAL,
-					this.getRhs() + this.epsilon);
+					this.getRhs() + this.epsilon, this.epsilon);
 			left.addTerm(psi, 1.0);
 			substitute.add(left);
 
 			// 5: f_i - psi'_i < k_i -> f_i - psi'_i <= k_i - epsilon
 			LinearConstraint right = new LinearConstraint(this.getLhsTerms(), Operator.LESS_OR_EQUAL,
-					this.getRhs() - this.epsilon);
+					this.getRhs() - this.epsilon, this.epsilon);
 			right.addTerm(psiPrime, -1.0);
 			substitute.add(right);
 
