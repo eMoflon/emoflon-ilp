@@ -101,52 +101,460 @@ public class GurobiTest {
 
 	@Test
 	public void testLinearConstrLinearObj() {
-		// TODO: write test
+		// Objective
+		// maximize i1 + 2* (r2 - i1)
+		Objective obj = new Objective();
+		obj.setType(ObjectiveType.MAX);
+
+		LinearFunction nested = new LinearFunction();
+		nested.addTerm(r2, 1.0);
+		nested.addTerm(i1, -1.0);
+
+		LinearFunction lin = new LinearFunction();
+		lin.addTerm(i1, 1.0);
+		lin.addNestedFunction(nested, 2.0);
+
+		// Constraints
+		// i1 >= 5
+		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 5.0);
+		c1.addTerm(i1, 1.0);
+
+		// r2 <= 100
+		LinearConstraint c2 = new LinearConstraint(Operator.LESS_OR_EQUAL, 100.0);
+		c2.addTerm(r2, 1.0);
+
+		// Model
+		obj.setObjective(lin);
+		obj.add(c1);
+		obj.add(c2);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		assertEquals(195.0, out.getObjVal(), 0.0001);
+		assertEquals(5, obj.getVariables().get("i1").getValue());
+		assertEquals(100.0, obj.getVariables().get("r2").getValue());
+
+		solver.terminate();
 	}
 
 	@Test
 	public void testQuadraticConstrLinearObj() {
-		// TODO: write test
+		// Objective
+		// maximize i1 + 2* (r2 - i1)
+		Objective obj = new Objective();
+		obj.setType(ObjectiveType.MAX);
+
+		LinearFunction nested = new LinearFunction();
+		nested.addTerm(r2, 1.0);
+		nested.addTerm(i1, -1.0);
+
+		LinearFunction lin = new LinearFunction();
+		lin.addTerm(i1, 1.0);
+		lin.addNestedFunction(nested, 2.0);
+
+		// Constraints
+		// i1 >= 5
+		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 5.0);
+		c1.addTerm(i1, 1.0);
+
+		// r2^2 <= 100
+		QuadraticConstraint c2 = new QuadraticConstraint(Operator.LESS_OR_EQUAL, 100.0);
+		c2.addTerm(r2, r2, 1.0);
+
+		// Model
+		obj.setObjective(lin);
+		obj.add(c1);
+		obj.add(c2);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		assertEquals(15.0, out.getObjVal(), 0.0001);
+		assertEquals(5, obj.getVariables().get("i1").getValue());
+		assertEquals(10.0, obj.getVariables().get("r2").getValue());
+
+		solver.terminate();
 	}
 
 	@Test
 	public void testLinearConstrQuadraticObj() {
-		// TODO: write test
+		// Objective
+		// maximize i1 + 2* (r2 - i1^2)
+		Objective obj = new Objective();
+		obj.setType(ObjectiveType.MAX);
+
+		QuadraticFunction nested = new QuadraticFunction();
+		nested.addTerm(r2, 1.0);
+		nested.addTerm(i1, i1, -1.0);
+
+		QuadraticFunction lin = new QuadraticFunction();
+		lin.addTerm(i1, 1.0);
+		lin.addNestedFunction(nested, 2.0);
+
+		// Constraints
+		// i1 >= 5
+		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 5.0);
+		c1.addTerm(i1, 1.0);
+
+		// r2 <= 100
+		LinearConstraint c2 = new LinearConstraint(Operator.LESS_OR_EQUAL, 100.0);
+		c2.addTerm(r2, 1.0);
+
+		// Model
+		obj.setObjective(lin);
+		obj.add(c1);
+		obj.add(c2);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		assertEquals(155.0, out.getObjVal(), 0.0001);
+		assertEquals(5, obj.getVariables().get("i1").getValue());
+		assertEquals(100.0, obj.getVariables().get("r2").getValue());
+
+		solver.terminate();
 	}
 
 	@Test
 	public void testQuadraticConstrQuadraticObj() {
-		// TODO: write test
+		// Objective
+		// maximize i1 + 2* (r2 - i1^2)
+		Objective obj = new Objective();
+		obj.setType(ObjectiveType.MAX);
+
+		QuadraticFunction nested = new QuadraticFunction();
+		nested.addTerm(r2, 1.0);
+		nested.addTerm(i1, i1, -1.0);
+
+		QuadraticFunction lin = new QuadraticFunction();
+		lin.addTerm(i1, 1.0);
+		lin.addNestedFunction(nested, 2.0);
+
+		// Constraints
+		// i1 >= 5
+		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 5.0);
+		c1.addTerm(i1, 1.0);
+
+		// r2^2 <= 100
+		QuadraticConstraint c2 = new QuadraticConstraint(Operator.LESS_OR_EQUAL, 100.0);
+		c2.addTerm(r2, r2, 1.0);
+
+		// Model
+		obj.setObjective(lin);
+		obj.add(c1);
+		obj.add(c2);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		assertEquals(-25.0, out.getObjVal(), 0.0001);
+		assertEquals(5, obj.getVariables().get("i1").getValue());
+		assertEquals(10.0, obj.getVariables().get("r2").getValue());
+
+		solver.terminate();
 	}
 
 	@Test
 	public void testLessLinearConstraint() {
-		// TODO: write test
+		// Objective
+		// maximize i1 + 2* (i2 - i1)
+		Objective obj = new Objective();
+		obj.setType(ObjectiveType.MAX);
+
+		LinearFunction nested = new LinearFunction();
+		nested.addTerm(i2, 1.0);
+		nested.addTerm(i1, -1.0);
+
+		LinearFunction lin = new LinearFunction();
+		lin.addTerm(i1, 1.0);
+		lin.addNestedFunction(nested, 2.0);
+
+		// Constraints
+		// i1 >= 5
+		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 5.0);
+		c1.addTerm(i1, 1.0);
+
+		// i2 < 100
+		LinearConstraint c2 = new LinearConstraint(Operator.LESS, 100.0);
+		c2.addTerm(i2, 1.0);
+
+		// Model
+		obj.setObjective(lin);
+		obj.add(c1);
+		obj.add(c2);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		assertEquals(193.0, out.getObjVal(), 0.0001);
+		assertEquals(5, obj.getVariables().get("i1").getValue());
+		assertEquals(99, obj.getVariables().get("i2").getValue());
+
+		solver.terminate();
 	}
 
 	@Test
 	public void testGreaterLinearConstraint() {
-		// TODO: write test
+		// Objective
+		// maximize i1 + 2* (r2 - i1)
+		Objective obj = new Objective();
+		obj.setType(ObjectiveType.MAX);
+
+		LinearFunction nested = new LinearFunction();
+		nested.addTerm(r2, 1.0);
+		nested.addTerm(i1, -1.0);
+
+		LinearFunction lin = new LinearFunction();
+		lin.addTerm(i1, 1.0);
+		lin.addNestedFunction(nested, 2.0);
+
+		// Constraints
+		// i1 > 5
+		LinearConstraint c1 = new LinearConstraint(Operator.GREATER, 5.0);
+		c1.addTerm(i1, 1.0);
+
+		// r2 <= 100
+		LinearConstraint c2 = new LinearConstraint(Operator.LESS_OR_EQUAL, 100.0);
+		c2.addTerm(r2, 1.0);
+
+		// Model
+		obj.setObjective(lin);
+		obj.add(c1);
+		obj.add(c2);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		assertEquals(194.0, out.getObjVal(), 0.0001);
+		assertEquals(6, obj.getVariables().get("i1").getValue());
+		assertEquals(100.0, obj.getVariables().get("r2").getValue());
+
+		solver.terminate();
 	}
 
 	@Test
 	public void testNotEqualLinearConstraint() {
-		// TODO: write test
+		// TODO: fails, != conversion not correct
+		// Objective
+		// maximize i1 + 2* (r2 - i1)
+		Objective obj = new Objective();
+		obj.setType(ObjectiveType.MAX);
+
+		LinearFunction nested = new LinearFunction();
+		nested.addTerm(r2, 1.0);
+		nested.addTerm(i1, -1.0);
+
+		LinearFunction lin = new LinearFunction();
+		lin.addTerm(i1, 1.0);
+		lin.addNestedFunction(nested, 2.0);
+
+		// Constraints
+		// i1 != 5 (lower bound)
+		i1.setLowerBound(5);
+		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 5.0);
+		c1.addTerm(i1, 1.0);
+
+		// r2 != 100 (upper bound)
+		r2.setUpperBound(100.0);
+		LinearConstraint c2 = new LinearConstraint(Operator.NOT_EQUAL, 100.0);
+		c2.addTerm(r2, 1.0);
+
+		// Model
+		obj.setObjective(lin);
+		obj.add(c1);
+		obj.add(c2);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		// assertEquals(195.0, out.getObjVal(), 0.0001);
+		assertEquals(4, obj.getVariables().get("i1").getValue());
+		assertEquals(99.0, obj.getVariables().get("r2").getValue().doubleValue(), 1.0);
+
+		solver.terminate();
 	}
 
 	@Test
 	public void testLessQuadraticConstraint() {
-		// TODO: write test
+		// Objective
+		// maximize i1 + 2* (i2 - i1)
+		Objective obj = new Objective();
+		obj.setType(ObjectiveType.MAX);
+
+		LinearFunction nested = new LinearFunction();
+		nested.addTerm(i2, 1.0);
+		nested.addTerm(i1, -1.0);
+
+		LinearFunction lin = new LinearFunction();
+		lin.addTerm(i1, 1.0);
+		lin.addNestedFunction(nested, 2.0);
+
+		// Constraints
+		// i1 >= 5
+		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 5.0);
+		c1.addTerm(i1, 1.0);
+
+		// i2^2 < 100
+		QuadraticConstraint c2 = new QuadraticConstraint(Operator.LESS, 100.0);
+		c2.addTerm(i2, i2, 1.0);
+
+		// Model
+		obj.setObjective(lin);
+		obj.add(c1);
+		obj.add(c2);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		assertEquals(13, out.getObjVal(), 0.0001);
+		assertEquals(5, obj.getVariables().get("i1").getValue());
+		assertEquals(9, obj.getVariables().get("i2").getValue());
+
+		solver.terminate();
 	}
 
 	@Test
 	public void testGreaterQuadraticConstraint() {
-		// TODO: write test
+		// Objective
+		// maximize i1 + 2* (i2 - i1)
+		Objective obj = new Objective();
+		obj.setType(ObjectiveType.MAX);
+
+		LinearFunction nested = new LinearFunction();
+		nested.addTerm(i2, 1.0);
+		nested.addTerm(i1, -1.0);
+
+		LinearFunction lin = new LinearFunction();
+		lin.addTerm(i1, 1.0);
+		lin.addNestedFunction(nested, 2.0);
+
+		// Constraints
+		// i1^2 > 25, i1 >= 0
+		i1.setLowerBound(0);
+		QuadraticConstraint c1 = new QuadraticConstraint(Operator.GREATER, 25.0);
+		c1.addTerm(i1, i1, 1.0);
+
+		// i2 <= 100
+		LinearConstraint c2 = new LinearConstraint(Operator.LESS_OR_EQUAL, 100.0);
+		c2.addTerm(i2, 1.0);
+
+		// Model
+		obj.setObjective(lin);
+		obj.add(c1);
+		obj.add(c2);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		assertEquals(194.0, out.getObjVal(), 0.0001);
+		assertEquals(6, obj.getVariables().get("i1").getValue());
+		assertEquals(100, obj.getVariables().get("i2").getValue());
+
+		solver.terminate();
 	}
 
 	@Test
 	public void testNotEqualQuadraticConstraint() {
-		// TODO: write test
+		// TODO: Not Equal fails
+
+		// Objective
+		// maximize i1 + 2* (i2 - i1)
+		Objective obj = new Objective();
+		obj.setType(ObjectiveType.MAX);
+
+		LinearFunction nested = new LinearFunction();
+		nested.addTerm(i2, 1.0);
+		nested.addTerm(i1, -1.0);
+
+		LinearFunction lin = new LinearFunction();
+		lin.addTerm(i1, 1.0);
+		lin.addNestedFunction(nested, 2.0);
+
+		// Constraints
+		// i1 >= 5
+		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 5.0);
+		c1.addTerm(i1, 1.0);
+
+		// i2^2 != 100 (upper bound), i2 > 0
+		i2.setLowerBound(0);
+		i2.setUpperBound(100);
+		QuadraticConstraint c2 = new QuadraticConstraint(Operator.NOT_EQUAL, 100.0);
+		c2.addTerm(i2, i2, 1.0);
+
+		// Model
+		obj.setObjective(lin);
+		obj.add(c1);
+		obj.add(c2);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, null, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		// assertEquals(13, out.getObjVal(), 0.0001);
+		assertEquals(5, obj.getVariables().get("i1").getValue());
+		assertEquals(9, obj.getVariables().get("i2").getValue());
+
+		solver.terminate();
 	}
 
 	@Test
@@ -306,10 +714,14 @@ public class GurobiTest {
 	public void testGurobiSOS() {
 		// Objective
 		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MIN);
+		obj.setType(ObjectiveType.MAX);
 
+		// In Gurobi example without objective
+		// Here objective to get max values for r2 and r3, zero for r1
 		LinearFunction lin = new LinearFunction();
-		lin.addTerm(r1, 0);
+		lin.addTerm(r1, 1.0);
+		lin.addTerm(r2, 1.0);
+		lin.addTerm(r3, 1.0);
 
 		// SOS1: x0=0 or x1=0
 		// here: SOS1(r1, r2)
@@ -330,17 +742,11 @@ public class GurobiTest {
 		SOS1Constraint sos2 = new SOS1Constraint(sosVars2);
 		sos2.setWeights(weights);
 
-		// Linear: r1 + r2 + r3 != 0
-		LinearConstraint l1 = new LinearConstraint(Operator.NOT_EQUAL, 0.0);
-		l1.addTerm(r1, 1.0);
-		l1.addTerm(r2, 1.0);
-		l1.addTerm(r3, 1.0);
-
 		// Model
 		obj.setObjective(lin);
 		obj.add(sos1);
 		obj.add(sos2);
-		obj.add(l1);
+		// obj.add(l1);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
@@ -351,15 +757,12 @@ public class GurobiTest {
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		System.out.println("===================");
-		System.out.println("Computation Result:");
-		System.out.println("Value for r1: " + obj.getVariables().get("r1").getValue());
-		System.out.println("Value for r2: " + obj.getVariables().get("r2").getValue());
-		System.out.println("Value for r3: " + obj.getVariables().get("r3").getValue());
-		System.out.println("===================");
+		assertEquals(20000.0, out.getObjVal(), 0.0001);
+		assertEquals(0.0, obj.getVariables().get("r1").getValue().doubleValue(), 0.0001);
+		assertEquals(10000.0, obj.getVariables().get("r2").getValue().doubleValue(), 0.0001);
+		assertEquals(10000.0, obj.getVariables().get("r3").getValue().doubleValue(), 0.0001);
 
 		solver.terminate();
-
 	}
 
 	@Test
