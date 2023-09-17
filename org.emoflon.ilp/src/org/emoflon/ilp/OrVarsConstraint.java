@@ -3,16 +3,31 @@ package org.emoflon.ilp;
 import java.util.List;
 import java.util.ArrayList;
 
+// Currently only used for Gurobi OrConstraints
+// b_result = or(var1, var2, ..., var_n)
 public class OrVarsConstraint implements GeneralConstraint {
 
 	private List<BinaryVariable> variables;
 	private BinaryVariable result;
 
+	/**
+	 * A constructor for Gurobi Or Constraints of the form binary_result = or(var_1,
+	 * var_2, ..., var_n)
+	 * 
+	 * @param variables The variables to be compared in this constraint.
+	 * @param result    The variable depicting the result.
+	 */
 	public OrVarsConstraint(List<Variable<?>> variables, BinaryVariable result) {
 		this.setVariables(variables);
 		this.setResult(result);
 	}
 
+	/**
+	 * A constructor for Gurobi Or Constraints of the form binary_result = or(var_1,
+	 * var_2, ..., var_n)
+	 * 
+	 * @param result The variable depicting the result.
+	 */
 	public OrVarsConstraint(BinaryVariable result) {
 		this.variables = new ArrayList<BinaryVariable>();
 		this.setResult(result);
@@ -35,6 +50,11 @@ public class OrVarsConstraint implements GeneralConstraint {
 		return result;
 	}
 
+	/**
+	 * Sets the result variable of the constraint.
+	 * 
+	 * @param res New result variable.
+	 */
 	public void setResult(BinaryVariable res) {
 		this.result = res;
 	}
@@ -61,6 +81,5 @@ public class OrVarsConstraint implements GeneralConstraint {
 	// TODO: Translate to normal constraint
 	public List<LinearConstraint> convert() {
 		throw new Error("Not yet implemented!");
-
 	}
 }

@@ -1,5 +1,9 @@
 package org.emoflon.ilp;
 
+/**
+ * This class represents binary variables.
+ *
+ */
 public class BinaryVariable implements Variable<Integer> {
 
 	final private String name;
@@ -8,6 +12,11 @@ public class BinaryVariable implements Variable<Integer> {
 	private int upperBound = 1;
 	private int lowerBound = 0;
 
+	/**
+	 * Constructor for Binary Variable.
+	 * 
+	 * @param name The name of this binary variable.
+	 */
 	public BinaryVariable(final String name) {
 		this.name = name;
 

@@ -3,6 +3,13 @@ package org.emoflon.ilp;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents linear constraints.
+ * 
+ * The terms on the left-hand side are summed up.
+ * 
+ * w_1 * x_1 + w_2 * x_2 + ... (>= | > | = | != | < | <=) rhs
+ */
 public class LinearConstraint implements NormalConstraint {
 
 	private List<Term> lhsTerms = new ArrayList<Term>();
@@ -10,18 +17,41 @@ public class LinearConstraint implements NormalConstraint {
 	private double rhs;
 	private double epsilon = 1.0E-4;
 
+	/**
+	 * A constructor for a Linear Constraint.
+	 * 
+	 * @param lhsTerms A list of the terms (linear!) on the left-hand side of the
+	 *                 constraint.
+	 * @param op       The operator used for this constraint.
+	 * @param rhs      The value on the right-hand side of the constraint.
+	 */
 	public LinearConstraint(List<Term> lhsTerms, Operator op, double rhs) {
 		this.setLhsTerms(lhsTerms);
 		this.setOp(op);
 		this.setRhs(rhs);
 	}
 
+	/**
+	 * A constructor for a Linear Constraint.
+	 * 
+	 * @param op  The operator used for this constraint.
+	 * @param rhs The value on the right-hand side of the constraint.
+	 */
 	public LinearConstraint(Operator op, double rhs) {
 		this.setLhsTerms(new ArrayList<Term>());
 		this.setOp(op);
 		this.setRhs(rhs);
 	}
 
+	/**
+	 * A constructor for a Linear Constraint.
+	 * 
+	 * @param lhsTerms A list of the terms (linear!) on the left-hand side of the
+	 *                 constraint.
+	 * @param op       The operator used for this constraint.
+	 * @param rhs      The value on the right-hand side of the constraint.
+	 * @param epsilon  A small value used for conversion if necessary.
+	 */
 	public LinearConstraint(List<Term> lhsTerms, Operator op, double rhs, double epsilon) {
 		this.setLhsTerms(lhsTerms);
 		this.setOp(op);
@@ -29,6 +59,13 @@ public class LinearConstraint implements NormalConstraint {
 		this.setEpsilon(epsilon);
 	}
 
+	/**
+	 * A constructor for a Linear Constraint.
+	 * 
+	 * @param op      The operator used for this constraint.
+	 * @param rhs     The value on the right-hand side of the constraint.
+	 * @param epsilon A small value used for conversion if necessary.
+	 */
 	public LinearConstraint(Operator op, double rhs, double epsilon) {
 		this.setLhsTerms(new ArrayList<Term>());
 		this.setOp(op);
@@ -36,6 +73,11 @@ public class LinearConstraint implements NormalConstraint {
 		this.setEpsilon(epsilon);
 	}
 
+	/**
+	 * A copy constructor for a Linear Constraint.
+	 * 
+	 * @param linConst The linear constraint to be copied.
+	 */
 	public LinearConstraint(LinearConstraint linConst) {
 		this.setLhsTerms(linConst.lhsTerms);
 		this.setOp(linConst.op);
@@ -61,6 +103,13 @@ public class LinearConstraint implements NormalConstraint {
 		this.lhsTerms.add(term);
 	}
 
+	/**
+	 * Adds a new linear term to the left-hand side of the constraint (weight *
+	 * variable).
+	 * 
+	 * @param var    Variable to be added in the term.
+	 * @param weight Weight of the term.
+	 */
 	public void addTerm(Variable<?> var, double weight) {
 		this.addTerm(new LinearTerm(var, weight));
 	}
@@ -85,10 +134,20 @@ public class LinearConstraint implements NormalConstraint {
 		this.rhs = rhs;
 	}
 
+	/**
+	 * Returns the value of epsilon for this constraint.
+	 * 
+	 * @return Epsilon
+	 */
 	public double getEpsilon() {
 		return epsilon;
 	}
 
+	/**
+	 * Sets the value of epsilon for this constraint.
+	 * 
+	 * @param epsilon A small value used for conversion if necessary.
+	 */
 	public void setEpsilon(double epsilon) {
 		this.epsilon = epsilon;
 	}
@@ -101,6 +160,7 @@ public class LinearConstraint implements NormalConstraint {
 	// Use for converting the operator from < to <=, from > to >= and from != to ???
 	// returns the new LinearConstraint for < and >
 	// returns the new Constraint for !=
+
 	@Override
 	public List<Constraint> convertOperator() {
 		List<Constraint> substitute = new ArrayList<Constraint>();

@@ -3,6 +3,14 @@ package org.emoflon.ilp;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * This class represents quadratic constraints.
+ * 
+ * The terms on the left-hand side can be either linear or quadratic and are
+ * summed up.
+ * 
+ * w_1 * x_1 + w_2 * x_2 + ... (>= | > | = | != | < | <=) rhs
+ */
 public class QuadraticConstraint implements NormalConstraint {
 
 	private List<Term> lhsTerms;
@@ -10,18 +18,41 @@ public class QuadraticConstraint implements NormalConstraint {
 	private double rhs;
 	private double epsilon = 1.0E-4;
 
+	/**
+	 * A constructor for a Quadratic Constraint.
+	 * 
+	 * @param lhsTerms A list of the terms (linear or quadratic) on the left-hand
+	 *                 side of the constraint.
+	 * @param op       The operator used for this constraint.
+	 * @param rhs      The value on the right-hand side of the constraint.
+	 */
 	public QuadraticConstraint(List<Term> lhsTerms, Operator op, double rhs) {
 		this.setLhsTerms(lhsTerms);
 		this.setOp(op);
 		this.setRhs(rhs);
 	}
 
+	/**
+	 * A constructor for a Quadratic Constraint.
+	 * 
+	 * @param op  The operator used for this constraint.
+	 * @param rhs The value on the right-hand side of the constraint.
+	 */
 	public QuadraticConstraint(Operator op, double rhs) {
 		this.setLhsTerms(new ArrayList<Term>());
 		this.setOp(op);
 		this.setRhs(rhs);
 	}
 
+	/**
+	 * A constructor for a Quadratic Constraint.
+	 * 
+	 * @param lhsTerms A list of the terms (linear or quadratic) on the left-hand
+	 *                 side of the constraint.
+	 * @param op       The operator used for this constraint.
+	 * @param rhs      The value on the right-hand side of the constraint.
+	 * @param epsilon  A small value used for conversion if necessary.
+	 */
 	public QuadraticConstraint(List<Term> lhsTerms, Operator op, double rhs, double epsilon) {
 		this.setLhsTerms(lhsTerms);
 		this.setOp(op);
@@ -29,6 +60,13 @@ public class QuadraticConstraint implements NormalConstraint {
 		this.setEpsilon(epsilon);
 	}
 
+	/**
+	 * A constructor for a Quadratic Constraint.
+	 * 
+	 * @param op      The operator used for this constraint.
+	 * @param rhs     The value on the right-hand side of the constraint.
+	 * @param epsilon A small value used for conversion if necessary.
+	 */
 	public QuadraticConstraint(Operator op, double rhs, double epsilon) {
 		this.setLhsTerms(new ArrayList<Term>());
 		this.setOp(op);
@@ -36,6 +74,11 @@ public class QuadraticConstraint implements NormalConstraint {
 		this.setEpsilon(epsilon);
 	}
 
+	/**
+	 * A copy constructor for a Quadratic Constraint.
+	 * 
+	 * @param quadConst The quadratic constraint to be copied.
+	 */
 	public QuadraticConstraint(QuadraticConstraint quadConst) {
 		this.setLhsTerms(quadConst.lhsTerms);
 		this.setOp(quadConst.op);
@@ -58,10 +101,25 @@ public class QuadraticConstraint implements NormalConstraint {
 		this.lhsTerms.add(term);
 	}
 
+	/**
+	 * Adds a new linear term to the left-hand side of the constraint (weight *
+	 * variable).
+	 * 
+	 * @param var    Variable to be added in the term.
+	 * @param weight Weight of the term.
+	 */
 	public void addTerm(Variable<?> var, double weight) {
 		this.lhsTerms.add(new LinearTerm(var, weight));
 	}
 
+	/**
+	 * Adds a new quadratic term to the left-hand side of the constraint (weight *
+	 * variable1 * variable2).
+	 * 
+	 * @param var1   Variable1 to be added in the term.
+	 * @param var2   Variable2 to be added in the term.
+	 * @param weight Weight of the term.
+	 */
 	public void addTerm(Variable<?> var1, Variable<?> var2, double weight) {
 		this.lhsTerms.add(new QuadraticTerm(var1, var2, weight));
 	}
@@ -91,10 +149,20 @@ public class QuadraticConstraint implements NormalConstraint {
 		return ConstraintType.QUADRATIC;
 	}
 
+	/**
+	 * Returns the value of epsilon for this constraint.
+	 * 
+	 * @return Epsilon
+	 */
 	public double getEpsilon() {
 		return epsilon;
 	}
 
+	/**
+	 * Sets the value of epsilon for this constraint.
+	 * 
+	 * @param epsilon A small value used for conversion if necessary.
+	 */
 	public void setEpsilon(double epsilon) {
 		this.epsilon = epsilon;
 	}
@@ -102,6 +170,7 @@ public class QuadraticConstraint implements NormalConstraint {
 	// Use for converting the operator from < to <=, from > to >= and from != to ???
 	// returns the new LinearConstraint for < and >
 	// returns the new Constraint for !=
+
 	@Override
 	public List<Constraint> convertOperator() {
 		List<Constraint> substitute = new ArrayList<Constraint>();
@@ -143,17 +212,18 @@ public class QuadraticConstraint implements NormalConstraint {
 			sosVars.add(psi);
 			sosVars.add(psiPrime);
 			SOS1Constraint sos = new SOS1Constraint(sosVars);
+			sos.setEpsilon(this.epsilon);
 			substitute.add(sos);
 
 			// 4: f_i + psi_i >= k_i
 			QuadraticConstraint left = new QuadraticConstraint(this.getLhsTerms(), Operator.GREATER_OR_EQUAL,
-					this.getRhs());
+					this.getRhs() + this.epsilon, this.epsilon);
 			left.addTerm(psi, 1.0);
 			substitute.add(left);
 
 			// 5: f_i - psi'_i <= k_i
 			QuadraticConstraint right = new QuadraticConstraint(this.getLhsTerms(), Operator.LESS_OR_EQUAL,
-					this.getRhs());
+					this.getRhs() - this.epsilon, this.epsilon);
 			right.addTerm(psiPrime, -1.0);
 			substitute.add(right);
 

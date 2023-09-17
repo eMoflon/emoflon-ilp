@@ -1,14 +1,22 @@
 package org.emoflon.ilp;
 
+/**
+ * This class represents integer variables.
+ *
+ */
 public class IntegerVariable implements Variable<Integer> {
 
 	final private String name;
 	private int value;
 
-	// TODO: Add default bounds! Gips: 10_000
 	private int upperBound = 10_000;
 	private int lowerBound = -10_000;
 
+	/**
+	 * Constructor for Integer Variable.
+	 * 
+	 * @param name The name of this integer variable.
+	 */
 	public IntegerVariable(final String name) {
 		this.name = name;
 

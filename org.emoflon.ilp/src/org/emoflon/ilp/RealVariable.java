@@ -1,14 +1,22 @@
 package org.emoflon.ilp;
 
+/**
+ * This class represents real variables.
+ *
+ */
 public class RealVariable implements Variable<Double> {
 
 	final private String name;
 	private double value;
 
-	// TODO: Add default bounds!
 	private double upperBound = 10_000;
 	private double lowerBound = -10_000;
 
+	/**
+	 * Constructor for Real Variable.
+	 * 
+	 * @param name The name of this real variable.
+	 */
 	public RealVariable(final String name) {
 		this.name = name;
 
