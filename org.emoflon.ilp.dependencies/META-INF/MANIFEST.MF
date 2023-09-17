@@ -9,5 +9,5 @@ Bundle-ClassPath: gurobi.jar,
  gurobi-javadoc.jar
 Export-Package: gurobi;version="10.0.1",
  org.gnu.glpk
-Bundle-RequiredExecutionEnvironment: JavaSE-18
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: org.emoflon.ilp.dependencies
