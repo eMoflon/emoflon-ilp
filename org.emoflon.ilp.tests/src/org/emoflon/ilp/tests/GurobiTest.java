@@ -411,6 +411,13 @@ public class GurobiTest {
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
+		System.out.println("===================");
+		System.out.println("Computation Result:");
+		for (String varName : obj.getVariables().keySet()) {
+			System.out.println("Value for " + varName + ": " + obj.getVariables().get(varName).getValue());
+		}
+		System.out.println("===================");
+
 		assertEquals(193.99, out.getObjVal(), 0.01);
 		assertEquals(6, obj.getVariables().get("i1").getValue());
 		assertEquals(99.99, obj.getVariables().get("r2").getValue().doubleValue(), 0.01);
@@ -865,7 +872,7 @@ public class GurobiTest {
 		lin.addTerm(b1, 1.0);
 		lin.addTerm(i1, 1.0);
 		lin.addTerm(r1, -1.0);
-		lin.addTerm(i1, 1.0);
+		lin.addTerm(i2, 1.0);
 
 		// Constraints
 		// i1 != 10000
@@ -900,13 +907,9 @@ public class GurobiTest {
 
 		System.out.println("===================");
 		System.out.println("Computation Result:");
-		System.out.println("Value for i1: " + obj.getVariables().get("i1").getValue());
-		System.out.println("Value for r1: " + obj.getVariables().get("r1").getValue());
-		System.out.println("Value for i2: " + obj.getVariables().get("i2").getValue());
-		// System.out.println("Value for psi: " +
-		// obj.getVariables().get("psi_org.emoflon.ilp.LinearConstraint@76536c53").getValue());
-		// System.out.println("Value for psi_prime: " +
-		// obj.getVariables().get("psiPrime_org.emoflon.ilp.LinearConstraint@76536c53").getValue());
+		for (String varName : obj.getVariables().keySet()) {
+			System.out.println("Value for " + varName + ": " + obj.getVariables().get(varName).getValue());
+		}
 		System.out.println("===================");
 
 		assertEquals(5, obj.getConstraintCount());

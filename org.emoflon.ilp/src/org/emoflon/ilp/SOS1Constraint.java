@@ -99,28 +99,23 @@ public class SOS1Constraint implements Constraint {
 			BinaryVariable binVar = new BinaryVariable("sos_binary_" + var.getName());
 			this.binary.add(binVar);
 			binaryTerms.add(new LinearTerm(binVar, 1));
+
+			// match variable to take non-zero value
+			// v_i <= c * s_i -> v_i - c * s_i <= 0
+			LinearConstraint linRight = new LinearConstraint(Operator.LESS_OR_EQUAL, 0.0);
+			linRight.addTerm(var, 1.0);
+			linRight.addTerm(binVar, -bound);
+			substitution.add(linRight);
+
+			// v_i >= -c * s_i -> v_i + c * s_i >= 0
+			LinearConstraint linLeft = new LinearConstraint(Operator.GREATER_OR_EQUAL, 0.0);
+			linLeft.addTerm(binVar, bound);
+			linLeft.addTerm(var, 1);
+			substitution.add(linLeft);
 		}
 		// at most one binary variable s_i is non-zero -> the sum of all binary
 		// variables is <= 1
-		substitution.add(new LinearConstraint(binaryTerms, Operator.LESS_OR_EQUAL, 1.0, this.epsilon));
-
-		// match variable to take non-zero value
-		int i = 0;
-		for (Variable<?> var : this.variables) {
-			// v_i <= c * s_i
-			LinearConstraint linRight = new LinearConstraint(Operator.LESS_OR_EQUAL, 0.0, this.epsilon);
-			linRight.addTerm(var, 1.0);
-			linRight.addTerm(this.binary.get(i), -bound);
-			substitution.add(linRight);
-
-			// v_i >= -c * s_i
-			LinearConstraint linLeft = new LinearConstraint(Operator.GREATER_OR_EQUAL, 0.0, this.epsilon);
-			linLeft.addTerm(this.binary.get(i), bound);
-			linLeft.addTerm(var, 1.0);
-			substitution.add(linLeft);
-
-			i++;
-		}
+		substitution.add(new LinearConstraint(binaryTerms, Operator.LESS_OR_EQUAL, 1.0));
 
 		return substitution;
 	}

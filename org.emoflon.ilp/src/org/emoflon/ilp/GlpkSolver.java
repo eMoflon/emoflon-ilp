@@ -309,7 +309,7 @@ public class GlpkSolver implements Solver {
 		} else if (timeOut) {
 			status = SolverStatus.TIME_OUT;
 			solutionCount = solved ? 1 : 0;
-		} else if (infeasible || noFeasibleSol || modelStatus == 1) {
+		} else if (infeasible || noFeasibleSol || modelStatus == 1 || mip_noFeasibleSol) {
 			status = SolverStatus.INFEASIBLE;
 			solutionCount = 0;
 		} else if (invalid) {
