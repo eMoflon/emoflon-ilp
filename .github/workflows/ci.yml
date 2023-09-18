@@ -31,5 +31,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Install GLPK
+        run: |
+          sudo apt-get install -yq glpk-utils libglpk-dev glpk-doc libglpk-java libglpk40
+          sudo cp libglpk_java.* /usr/lib/
       - name: Test with Maven
         run: mvn --batch-mode --update-snapshots clean -Dtest=GlpkTest -DfailIfNoTests=false verify
