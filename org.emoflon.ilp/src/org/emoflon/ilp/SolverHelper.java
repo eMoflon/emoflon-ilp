@@ -1,9 +1,19 @@
 package org.emoflon.ilp;
 
+/**
+ * This is a helper class for keeping the solver easily parameterized.
+ *
+ */
 public class SolverHelper {
 	// TODO
 	private Solver solver;
 
+	/**
+	 * The constructor for the solver helper.
+	 * 
+	 * @param config The solver config used for configuring the parameters of the
+	 *               solver.
+	 */
 	public SolverHelper(SolverConfig config) {
 		switch (config.solver()) {
 		case GUROBI:
@@ -20,6 +30,11 @@ public class SolverHelper {
 		}
 	}
 
+	/**
+	 * Returns the solver set by this helper.
+	 * 
+	 * @return The current solver set by the configuration.
+	 */
 	public Solver getSolver() {
 		return this.solver;
 	}

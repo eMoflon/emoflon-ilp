@@ -30,7 +30,6 @@ import org.emoflon.ilp.SolverOutput;
 import org.emoflon.ilp.Term;
 import org.emoflon.ilp.Variable;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class GlpkTest {
@@ -271,7 +270,7 @@ public class GlpkTest {
 
 		solver.terminate();
 	}
-	
+
 	@Test
 	public void testLessLinearConstraint() {
 		System.out.println("--------- testLessLinearConstraint() ---------");
@@ -317,7 +316,7 @@ public class GlpkTest {
 
 		solver.terminate();
 	}
-	
+
 	@Test
 	public void testGreaterLinearConstraint() {
 		System.out.println("--------- testGreaterLinearConstraint() ---------");
@@ -363,7 +362,7 @@ public class GlpkTest {
 
 		solver.terminate();
 	}
-	
+
 	@Test
 	public void testNotEqualLinearConstraint() {
 		System.out.println("--------- testNotEqualLinearConstraint() ---------");
@@ -385,14 +384,14 @@ public class GlpkTest {
 		i1.setLowerBound(5);
 		LinearConstraint c1 = new LinearConstraint(Operator.NOT_EQUAL, 5.0);
 		c1.addTerm(i1, 1.0);
-		
+
 		c1.setEpsilon(1.0);
 
 		// r2 != 100 (upper bound)
 		r2.setUpperBound(100.0);
 		LinearConstraint c2 = new LinearConstraint(Operator.NOT_EQUAL, 100.0);
 		c2.addTerm(r2, 1.0);
-		
+
 		c2.setEpsilon(1.0);
 
 		// Model
@@ -415,7 +414,6 @@ public class GlpkTest {
 
 		solver.terminate();
 	}
-
 
 	@Test
 	public void testBasicSOS1Constraint() {
@@ -564,8 +562,8 @@ public class GlpkTest {
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
-		
-		//lin.addTerm(i1, 1.0);
+
+		// lin.addTerm(i1, 1.0);
 		lin.addTerm(r1, -1.0);
 		lin.addTerm(i2, 1.0);
 
@@ -573,7 +571,7 @@ public class GlpkTest {
 		// i1 != 5
 		LinearConstraint c1 = new LinearConstraint(Operator.NOT_EQUAL, 5.0);
 		c1.addTerm(i1, 1.0);
-		
+
 		c1.setEpsilon(1.0);
 
 		// r1 > 1

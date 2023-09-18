@@ -61,7 +61,7 @@ public class OrVarsConstraint implements GeneralConstraint {
 
 	@Override
 	public ConstraintType getType() {
-		return ConstraintType.OR;
+		return ConstraintType.GUROBI_OR;
 	}
 
 	@Override

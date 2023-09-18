@@ -3,8 +3,27 @@ package org.emoflon.ilp;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * This class represents linear functions. A linear function can consist of
+ * multiple terms (weight * variable), constants and nested weighted linear
+ * functions (weight * function).
+ * 
+ * function = term1 + term2 + ... + constant1 + constant2 + ... + w1 * func1 +
+ * w2 * func2 + ...
+ *
+ */
 public class LinearFunction extends Function {
 
+	/**
+	 * A constructor for a linear function.
+	 * 
+	 * function = term1 + term2 + ... + constant1 + constant2 + ... + w1 * func1 +
+	 * w2 * func2 + ...
+	 * 
+	 * @param terms           A list of linear terms.
+	 * @param constantTerms   A list of constants.
+	 * @param nestedFunctions A list of nested weighted linear functions.
+	 */
 	public LinearFunction(List<Term> terms, List<Constant> constantTerms, List<WeightedFunction> nestedFunctions) {
 		if (terms.stream().anyMatch(QuadraticTerm.class::isInstance)) {
 			throw new IllegalArgumentException("A linear function is not allowed to contain any quadratic terms!");
@@ -18,12 +37,21 @@ public class LinearFunction extends Function {
 		this.nestedFunctions = nestedFunctions;
 	}
 
+	/**
+	 * A constructor for a completely empty linear function.
+	 */
 	public LinearFunction() {
 		this.terms = new ArrayList<Term>();
 		this.constantTerms = new ArrayList<Constant>();
 		this.nestedFunctions = new ArrayList<WeightedFunction>();
 	}
 
+	/**
+	 * A constructor for a linear function.
+	 * 
+	 * @param terms         A list of linear terms.
+	 * @param constantTerms A list of constants.
+	 */
 	public LinearFunction(List<Term> terms, List<Constant> constantTerms) {
 		this.terms = terms;
 		this.constantTerms = constantTerms;

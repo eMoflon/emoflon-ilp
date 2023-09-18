@@ -10,23 +10,38 @@ public abstract class Term {
 		this.weight = weight;
 	}
 
-	public Term(Variable<?> var1, Variable<?> var2, double weight) {
-		this.var1 = var1;
-		this.weight = weight;
-	}
-
+	/**
+	 * Returns the first variable of this term.
+	 * 
+	 * @return Current variable 1 of this term.
+	 */
 	public Variable<?> getVar1() {
 		return var1;
 	}
 
+	/**
+	 * Sets the first variable of this term.
+	 * 
+	 * @param var New variable 1 of this term.
+	 */
 	public void setVar1(Variable<?> var) {
 		this.var1 = var;
 	}
 
+	/**
+	 * Returns the weight with which the variable is multiplied in this term.
+	 * 
+	 * @return Current value of the weight.
+	 */
 	public double getWeight() {
 		return weight;
 	}
 
+	/**
+	 * Sets the weight with which the variable is multiplied in this term.
+	 * 
+	 * @param weight New value of the weight.
+	 */
 	public void setWeight(double weight) {
 		this.weight = weight;
 	}

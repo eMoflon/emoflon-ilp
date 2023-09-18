@@ -15,6 +15,11 @@ import gurobi.GRBModel;
 import gurobi.GRBQuadExpr;
 import gurobi.GRBVar;
 
+/**
+ * This class represents the Gurobi Solver. Here the problem formulation gets
+ * translated to be comprehensible for Gurobi and solved.
+ *
+ */
 public class GurobiSolver implements Solver {
 
 	private GRBEnv env;
@@ -25,6 +30,11 @@ public class GurobiSolver implements Solver {
 	private Objective objective;
 	private SolverOutput result;
 
+	/**
+	 * The constructor for GurobiSolver.
+	 * 
+	 * @param config The configuration parameters used by this solver.
+	 */
 	public GurobiSolver(final SolverConfig config) {
 		try {
 			this.config = config;
@@ -35,6 +45,11 @@ public class GurobiSolver implements Solver {
 
 	}
 
+	/**
+	 * Initializes the solver with the parameters given in the configuration.
+	 * 
+	 * @throws GRBException
+	 */
 	private void init() throws GRBException {
 		// create new Gurobi Environment
 		env = new GRBEnv("Gurobi_ILP.log");
@@ -100,6 +115,11 @@ public class GurobiSolver implements Solver {
 		objective.getSOSConstraints().forEach(it -> translateSOSConstraint(it));
 	}
 
+	/**
+	 * Translates the variables to Gurobi variables.
+	 * 
+	 * @param vars A map of the variables to be translated.
+	 */
 	private void translateVariables(Map<String, Variable<?>> vars) {
 		GRBVar temp = null;
 		for (final String name : vars.keySet()) {
@@ -122,6 +142,9 @@ public class GurobiSolver implements Solver {
 		}
 	}
 
+	/**
+	 * Translates the objective function and sets the Gurobi objective.
+	 */
 	private void translateObjective() {
 		// Translate Objective to GRB
 		// TODO: (future work) nested Functions OR use "expand" in
@@ -174,6 +197,12 @@ public class GurobiSolver implements Solver {
 		}
 	}
 
+	/**
+	 * Translates a normal constraint into a Gurobi constraint and adds it to the
+	 * model.
+	 * 
+	 * @param constraint Normal constraint to be translated and added.
+	 */
 	private void translateNormalConstraint(NormalConstraint constraint) {
 		List<Term> lhs = constraint.getLhsTerms();
 		char op = translateOp(constraint.getOp());
@@ -210,10 +239,20 @@ public class GurobiSolver implements Solver {
 		case SOS:
 			throw new Error("SOS Constraints are a different subclass of constraints!");
 		case OR:
-			throw new Error("Or Constraints are general constraints!");
+			throw new Error("Or Constraints are not normal constraints!");
+		case GUROBI_OR:
+			throw new Error("Gurobi Or Constraints are general constraints!");
+		default:
+			break;
 		}
 	}
 
+	/**
+	 * Translates a general constraint into a Gurobi General Constraint and adds it
+	 * to the model.
+	 * 
+	 * @param constraint General constraint to be translated and added.
+	 */
 	private void translateGeneralConstraint(GeneralConstraint constraint) {
 		List<? extends Variable<?>> var = constraint.getVariables();
 		Variable<?> res = constraint.getResult();
@@ -226,6 +265,8 @@ public class GurobiSolver implements Solver {
 		case SOS:
 			throw new Error("SOS Constraints are not general constraints!");
 		case OR:
+			throw new Error("Or Constraints are not general constraints!");
+		case GUROBI_OR:
 			// TODO: add Gurobi OR constraints
 			GRBVar[] grbVars = new GRBVar[var.size()];
 			try {
@@ -242,9 +283,17 @@ public class GurobiSolver implements Solver {
 			} catch (GRBException e) {
 				throw new RuntimeException(e);
 			}
+		default:
+			break;
 		}
 	}
 
+	/**
+	 * Translates a SOS constraint into a Gurobi SOS constraint and adds it to the
+	 * model.
+	 * 
+	 * @param constraint SOS constraint to be translated and added.
+	 */
 	private void translateSOSConstraint(SOS1Constraint constraint) {
 		List<Variable<?>> var = constraint.getVariables();
 		GRBVar[] sosVars = new GRBVar[var.size()];
@@ -272,6 +321,12 @@ public class GurobiSolver implements Solver {
 		}
 	}
 
+	/**
+	 * Translates a binary variable into a Gurobi variable and adds it to the model.
+	 * 
+	 * @param variable Binary variable to be translated and added.
+	 * @return Translated Gurobi variable.
+	 */
 	private GRBVar translateBinaryVariable(BinaryVariable variable) {
 		try {
 			if (variable.getLowerBound() > variable.getUpperBound()) {
@@ -285,6 +340,13 @@ public class GurobiSolver implements Solver {
 		}
 	}
 
+	/**
+	 * Translates an integer variable into a Gurobi variable and adds it to the
+	 * model.
+	 * 
+	 * @param variable Integer variable to be translated and added.
+	 * @return Translated Gurobi variable.
+	 */
 	private GRBVar translateIntegerVariable(IntegerVariable variable) {
 		try {
 			if (variable.getLowerBound() > variable.getUpperBound()) {
@@ -302,6 +364,12 @@ public class GurobiSolver implements Solver {
 		}
 	}
 
+	/**
+	 * Translates a real variable into a Gurobi variable and adds it to the model.
+	 * 
+	 * @param variable Real variable to be translated and added.
+	 * @return Translated Gurobi variable.
+	 */
 	private GRBVar translateRealVariable(RealVariable variable) {
 		try {
 			if (variable.getLowerBound() > variable.getUpperBound()) {
@@ -319,6 +387,12 @@ public class GurobiSolver implements Solver {
 		}
 	}
 
+	/**
+	 * Translates the operator used in constraints into a Gurobi operator.
+	 * 
+	 * @param op Operator to be translated.
+	 * @return Gurobi operator value.
+	 */
 	private char translateOp(Operator op) {
 		switch (op) {
 		case LESS:
@@ -440,10 +514,6 @@ public class GurobiSolver implements Solver {
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	public Objective getObjective() {
-		return this.objective;
 	}
 
 }

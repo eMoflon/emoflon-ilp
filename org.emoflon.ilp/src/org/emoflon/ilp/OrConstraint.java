@@ -4,55 +4,121 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This class represents or constraints containing linear constraints.
+ * 
+ * Or(lin_constr_1, lin_constr_2, ..., lin_constr_n)
+ *
+ */
 public class OrConstraint implements Constraint {
 
 	private List<LinearConstraint> constraints;
 	private double epsilon = 1.0E-4;
 
+	/**
+	 * A constructor for an Or constraint.
+	 * 
+	 * @param constraints List of linear constraints affected by this constraint.
+	 */
 	public OrConstraint(List<LinearConstraint> constraints) {
 		this.setConstraints(constraints);
 	}
 
+	/**
+	 * A constructor for an empty Or constraint.
+	 */
 	public OrConstraint() {
 		this.constraints = new ArrayList<LinearConstraint>();
 	}
 
+	/**
+	 * A constructor for an Or constraint. Epsilon is a small value that is used
+	 * when converting the Or constraint into normal constraints and SOS1
+	 * constraints.
+	 * 
+	 * @param constraints List of linear constraints affected by this constraint.
+	 * @param epsilon     Value of epsilon, used for converting this constraint.
+	 */
 	public OrConstraint(List<LinearConstraint> constraints, double epsilon) {
 		this.setConstraints(constraints);
 		this.setEpsilon(epsilon);
 	}
 
+	/**
+	 * A constructor for an Or constraint. Epsilon is a small value that is used
+	 * when converting the Or constraint into normal constraints and SOS1
+	 * constraints.
+	 * 
+	 * @param epsilon Value of epsilon, used for converting this constraint.
+	 */
 	public OrConstraint(double epsilon) {
 		this.constraints = new ArrayList<LinearConstraint>();
 		this.setEpsilon(epsilon);
 	}
 
+	/**
+	 * Returns the linear constraints affected by this constraint.
+	 * 
+	 * @return List of linear constraints affected by this constraint.
+	 */
 	public List<LinearConstraint> getConstraints() {
 		return this.constraints;
 	}
 
+	/**
+	 * Adds multiple linear constraints to the constraints affected by this Or
+	 * constraint.
+	 * 
+	 * @param constraints List of linear constraints to be added.
+	 */
 	public void setConstraints(List<LinearConstraint> constraints) {
-		this.constraints = constraints;
+		this.constraints.addAll(constraints);
 	}
 
+	/**
+	 * Returns the constraint type of this constraint.
+	 * 
+	 * @return Constraint type (OR).
+	 */
 	public ConstraintType getType() {
 		return ConstraintType.OR;
 	}
 
+	/**
+	 * Adds a single linear constraint to the constraints affected by this Or
+	 * constraint.
+	 * 
+	 * @param constr Linear constraint to be added.
+	 */
 	public void addConstraint(LinearConstraint constr) {
 		constraints.add(constr);
 	}
 
+	/**
+	 * Returns the epsilon value used for converting this Or constraint.
+	 * 
+	 * @return Current epsilon value used for conversion.
+	 */
 	public double getEpsilon() {
 		return epsilon;
 	}
 
+	/**
+	 * Sets the epsilon value used for converting this Or constraint. This should be
+	 * a small number (default is 1.0E-4).
+	 * 
+	 * @param epsilon New epsilon value used for conversion.
+	 */
 	public void setEpsilon(double epsilon) {
 		this.epsilon = epsilon;
 	}
 
-	// Translate to normal (incl. SOS1) constraints
 	// TODO: negation of constraints?
+	/**
+	 * Converts this Or constraint into a set of linear and SOS1 constraints.
+	 * 
+	 * @return List of constraints to substitute this Or constraint.
+	 */
 	public List<Constraint> convert() {
 		List<Constraint> substitute = new ArrayList<Constraint>();
 		LinearConstraint binary_sub = new LinearConstraint(Operator.GREATER, 0.0);

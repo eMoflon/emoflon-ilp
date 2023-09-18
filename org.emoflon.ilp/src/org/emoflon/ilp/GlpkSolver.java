@@ -9,6 +9,11 @@ import org.gnu.glpk.SWIGTYPE_p_int;
 import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
 
+/**
+ * This class represents the Glpk Solver. Here the problem formulation gets
+ * translated to be comprehensible for Glpk and solved.
+ *
+ */
 public class GlpkSolver implements Solver {
 
 	private glp_prob model;
@@ -19,12 +24,20 @@ public class GlpkSolver implements Solver {
 	private SolverOutput result;
 	private Map<String, Integer> indexNameMap;
 
+	/**
+	 * The constructor for GlpkSolver.
+	 * 
+	 * @param config The configuration parameters used by this solver.
+	 */
 	public GlpkSolver(final SolverConfig config) {
 		this.config = config;
 		this.indexNameMap = new HashMap<>();
 		init();
 	}
 
+	/**
+	 * Initializes the solver with the parameters given in the configuration.
+	 */
 	private void init() {
 		GLPK.glp_free_env();
 
@@ -79,7 +92,7 @@ public class GlpkSolver implements Solver {
 
 		// Substitute <, >, != Operators
 		objective.substituteOperators();
-		
+
 		// Substitute SOS1 Constraints
 		objective.substituteSOS1();
 
@@ -94,6 +107,11 @@ public class GlpkSolver implements Solver {
 
 	}
 
+	/**
+	 * Translates the variables to Glpk variables.
+	 * 
+	 * @param vars A map of the variables to be translated.
+	 */
 	private void translateVariables(Map<String, Variable<?>> vars) {
 		if (vars.size() == 0) {
 			return;
@@ -137,6 +155,14 @@ public class GlpkSolver implements Solver {
 		}
 	}
 
+	/**
+	 * Translates a single variable and sets the column values for the glpk problem.
+	 * 
+	 * @param index   Index of this variable.
+	 * @param varType Type of this variable (binary, integer, continuous).
+	 * @param lb      Lower bound of this variable.
+	 * @param ub      Upper bound of this variable.
+	 */
 	private void translateVariable(int index, int varType, double lb, double ub) {
 		if (lb > ub) {
 			throw new IllegalArgumentException("The lower bound is not allowed to be greater than the upper bound.");
@@ -149,6 +175,9 @@ public class GlpkSolver implements Solver {
 		}
 	}
 
+	/**
+	 * Translates the objective function and sets the glpk objective.
+	 */
 	private void translateObjective() {
 		if (objective == null) {
 			return;
@@ -189,6 +218,9 @@ public class GlpkSolver implements Solver {
 		}
 	}
 
+	/**
+	 * Translates the constraints and sets the row values of the glpk problem.
+	 */
 	private void translateConstraints() {
 		if (objective.getConstraintCount() != objective.getTotalConstraintCount()) {
 			throw new Error("All Constraints should be linear constraints!");
@@ -228,6 +260,12 @@ public class GlpkSolver implements Solver {
 		}
 	}
 
+	/**
+	 * Translates the operator used in constraints into a glpk operator.
+	 * 
+	 * @param op Operator to be translated.
+	 * @return Glpk operator value.
+	 */
 	private int translateOp(Operator op) {
 		switch (op) {
 		case LESS:
@@ -270,7 +308,9 @@ public class GlpkSolver implements Solver {
 
 		// not a return value that glp_intopt returns
 		// TODO
+		// invalid basis
 		final boolean invalid = solveStatus == GLPK.GLP_EBADB;
+		// no primal feasible solution
 		final boolean noPrimalFeasSol = solveStatus == GLPK.GLP_ENOPFS;
 
 		// unable to start search, LP relaxation of MIP prob has no dual feasible
@@ -286,13 +326,13 @@ public class GlpkSolver implements Solver {
 		final boolean infeasible = modelStatus == GLPK.GLP_INFEAS;
 		final boolean noFeasibleSol = modelStatus == GLPK.GLP_NOFEAS;
 		final boolean unbounded = modelStatus == GLPK.GLP_UNBND;
-		final boolean undefined = modelStatus == GLPK.GLP_UNDEF;
+		// final boolean undefined = modelStatus == GLPK.GLP_UNDEF;
 
 		// mip_status returns the status of a MIP solution found by the MIP solver
 		// GLP_UNDEF, GLP_OPT, GLP_FEAS, GLP_NOFEAS
 		final int mipModelStatus = GLPK.glp_mip_status(model);
 
-		final boolean mip_undefined = mipModelStatus == GLPK.GLP_UNDEF;
+		// final boolean mip_undefined = mipModelStatus == GLPK.GLP_UNDEF;
 		final boolean mip_optimal = mipModelStatus == GLPK.GLP_OPT;
 		final boolean mip_feasible = mipModelStatus == GLPK.GLP_FEAS;
 		final boolean mip_noFeasibleSol = mipModelStatus == GLPK.GLP_NOFEAS;
@@ -309,12 +349,15 @@ public class GlpkSolver implements Solver {
 		} else if (timeOut) {
 			status = SolverStatus.TIME_OUT;
 			solutionCount = solved ? 1 : 0;
-		} else if (infeasible || noFeasibleSol || modelStatus == 1 || mip_noFeasibleSol) {
+		} else if (infeasible || noPrimalFeasSol || noFeasibleSol || modelStatus == 1 || mip_noFeasibleSol
+				|| noDualFeasSol) {
 			status = SolverStatus.INFEASIBLE;
 			solutionCount = 0;
 		} else if (invalid) {
 			status = SolverStatus.INF_OR_UNBD;
 			solutionCount = 0;
+		} else if (feasible || mip_feasible) {
+			status = SolverStatus.FEASIBLE;
 		} else {
 			throw new RuntimeException("GLPK: Solver status could not be determined.");
 		}
