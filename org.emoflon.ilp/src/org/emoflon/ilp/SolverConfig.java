@@ -21,16 +21,14 @@ package org.emoflon.ilp;
  *                           to true!).
  * @param debugOutputEnabled Set to true, if debug output should be written into
  *                           a file.
- * @param debugOutputPath    Path to the debug output file.
  * @param outputEnabled      Set to true, if the problem should be written into
- *                           a file (e.g. with the file ending ".lp").
+ *                           a file (e.g. with the file ending ".lp")
  * @param outputPath         Path to the output file.
  *
  */
 public record SolverConfig(SolverType solver, boolean timeoutEnabled, double timeout, boolean randomSeedEnabled,
 		int randomSeed, boolean toleranceEnabled, double tolerance, boolean boundsEnabled, int lowerBound,
-		int upperBound, boolean presolveEnabled, boolean debugOutputEnabled, String debugOutputPath,
-		boolean outputEnabled, String outputPath) {
+		int upperBound, boolean presolveEnabled, boolean debugOutputEnabled, boolean outputEnabled, String outputPath) {
 
 	public enum SolverType {
 		GUROBI, CPLEX, GLPK

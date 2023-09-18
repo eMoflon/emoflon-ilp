@@ -62,7 +62,7 @@ public class GurobiSolver implements Solver {
 			env.set(IntParam.Seed, config.randomSeed());
 		}
 		// Output?
-		if (!config.outputEnabled()) {
+		if (!config.debugOutputEnabled()) {
 			env.set(IntParam.OutputFlag, 0);
 		}
 		// Tolerance?

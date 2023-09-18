@@ -99,7 +99,7 @@ public class GlpkTest {
 		// Optimize
 		// TODO: Anmerkung zu presolve = true
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -143,7 +143,7 @@ public class GlpkTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -186,7 +186,7 @@ public class GlpkTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		assertThrows(IllegalArgumentException.class, () -> {
 			solver.buildILPProblem(obj);
@@ -224,7 +224,7 @@ public class GlpkTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		assertThrows(IllegalArgumentException.class, () -> {
 			solver.buildILPProblem(obj);
@@ -262,7 +262,7 @@ public class GlpkTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		assertThrows(IllegalArgumentException.class, () -> {
 			solver.buildILPProblem(obj);
@@ -303,7 +303,7 @@ public class GlpkTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -349,7 +349,7 @@ public class GlpkTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -401,7 +401,7 @@ public class GlpkTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -451,7 +451,7 @@ public class GlpkTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -497,7 +497,7 @@ public class GlpkTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, true, -10, 10, true,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -543,7 +543,7 @@ public class GlpkTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		assertThrows(IllegalArgumentException.class, () -> {
 			solver.buildILPProblem(obj);
@@ -592,7 +592,7 @@ public class GlpkTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, true, 1.0E-4, false, 0, 0, true,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -604,6 +604,52 @@ public class GlpkTest {
 		assertNotEquals(5, obj.getVariables().get("i1").getValue());
 		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() > 1);
 		assertTrue(obj.getVariables().get("i2").getValue().intValue() < 4);
+
+		solver.terminate();
+	}
+	
+	@Test
+	public void testEmptyObjectiveFunction() {
+		// Objective
+		Objective obj = new Objective();
+
+		// Constraints
+		// i1 <= 10
+		LinearConstraint c1 = new LinearConstraint(Operator.LESS_OR_EQUAL, 10);
+		c1.addTerm(i1, 1.0);
+
+		// r1 >= 1
+		LinearConstraint c2 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 1.0);
+		c2.addTerm(r1, 1.0);
+
+		// 2*i2 = 4
+		LinearConstraint c3 = new LinearConstraint(Operator.EQUAL, 4);
+		c3.addTerm(i2, 2.0);
+
+		// Model
+		obj.add(c1);
+		obj.add(c2);
+		obj.add(c3);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
+				false, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		System.out.println("===================");
+		System.out.println("Computation Result:");
+		for (String varName : obj.getVariables().keySet()) {
+			System.out.println("Value for " + varName + ": " + obj.getVariables().get(varName).getValue());
+		}
+		System.out.println("===================");
+
+		assertTrue(obj.getVariables().get("i1").getValue().doubleValue() <= 10);
+		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() >= 1);
+		assertEquals(2, obj.getVariables().get("i2").getValue().intValue());
 
 		solver.terminate();
 	}

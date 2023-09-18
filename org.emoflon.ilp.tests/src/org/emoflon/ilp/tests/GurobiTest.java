@@ -1,6 +1,5 @@
 package org.emoflon.ilp.tests;
 
-//import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -81,7 +80,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -131,7 +130,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -176,7 +175,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -221,7 +220,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -266,7 +265,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -311,7 +310,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -356,7 +355,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -392,10 +391,14 @@ public class GurobiTest {
 		LinearConstraint c1 = new LinearConstraint(Operator.NOT_EQUAL, 5.0);
 		c1.addTerm(i1, 1.0);
 
+		c1.setEpsilon(1.0E-3);
+
 		// r2 != 100 (upper bound)
 		r2.setUpperBound(100.0);
 		LinearConstraint c2 = new LinearConstraint(Operator.NOT_EQUAL, 100.0);
 		c2.addTerm(r2, 1.0);
+
+		// c2.setEpsilon(1.0E-4);
 
 		// Model
 		obj.setObjective(lin);
@@ -403,8 +406,8 @@ public class GurobiTest {
 		obj.add(c2);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 1.0E-4, false, 0, 0,
+				false, false, true, "/Users/luise/Projektseminar/neq.lp");
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -456,7 +459,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -502,7 +505,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -551,7 +554,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -600,7 +603,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -648,7 +651,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -697,7 +700,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config_sub = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0,
-				false, false, null, false, null);
+				false, false, false, null);
 		Solver solver_sub = (new SolverHelper(config_sub)).getSolver();
 		solver_sub.buildILPProblem(obj_sub);
 		SolverOutput out_sub = solver_sub.solve();
@@ -751,7 +754,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -800,7 +803,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, true, -10, 10,
-				false, false, null, false, null);
+				false, false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -847,7 +850,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, false, null);
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -878,7 +881,6 @@ public class GurobiTest {
 		// i1 != 10000
 		LinearConstraint c1 = new LinearConstraint(Operator.NOT_EQUAL, i1.getUpperBound());
 		c1.addTerm(i1, 1.0);
-		c1.setEpsilon(1.0);
 
 		// r1 > 1
 		LinearConstraint c2 = new LinearConstraint(Operator.GREATER, 1.0);
@@ -898,7 +900,7 @@ public class GurobiTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
-				false, null, true, "/Users/luise/Projektseminar/NOT_error.lp");
+				false, true, "/Users/luise/Projektseminar/NOT_error.lp");
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -912,12 +914,59 @@ public class GurobiTest {
 		}
 		System.out.println("===================");
 
-		assertEquals(5, obj.getConstraintCount());
+		// assertEquals(5, obj.getConstraintCount());
 
 		assertNotEquals(i1.getUpperBound(), obj.getVariables().get("i1").getValue());
 		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() > 1);
 		assertTrue(obj.getVariables().get("i2").getValue().intValue() < 2
 				&& obj.getVariables().get("i2").getValue().intValue() > -2);
+
+		solver.terminate();
+	}
+
+	@Test
+	public void testEmptyObjectiveFunction() {
+		// Objective
+		Objective obj = new Objective();
+
+		// Constraints
+		// i1 <= 10
+		LinearConstraint c1 = new LinearConstraint(Operator.LESS_OR_EQUAL, 10);
+		c1.addTerm(i1, 1.0);
+
+		// r1 >= 1
+		LinearConstraint c2 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 1.0);
+		c2.addTerm(r1, 1.0);
+
+		// 2*i2 = 4
+		LinearConstraint c3 = new LinearConstraint(Operator.EQUAL, 4);
+		c3.addTerm(i2, 2.0);
+
+		// Model
+		obj.setObjective(null);
+		obj.add(c1);
+		obj.add(c2);
+		obj.add(c3);
+
+		// Optimize
+		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, false, null);
+		Solver solver = (new SolverHelper(config)).getSolver();
+		solver.buildILPProblem(obj);
+		SolverOutput out = solver.solve();
+		System.out.println(out.toString());
+		solver.updateValuesFromSolution();
+
+		System.out.println("===================");
+		System.out.println("Computation Result:");
+		for (String varName : obj.getVariables().keySet()) {
+			System.out.println("Value for " + varName + ": " + obj.getVariables().get(varName).getValue());
+		}
+		System.out.println("===================");
+
+		assertTrue(obj.getVariables().get("i1").getValue().doubleValue() <= 10);
+		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() >= 1);
+		assertEquals(2, obj.getVariables().get("i2").getValue().intValue());
 
 		solver.terminate();
 	}

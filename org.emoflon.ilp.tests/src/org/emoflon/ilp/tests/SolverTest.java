@@ -68,7 +68,7 @@ public class SolverTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(type, false, 0.0, true, 42, false, 0.0, false, 0, 0, presolve, false,
-				null, false, null);
+				false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -130,7 +130,7 @@ public class SolverTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(type, false, 0.0, true, 42, false, 0.0, false, 0, 0, presolve, false,
-				null, false, null);
+				false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -267,7 +267,7 @@ public class SolverTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(type, false, 120, true, 42, false, 0.0, false, 0, 0, presolve, false,
-				null, false, null);
+				false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();

@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
  */
 public class Objective {
 
-	// TODO: Linear OR QUADRATIC function
 	private Function objective;
 	private ObjectiveType type = ObjectiveType.MIN;
 	private List<NormalConstraint> constraints = new ArrayList<NormalConstraint>();
@@ -152,9 +151,11 @@ public class Objective {
 	 * @param objective Objective function to be optimized.
 	 */
 	public void setObjective(Function objective) {
-		// TODO: nur Konstanten auch okay?
-		if (objective.getTerms().isEmpty()) {
-			throw new IllegalArgumentException("An Objective has to contain terms.");
+		if (objective == null) {
+			System.out.println("WARNING: The objective function of this problem is empty.");
+			objective = new LinearFunction();
+		} else if (objective.getTerms().isEmpty()) {
+			System.out.println("WARNING: The objective function of this problem does not contain any variables.");
 		}
 		for (Term term : objective.getTerms()) {
 			variables.put(term.getVar1().getName(), term.getVar1());
@@ -175,6 +176,16 @@ public class Objective {
 	public void setObjective(Function objective, ObjectiveType type) {
 		setObjective(objective);
 		setType(type);
+	}
+
+	/**
+	 * Sets the objective function of this problem to an empty linear function.
+	 */
+	public void setObjective() {
+		if (objective.getTerms().isEmpty()) {
+			System.out.println("WARNING: The objective function of this problem is empty.");
+		}
+		this.objective = new LinearFunction();
 	}
 
 	/**

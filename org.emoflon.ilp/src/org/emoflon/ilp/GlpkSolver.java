@@ -52,8 +52,12 @@ public class GlpkSolver implements Solver {
 		// Presolve?
 		iocp.setPresolve(config.presolveEnabled() ? GLPK.GLP_ON : GLPK.GLP_OFF);
 		// Random Seed?
-		// TODO: scheinbar nicht unterstützt?
-
+		// not supported in glpk for Java
+		// --seed value is option fo glpsol
+		// Debug Output?
+		if (!config.debugOutputEnabled()) {
+			GLPK.glp_term_out(GLPK.GLP_OFF);
+		}
 		// Output?
 		if (config.outputEnabled()) {
 			this.outputPath = config.outputPath();
