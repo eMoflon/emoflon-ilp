@@ -683,7 +683,7 @@ public class GlpkTest {
 		c3.addTerm(i2, 2.0);
 
 		// Model
-		obj.setObjective();
+		obj.setObjective(null);
 		obj.add(c1);
 		obj.add(c2);
 		obj.add(c3);
