@@ -515,7 +515,7 @@ public class GlpkTest {
 
 		assertEquals(20, obj.getVariables().get("i1").getValue());
 		assertEquals(0, obj.getVariables().get("i2").getValue());
-		assertEquals(0, obj.getVariables().get("r1").getValue());
+		assertEquals(0.0, obj.getVariables().get("r1").getValue());
 
 		solver.terminate();
 	}
@@ -713,32 +713,40 @@ public class GlpkTest {
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
-
-		// lin.addTerm(i1, 1.0);
+		lin.addTerm(i1, 1.0);
 		lin.addTerm(r1, -1.0);
 		lin.addTerm(i2, 1.0);
 
 		// Constraints
-		// i1 <= 10
+		// 7*i1 + 3*r1 - 13*i2 <= 10
 		LinearConstraint c1 = new LinearConstraint(Operator.LESS_OR_EQUAL, 10);
-		c1.addTerm(i1, 1.0);
+		c1.addTerm(i1, 7.0);
+		c1.addTerm(r1, 3.0);
+		c1.addTerm(i2, -13.0);
 
-		// r1 >= 1
+		// r1 + b1 >= 1
 		LinearConstraint c2 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 1.0);
 		c2.addTerm(r1, 1.0);
+		c2.addTerm(b1, 1.0);
 
 		// 2*i2 = 4
 		LinearConstraint c3 = new LinearConstraint(Operator.EQUAL, 4);
 		c3.addTerm(i2, 2.0);
+		
+		// r1 + 20*i1 >= 13
+		LinearConstraint c4 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 13.0);
+		c4.addTerm(r1, 1.0);
+		c4.addTerm(i1, 20.0);
 
 		// Model
 		obj.setObjective(lin);
 		obj.add(c1);
 		obj.add(c2);
 		obj.add(c3);
+		obj.add(c4);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GLPK, true, 0.1, false, 0, false, 0.0, false, 0, 0, true,
+		SolverConfig config = new SolverConfig(SolverType.GLPK, true, 1.0E-3, false, 0, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
