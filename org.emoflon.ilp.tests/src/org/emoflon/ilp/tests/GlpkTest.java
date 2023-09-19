@@ -478,8 +478,8 @@ public class GlpkTest {
 		lin.addTerm(r1, 1.0);
 
 		// Constraints
-		// i1 >= 1
-		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 1.0);
+		// i1 >= 20
+		LinearConstraint c1 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 20.0);
 		c1.addTerm(i1, 1.0);
 
 		// 2*i2 <= 4
@@ -513,7 +513,7 @@ public class GlpkTest {
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		assertEquals(1, obj.getVariables().get("i1").getValue());
+		assertEquals(20, obj.getVariables().get("i1").getValue());
 		assertEquals(0, obj.getVariables().get("i2").getValue());
 		assertEquals(0, obj.getVariables().get("r1").getValue());
 

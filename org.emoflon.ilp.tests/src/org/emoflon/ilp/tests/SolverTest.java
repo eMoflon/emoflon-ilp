@@ -25,6 +25,7 @@ public class SolverTest {
 
 	SolverType type = SolverType.GUROBI;
 	// SolverType type = SolverType.GLPK;
+	// SolverType type = SolverType.CPLEX;
 
 	boolean presolve = (type == SolverType.GLPK) ? true : false;
 

@@ -33,7 +33,7 @@ public class GurobiSolver implements Solver {
 	/**
 	 * The constructor for GurobiSolver.
 	 * 
-	 * @param config The configuration parameters used by this solver.
+	 * @param config The configuration parameters used for this solver.
 	 */
 	public GurobiSolver(final SolverConfig config) {
 		try {
@@ -434,6 +434,7 @@ public class GurobiSolver implements Solver {
 		double objVal = -1;
 		int solCount = -1;
 
+		// Write model into output file
 		if (this.outputPath != null) {
 			try {
 				model.write(outputPath);

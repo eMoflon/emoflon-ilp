@@ -5,7 +5,7 @@ package org.emoflon.ilp;
  *
  */
 public class SolverHelper {
-	// TODO
+
 	private Solver solver;
 
 	/**
@@ -20,8 +20,8 @@ public class SolverHelper {
 			this.solver = new GurobiSolver(config);
 			break;
 		case CPLEX:
-			throw new Error("Not yet implemented!");
-		// break;
+			this.solver = new CplexSolver(config);
+			break;
 		case GLPK:
 			this.solver = new GlpkSolver(config);
 			break;
