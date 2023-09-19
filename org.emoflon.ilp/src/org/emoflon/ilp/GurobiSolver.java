@@ -108,7 +108,6 @@ public class GurobiSolver implements Solver {
 		objective.getConstraints().forEach(it -> translateNormalConstraint(it));
 
 		// Translate General Constraints
-		// TODO: rausnehmen? -> OrVarsConstraint
 		objective.getGeneralConstraints().forEach(it -> translateGeneralConstraint(it));
 
 		// Translate SOS Constraints
@@ -349,16 +348,26 @@ public class GurobiSolver implements Solver {
 	 */
 	private GRBVar translateIntegerVariable(IntegerVariable variable) {
 		try {
-			if (variable.getLowerBound() > variable.getUpperBound()) {
+			int lb = variable.getLowerBound();
+			int ub = variable.getUpperBound();
+
+			if (config.boundsEnabled()) {
+				if (variable.isDefaultLowerBound()) {
+					lb = config.lowerBound();
+					variable.setLowerBound((int) lb);
+				}
+				if (variable.isDefaultUpperBound()) {
+					ub = config.upperBound();
+					variable.setUpperBound((int) ub);
+				}
+			}
+			if (lb > ub) {
 				throw new IllegalArgumentException(
 						"The lower bound is not allowed to be greater than the upper bound.");
 			}
-			if (config.boundsEnabled()) {
-				return model.addVar(config.lowerBound(), config.upperBound(), 0.0, GRB.INTEGER, variable.getName());
-			} else {
-				return model.addVar(variable.getLowerBound(), variable.getUpperBound(), 0.0, GRB.INTEGER,
-						variable.getName());
-			}
+
+			return model.addVar(lb, ub, 0.0, GRB.INTEGER, variable.getName());
+
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
 		}
@@ -372,16 +381,25 @@ public class GurobiSolver implements Solver {
 	 */
 	private GRBVar translateRealVariable(RealVariable variable) {
 		try {
-			if (variable.getLowerBound() > variable.getUpperBound()) {
+			double lb = variable.getLowerBound();
+			double ub = variable.getUpperBound();
+
+			if (config.boundsEnabled()) {
+				if (variable.isDefaultLowerBound()) {
+					lb = config.lowerBound();
+					variable.setLowerBound(lb);
+				}
+				if (variable.isDefaultUpperBound()) {
+					ub = config.upperBound();
+					variable.setUpperBound(ub);
+				}
+			}
+			if (lb > ub) {
 				throw new IllegalArgumentException(
 						"The lower bound is not allowed to be greater than the upper bound.");
 			}
-			if (config.boundsEnabled()) {
-				return model.addVar(config.lowerBound(), config.upperBound(), 0.0, GRB.CONTINUOUS, variable.getName());
-			} else {
-				return model.addVar(variable.getLowerBound(), variable.getUpperBound(), 0.0, GRB.CONTINUOUS,
-						variable.getName());
-			}
+
+			return model.addVar(lb, ub, 0.0, GRB.CONTINUOUS, variable.getName());
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
 		}

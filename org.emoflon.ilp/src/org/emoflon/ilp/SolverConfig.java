@@ -12,10 +12,12 @@ package org.emoflon.ilp;
  * @param toleranceEnabled   Set to true, if a value for the tolerance should be
  *                           set.
  * @param tolerance          Value for the tolerance.
- * @param boundsEnabled      Set to true, if custom bounds for variables should
- *                           be set.
- * @param lowerBound         Value for the custom upper bound.
- * @param upperBound         Value for the custom upper bound.
+ * @param boundsEnabled      Set to true, if custom default bounds for integer
+ *                           and real variables should be set.
+ * @param lowerBound         Value for the custom upper bound for integer and
+ *                           real variables.
+ * @param upperBound         Value for the custom upper bound for integer and
+ *                           real variables.
  * @param presolveEnabled    Set to true, if the solver should carry out a
  *                           presolve phase (for GPLK you might need to set this
  *                           to true!).

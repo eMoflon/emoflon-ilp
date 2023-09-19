@@ -86,7 +86,7 @@ public class GlpkSolver implements Solver {
 			throw new IllegalArgumentException("GLPK does not support quadratic constraints and quadratic functions!");
 		}
 		// General Constraints are not supported
-		// TODO: convert OrVarsConstraints to OrConstraints or remove
+		// TODO (future work): convert OrVarsConstraints to OrConstraints or remove
 		if (objective.getGenConstraintCount() != 0) {
 			throw new IllegalArgumentException("General Constraints are not supported by GLPK.");
 		}
@@ -124,30 +124,43 @@ public class GlpkSolver implements Solver {
 		int j = 1;
 		GLPK.glp_add_cols(model, vars.size());
 		for (final String name : vars.keySet()) {
+			Variable<?> var = vars.get(name);
 			indexNameMap.put(name, j);
 
-			double lb = vars.get(name).getLowerBound().doubleValue();
-			double ub = vars.get(name).getUpperBound().doubleValue();
+			double lb = var.getLowerBound().doubleValue();
+			double ub = var.getUpperBound().doubleValue();
 
 			GLPK.glp_set_col_name(model, j, name);
 
-			switch (vars.get(name).getType()) {
+			switch (var.getType()) {
 			case BINARY:
 				translateVariable(j, GLPK.GLP_BV, lb, ub);
 				break;
 			case INTEGER:
 				// Check if other bounds are defined in the solver config
 				if (config.boundsEnabled()) {
-					lb = config.lowerBound();
-					ub = config.upperBound();
+					if (((IntegerVariable) var).isDefaultLowerBound()) {
+						lb = config.lowerBound();
+						((IntegerVariable) var).setLowerBound((int) lb);
+					}
+					if (((IntegerVariable) var).isDefaultUpperBound()) {
+						ub = config.upperBound();
+						((IntegerVariable) var).setUpperBound((int) ub);
+					}
 				}
 				translateVariable(j, GLPK.GLP_IV, lb, ub);
 				break;
 			case REAL:
 				// Check if other bounds are defined in the solver config
 				if (config.boundsEnabled()) {
-					lb = config.lowerBound();
-					ub = config.upperBound();
+					if (((RealVariable) var).isDefaultLowerBound()) {
+						lb = config.lowerBound();
+						((RealVariable) var).setLowerBound(lb);
+					}
+					if (((RealVariable) var).isDefaultUpperBound()) {
+						ub = config.upperBound();
+						((RealVariable) var).setUpperBound(ub);
+					}
 				}
 				translateVariable(j, GLPK.GLP_CV, lb, ub);
 				break;
