@@ -250,8 +250,10 @@ public class CplexSolver implements Solver {
 			switch (objective.getType()) {
 			case MIN:
 				cplexObj = cplex.addMinimize();
+				break;
 			case MAX:
 				cplexObj = cplex.addMaximize();
+				break;
 			}
 
 			// Add Terms
@@ -265,7 +267,10 @@ public class CplexSolver implements Solver {
 				String varName = term.getVar1().getName();
 
 				// Get previous coefficient (if there is one)
-				double prevCoef = coefficients.remove(varName);
+				double prevCoef = 0.0;
+				if (coefficients.containsKey(varName)) {
+					prevCoef = coefficients.remove(varName);
+				}
 
 				// Set new coefficient for the variable (replaces old value)
 				coefficients.put(varName, prevCoef + term.getWeight());
@@ -314,11 +319,14 @@ public class CplexSolver implements Solver {
 
 				switch (constraint.getOp()) {
 				case LESS_OR_EQUAL:
-					cplex.addLe(constraint.getRhs(), linearNumExpr);
-				case GREATER_OR_EQUAL:
 					cplex.addGe(constraint.getRhs(), linearNumExpr);
+					break;
+				case GREATER_OR_EQUAL:
+					cplex.addLe(constraint.getRhs(), linearNumExpr);
+					break;
 				case EQUAL:
 					cplex.addEq(constraint.getRhs(), linearNumExpr);
+					break;
 				case LESS:
 					throw new Error("All constraints with this operator should already have been converted!");
 				case GREATER:
@@ -431,6 +439,10 @@ public class CplexSolver implements Solver {
 
 	@Override
 	public void updateValuesFromSolution() {
+		if (this.result.getStatus() == SolverStatus.INFEASIBLE || this.result.getStatus() == SolverStatus.INF_OR_UNBD) {
+			throw new RuntimeException(
+					"The problem status is " + this.result.getStatus() + " and therefore no values were found.");
+		}
 		Map<String, Variable<?>> objVars = this.objective.getVariables();
 
 		for (final String varName : this.cplexVars.keySet()) {
