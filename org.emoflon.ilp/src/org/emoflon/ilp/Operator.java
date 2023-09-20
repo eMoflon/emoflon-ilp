@@ -2,7 +2,10 @@ package org.emoflon.ilp;
 
 /**
  * The operators used in the normal constraints (linear/quadratic constraints).
- *
+ * <br>
+ * <br>
+ * 
+ * LESS, LESS_OR_EQUAL, EQUAL, GREATER_OR_EQUAL, GREATER, NOT_EQUAL
  */
 public enum Operator {
 	LESS, LESS_OR_EQUAL, EQUAL, GREATER_OR_EQUAL, GREATER, NOT_EQUAL;

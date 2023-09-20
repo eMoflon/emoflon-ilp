@@ -173,7 +173,7 @@ public class BasicTest {
 
 		// SOS1(x, y, z)
 		SOS1Constraint sos = new SOS1Constraint();
-		sos.setVariables(Arrays.asList(x, y, z));
+		sos.addVariables(Arrays.asList(x, y, z));
 
 		List<LinearConstraint> substitution = sos.convert();
 

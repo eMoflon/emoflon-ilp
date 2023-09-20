@@ -6,7 +6,8 @@ import java.util.ArrayList;
 /**
  * This class represents linear functions. A linear function can consist of
  * multiple terms (weight * variable), constants and nested weighted linear
- * functions (weight * function).
+ * functions (weight * function). <br>
+ * <br>
  * 
  * function = term1 + term2 + ... + constant1 + constant2 + ... + w1 * func1 +
  * w2 * func2 + ...
@@ -23,6 +24,9 @@ public class LinearFunction extends Function {
 	 * @param terms           A list of linear terms.
 	 * @param constantTerms   A list of constants.
 	 * @param nestedFunctions A list of nested weighted linear functions.
+	 * @see LinearTerm
+	 * @see Constant
+	 * @see WeightedFunction
 	 */
 	public LinearFunction(List<Term> terms, List<Constant> constantTerms, List<WeightedFunction> nestedFunctions) {
 		if (terms.stream().anyMatch(QuadraticTerm.class::isInstance)) {
@@ -51,6 +55,8 @@ public class LinearFunction extends Function {
 	 * 
 	 * @param terms         A list of linear terms.
 	 * @param constantTerms A list of constants.
+	 * @see LinearTerm
+	 * @see Constant
 	 */
 	public LinearFunction(List<Term> terms, List<Constant> constantTerms) {
 		this.terms = terms;

@@ -6,7 +6,8 @@ import java.util.ArrayList;
 
 /**
  * This class represents SOS1 Constraints. At most one variable contained in
- * this constraint is allowed to be non-zero.
+ * this constraint is allowed to be non-zero. <br>
+ * <br>
  * 
  * SOS1(var_1, var_2, ..., var_n) with weights w = [w_1, w_2, ..., w_n]
  *
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class SOS1Constraint implements Constraint {
 
 	private List<Variable<?>> variables = new ArrayList<Variable<?>>();
-	private double[] weights;
+	private List<Double> weights = new ArrayList<Double>();
 	private List<BinaryVariable> binary = new ArrayList<BinaryVariable>();
 	private int bound = (int) 10E4;
 	private double epsilon = 1.0E-4;
@@ -26,8 +27,7 @@ public class SOS1Constraint implements Constraint {
 	 * @param weights   List of weights with which to regard the variables.
 	 */
 	public SOS1Constraint(List<Variable<?>> variables, double[] weights) {
-		this.setVariables(variables);
-		this.setWeights(weights);
+		this.addVariables(variables, weights);
 	}
 
 	/**
@@ -38,18 +38,17 @@ public class SOS1Constraint implements Constraint {
 	 * @param variables List of variables that are subject to this constraint.
 	 */
 	public SOS1Constraint(List<Variable<?>> variables) {
-		this.setVariables(variables);
-		this.weights = new double[variables.size()];
-		Arrays.fill(this.weights, 1);
+		double[] arr_weights = new double[variables.size()];
+		Arrays.fill(arr_weights, 1);
+		this.addVariables(variables, arr_weights);
 	}
 
 	/**
 	 * A constructor for a SOS1 constraint.
 	 */
 	public SOS1Constraint() {
-		this.setVariables(new ArrayList<Variable<?>>());
-		this.weights = new double[variables.size()];
-		Arrays.fill(this.weights, 1);
+		double[] arr_weights = new double[0];
+		this.addVariables(new ArrayList<Variable<?>>(), arr_weights);
 	}
 
 	/**
@@ -61,8 +60,9 @@ public class SOS1Constraint implements Constraint {
 	 *                  constraints.
 	 */
 	public SOS1Constraint(List<Variable<?>> variables, double[] weights, int bound) {
-		this.setVariables(variables);
-		this.setWeights(weights);
+		double[] arr_weights = new double[variables.size()];
+		Arrays.fill(arr_weights, 1);
+		this.addVariables(variables, arr_weights);
 		this.setBound(bound);
 	}
 
@@ -77,9 +77,9 @@ public class SOS1Constraint implements Constraint {
 	 *                  constraints.
 	 */
 	public SOS1Constraint(List<Variable<?>> variables, int bound) {
-		this.setVariables(variables);
-		this.weights = new double[variables.size()];
-		Arrays.fill(this.weights, 1);
+		double[] arr_weights = new double[variables.size()];
+		Arrays.fill(arr_weights, 1);
+		this.addVariables(variables, arr_weights);
 		this.setBound(bound);
 	}
 
@@ -90,9 +90,8 @@ public class SOS1Constraint implements Constraint {
 	 *              constraints.
 	 */
 	public SOS1Constraint(int bound) {
-		this.setVariables(new ArrayList<Variable<?>>());
-		this.weights = new double[variables.size()];
-		Arrays.fill(this.weights, 1);
+		double[] arr_weights = new double[0];
+		this.addVariables(new ArrayList<Variable<?>>(), arr_weights);
 		this.setBound(bound);
 	}
 
@@ -105,21 +104,56 @@ public class SOS1Constraint implements Constraint {
 		return variables;
 	}
 
-	// TODO: weights as array? ArrayList! -> add new weights
 	/**
-	 * Adds new variables that are subject to this constraint.
+	 * Adds new variables that are subject to this constraint and their respective
+	 * weights. The list of variables and the Array of weights have to be the same
+	 * size.
+	 * 
+	 * @param variables List of the new variables.
+	 * @param weights   Array of weights to be set for the new variables.
+	 */
+	public void addVariables(List<Variable<?>> variables, double[] weights) {
+		if (variables.size() != weights.length) {
+			throw new IllegalArgumentException("Every variable has to have a weight!");
+		}
+		this.variables.addAll(variables);
+		this.weights.addAll(Arrays.stream(weights).mapToObj(Double::valueOf).toList());
+	}
+
+	/**
+	 * Adds new variables that are subject to this constraint. <br>
+	 * Important: All variables are assigned a weight of 1.0. The weight cannot be
+	 * changed afterwards!
 	 * 
 	 * @param variables List of the new variables.
 	 */
-	public void setVariables(List<Variable<?>> variables) {
+	public void addVariables(List<Variable<?>> variables) {
 		this.variables.addAll(variables);
+		variables.forEach(it -> this.weights.add(1.0));
 	}
 
-	/*
-	 * weights nicht als array, wenn das hier implementiert werden soll public void
-	 * addVariable(Variable<?> variable, double weight) {
-	 * this.variables.add(variable); this.addWeight(weight); }
+	/**
+	 * Adds a new variable and its weight to this constraint.
+	 * 
+	 * @param variable The new variable to be added.
+	 * @param weight   The weights to be set for the variable.
 	 */
+	public void addVariable(Variable<?> variable, double weight) {
+		this.variables.add(variable);
+		this.weights.add(weight);
+	}
+
+	/**
+	 * Adds a new variable and its weight to this constraint. <br>
+	 * Important: The variable is assigned a weight of 1.0. This weight cannot be
+	 * changed afterwards!
+	 * 
+	 * @param variable The new variable to be added.
+	 */
+	public void addVariable(Variable<?> variable) {
+		this.variables.add(variable);
+		this.weights.add(1.0);
+	}
 
 	/**
 	 * Returns the weights of the current variables of this constraint.
@@ -127,16 +161,7 @@ public class SOS1Constraint implements Constraint {
 	 * @return Array of weights.
 	 */
 	public double[] getWeights() {
-		return weights;
-	}
-
-	/**
-	 * Sets the weights for the variables of this constraint.
-	 * 
-	 * @param weights Array of weights to be set.
-	 */
-	public void setWeights(double[] weights) {
-		this.weights = weights;
+		return weights.stream().mapToDouble(Double::doubleValue).toArray();
 	}
 
 	/**
@@ -182,6 +207,7 @@ public class SOS1Constraint implements Constraint {
 	 * Converts the SOS1 constraint into multiple linear constraints.
 	 * 
 	 * @return List of constraints to substitute this SOS1 constraint.
+	 * @see LinearConstraint
 	 */
 	public List<LinearConstraint> convert() {
 		List<LinearConstraint> substitution = new ArrayList<LinearConstraint>();

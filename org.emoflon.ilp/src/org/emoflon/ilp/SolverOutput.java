@@ -2,11 +2,13 @@ package org.emoflon.ilp;
 
 /**
  * This class represents the solver output after the optimization of the
- * problem.
+ * problem. <br>
+ * Contains the Solver Status, the Objective Value and the Solution Count.
+ * 
+ * @see SolverStatus
  *
  */
 public class SolverOutput {
-	// TODO
 
 	private SolverStatus status = null;
 	private double objVal = -1;
@@ -18,6 +20,7 @@ public class SolverOutput {
 	 * @param status   The status of the solver.
 	 * @param objVal   The value of the objective.
 	 * @param solCount The number of solutions found by the solver.
+	 * @see SolverStatus
 	 */
 	public SolverOutput(SolverStatus status, double objVal, int solCount) {
 		this.setStatus(status);
@@ -29,6 +32,7 @@ public class SolverOutput {
 	 * Returns the status of the solver.
 	 * 
 	 * @return The current status of the solver.
+	 * @see SolverStatus
 	 */
 	public SolverStatus getStatus() {
 		return status;
@@ -38,6 +42,7 @@ public class SolverOutput {
 	 * Sets the status of the solver.
 	 * 
 	 * @param status The new status of the solver.
+	 * @see SolverStatus
 	 */
 	public void setStatus(SolverStatus status) {
 		this.status = status;

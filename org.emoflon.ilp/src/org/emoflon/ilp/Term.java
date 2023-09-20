@@ -1,5 +1,15 @@
 package org.emoflon.ilp;
 
+/**
+ * This abstract class represents terms. <br>
+ * <br>
+ * 
+ * LinearTerm = weight * var1 <br>
+ * QuadraticTerm = weight * var1 * var2 <br>
+ * 
+ * @see LinearTerm
+ * @see QuadraticTerm
+ */
 public abstract class Term {
 
 	private Variable<?> var1;

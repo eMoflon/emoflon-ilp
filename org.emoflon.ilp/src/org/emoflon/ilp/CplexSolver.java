@@ -34,6 +34,7 @@ public class CplexSolver implements Solver {
 	 * The constructor for CplexSolver.
 	 * 
 	 * @param config The configuration parameters used for this solver.
+	 * @see SolverConfig
 	 */
 	public CplexSolver(final SolverConfig config) {
 		this.config = config;

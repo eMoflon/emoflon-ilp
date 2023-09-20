@@ -28,6 +28,7 @@ public class GlpkSolver implements Solver {
 	 * The constructor for GlpkSolver.
 	 * 
 	 * @param config The configuration parameters used for this solver.
+	 * @see SolverConfig
 	 */
 	public GlpkSolver(final SolverConfig config) {
 		this.config = config;

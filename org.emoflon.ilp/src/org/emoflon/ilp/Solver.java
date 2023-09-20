@@ -1,5 +1,12 @@
 package org.emoflon.ilp;
 
+/**
+ * Interface for all implemented Solvers.
+ * 
+ * @see GurobiSolver
+ * @see GlpkSolver
+ * @see CplexSolver
+ */
 public interface Solver {
 
 	/**
@@ -7,6 +14,7 @@ public interface Solver {
 	 * configured in SolverConfig.
 	 * 
 	 * @param problem Problem formulation to be optimized.
+	 * @see Problem
 	 */
 	public abstract void buildILPProblem(Problem problem);
 
@@ -14,6 +22,7 @@ public interface Solver {
 	 * Solves the problem.
 	 * 
 	 * @return Result of the solving process.
+	 * @see SolverOutput
 	 */
 	public abstract SolverOutput solve();
 

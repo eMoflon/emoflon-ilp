@@ -1,7 +1,8 @@
 package org.emoflon.ilp;
 
 /**
- * This class represents quadratic terms.
+ * This class represents quadratic terms. <br>
+ * <br>
  * 
  * quadratic term = weight * variable1 * variable2
  *

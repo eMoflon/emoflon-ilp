@@ -8,6 +8,7 @@ public interface NormalConstraint extends Constraint {
 	 * Returns a list of the terms on the left-hand side of the constraint.
 	 * 
 	 * @return Current list of terms on the left-hand side of the constraint.
+	 * @see Term
 	 */
 	public List<Term> getLhsTerms();
 
@@ -15,6 +16,7 @@ public interface NormalConstraint extends Constraint {
 	 * Sets the terms of the constraint.
 	 * 
 	 * @param lhsTerms New list of terms to be set for the constraint.
+	 * @see Term
 	 */
 	public void setLhsTerms(List<Term> lhsTerms);
 
@@ -22,6 +24,7 @@ public interface NormalConstraint extends Constraint {
 	 * Adds a term to the existing terms on the left-hand side of the constraint.
 	 * 
 	 * @param term New term to be added to the constraint.
+	 * @see Term
 	 */
 	public void addTerm(Term term);
 
@@ -29,6 +32,7 @@ public interface NormalConstraint extends Constraint {
 	 * Returns the operator of the constraint.
 	 * 
 	 * @return Current operator of the constraint.
+	 * @see Operator
 	 */
 	public Operator getOp();
 
@@ -36,6 +40,7 @@ public interface NormalConstraint extends Constraint {
 	 * Sets the operator of the constraint.
 	 * 
 	 * @param op Operator to be set for the constraint.
+	 * @see Operator
 	 */
 	public void setOp(Operator op);
 
@@ -57,6 +62,7 @@ public interface NormalConstraint extends Constraint {
 	 * Returns the type of the constraint.
 	 * 
 	 * @return Type of the constraint.
+	 * @see ConstraintType
 	 */
 	public ConstraintType getType();
 

@@ -763,9 +763,8 @@ public class CplexTest {
 		List<Variable<?>> sosVars1 = new ArrayList<Variable<?>>();
 		sosVars1.add(r1);
 		sosVars1.add(r2);
-		SOS1Constraint sos1 = new SOS1Constraint(sosVars1);
 		double[] weights = { 1, 2 };
-		sos1.setWeights(weights);
+		SOS1Constraint sos1 = new SOS1Constraint(sosVars1, weights);
 
 		// SOS1: x0=0 or x2=0
 		// here: SOS1(r1, r3)
@@ -773,8 +772,7 @@ public class CplexTest {
 		List<Variable<?>> sosVars2 = new ArrayList<Variable<?>>();
 		sosVars2.add(r1);
 		sosVars2.add(r3);
-		SOS1Constraint sos2 = new SOS1Constraint(sosVars2);
-		sos2.setWeights(weights);
+		SOS1Constraint sos2 = new SOS1Constraint(sosVars2, weights);
 
 		// Model
 		problem.setObjective(lin);

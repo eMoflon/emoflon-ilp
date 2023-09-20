@@ -34,6 +34,7 @@ public class GurobiSolver implements Solver {
 	 * The constructor for GurobiSolver.
 	 * 
 	 * @param config The configuration parameters used for this solver.
+	 * @see SolverConfig
 	 */
 	public GurobiSolver(final SolverConfig config) {
 		try {

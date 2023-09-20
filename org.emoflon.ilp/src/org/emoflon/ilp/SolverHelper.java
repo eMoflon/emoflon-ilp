@@ -2,6 +2,8 @@ package org.emoflon.ilp;
 
 /**
  * This is a helper class for keeping the solver easily parameterized.
+ * 
+ * @see Solver
  *
  */
 public class SolverHelper {
@@ -13,6 +15,7 @@ public class SolverHelper {
 	 * 
 	 * @param config The solver config used for configuring the parameters of the
 	 *               solver.
+	 * @see SolverConfig
 	 */
 	public SolverHelper(SolverConfig config) {
 		switch (config.solver()) {
@@ -34,6 +37,7 @@ public class SolverHelper {
 	 * Returns the solver set by this helper.
 	 * 
 	 * @return The current solver set by the configuration.
+	 * @see Solver
 	 */
 	public Solver getSolver() {
 		return this.solver;

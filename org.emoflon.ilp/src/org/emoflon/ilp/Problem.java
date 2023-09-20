@@ -32,6 +32,7 @@ public class Problem {
 	 * Returns the type (minimize or maximize) of the objective.
 	 * 
 	 * @return Objective type of this objective.
+	 * @see ObjectiveType
 	 */
 	public ObjectiveType getType() {
 		return type;
@@ -41,6 +42,7 @@ public class Problem {
 	 * Sets the type of this objective.
 	 * 
 	 * @param type New type of this objective (MIN or MAX).
+	 * @see ObjectiveType
 	 */
 	public void setType(ObjectiveType type) {
 		this.type = type;
@@ -51,6 +53,8 @@ public class Problem {
 	 * constraints.
 	 * 
 	 * @param constraints List of normal constraints to be added to this problem.
+	 * @see LinearConstraint
+	 * @see QuadraticConstraint
 	 */
 	public void setConstraints(List<NormalConstraint> constraints) {
 		for (NormalConstraint cons : constraints) {
@@ -73,6 +77,7 @@ public class Problem {
 	 * Adds a list of SOS constraints to the current constraints.
 	 * 
 	 * @param constraints List of SOS1 constraints to be added to this problem.
+	 * @see SOS1Constraint
 	 */
 	public void setSOSConstraints(List<SOS1Constraint> constraints) {
 		for (SOS1Constraint cons : constraints) {
@@ -84,6 +89,7 @@ public class Problem {
 	 * Adds a list of Or constraints to the current constraints.
 	 * 
 	 * @param constraints List of Or constraints to be added to this problem.
+	 * @seer OrConstraint
 	 */
 	public void setOrConstraints(List<OrConstraint> constraints) {
 		for (OrConstraint cons : constraints) {
@@ -95,6 +101,8 @@ public class Problem {
 	 * Returns all normal constraints currently contained in this problem.
 	 * 
 	 * @return List of all normal constraints.
+	 * @see LinearConstraint
+	 * @see QuadraticConstraint
 	 */
 	public List<NormalConstraint> getConstraints() {
 		return constraints;
@@ -113,6 +121,7 @@ public class Problem {
 	 * Returns all SOS constraints currently contained in this problem.
 	 * 
 	 * @return List of all SOS constraints.
+	 * @see SOS1Constraint
 	 */
 	public List<SOS1Constraint> getSOSConstraints() {
 		return sosConstraints;
@@ -122,6 +131,7 @@ public class Problem {
 	 * Returns all Or constraints currently contained in this problem.
 	 * 
 	 * @return List of all Or constraints.
+	 * @see OrConstraint
 	 */
 	public List<OrConstraint> getOrConstraints() {
 		return orConstraints;
@@ -140,6 +150,7 @@ public class Problem {
 	 * Returns the objective function to be optimized in this problem.
 	 * 
 	 * @return Objective function of this problem.
+	 * @see Function
 	 */
 	public Function getObjective() {
 		return objective;
@@ -149,6 +160,7 @@ public class Problem {
 	 * Sets the objective function of this problem.
 	 * 
 	 * @param objective Objective function to be optimized.
+	 * @see Function
 	 */
 	public void setObjective(Function objective) {
 		if (objective == null) {
@@ -172,6 +184,8 @@ public class Problem {
 	 * 
 	 * @param objective Objective function to be optimized.
 	 * @param type      Objective type of this problem (MIN or MAX).
+	 * @see function
+	 * @see ObjectiveType
 	 */
 	public void setObjective(Function objective, ObjectiveType type) {
 		setObjective(objective);
@@ -247,6 +261,8 @@ public class Problem {
 	 * Adds a normal constraint to the current constraints.
 	 * 
 	 * @param constraint Normal constraint to be added to this problem.
+	 * @see LinearConstraint
+	 * @see QuadraticConstraint
 	 */
 	public void add(NormalConstraint constraint) {
 		if (constraint.getLhsTerms().isEmpty()) {
@@ -281,6 +297,7 @@ public class Problem {
 	 * Adds a SOS constraint to the current constraints.
 	 * 
 	 * @param constraint SOS constraint to be added to this problem.
+	 * @see SOS1Constraint
 	 */
 	public void add(SOS1Constraint constraint) {
 		if (constraint.getVariables().isEmpty()) {
@@ -298,6 +315,7 @@ public class Problem {
 	 * Adds a Or constraint to the current constraints.
 	 * 
 	 * @param constraint Or constraint to be added to this problem.
+	 * @see OrConstraint
 	 */
 	public void add(OrConstraint constraint) {
 		if (constraint.getConstraints().isEmpty()) {
@@ -363,7 +381,8 @@ public class Problem {
 	 * Substitutes all Or constraints with the result of their conversion. After
 	 * calling this method, there are no more Or constraints in the problem
 	 * formulation. The Or constraints are substituted with linear constraints and
-	 * SOS1 constraints.
+	 * SOS1 constraints. <br>
+	 * <br>
 	 * 
 	 * Please call substituteSOS1() after calling this method (if needed)!
 	 */
@@ -394,7 +413,8 @@ public class Problem {
 	 * operators. After calling this method, all normal constraints have the
 	 * operators LESS_OR_EQUAL, GREATER_OR_EQUAL or EQUAL. The substitution
 	 * constraints are normal constraints and SOS1 constraints (for operator
-	 * NOT_EQUAL).
+	 * NOT_EQUAL). <br>
+	 * <br>
 	 * 
 	 * Please call substituteSOS1() after calling this method (if needed)!
 	 */
@@ -429,6 +449,8 @@ public class Problem {
 	 * Substitutes all SOS1 constraints with the result of their conversion. After
 	 * calling this method, there are no more SOS1 constraints in the problem
 	 * formulation. The SO1 constraints are substituted with linear constraints.
+	 * <br>
+	 * <br>
 	 * 
 	 * Please call substituteOr() and substituteOperators() before calling this
 	 * method (if needed)!

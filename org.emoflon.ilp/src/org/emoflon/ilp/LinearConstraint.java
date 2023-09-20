@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents linear constraints.
+ * This class represents linear constraints. <br>
  * 
- * The terms on the left-hand side are summed up.
+ * The terms on the left-hand side are summed up. <br>
+ * <br>
  * 
  * w_1 * x_1 + w_2 * x_2 + ... (>= | > | = | != | < | <=) rhs
  */
@@ -24,6 +25,8 @@ public class LinearConstraint implements NormalConstraint {
 	 *                 constraint.
 	 * @param op       The operator used for this constraint.
 	 * @param rhs      The value on the right-hand side of the constraint.
+	 * @see LinearTerm
+	 * @see Operator
 	 */
 	public LinearConstraint(List<Term> lhsTerms, Operator op, double rhs) {
 		this.setLhsTerms(lhsTerms);
@@ -36,6 +39,7 @@ public class LinearConstraint implements NormalConstraint {
 	 * 
 	 * @param op  The operator used for this constraint.
 	 * @param rhs The value on the right-hand side of the constraint.
+	 * @see Operator
 	 */
 	public LinearConstraint(Operator op, double rhs) {
 		this.setLhsTerms(new ArrayList<Term>());
@@ -51,6 +55,8 @@ public class LinearConstraint implements NormalConstraint {
 	 * @param op       The operator used for this constraint.
 	 * @param rhs      The value on the right-hand side of the constraint.
 	 * @param epsilon  A small value used for conversion if necessary.
+	 * @see LinearTerm
+	 * @see Operator
 	 */
 	public LinearConstraint(List<Term> lhsTerms, Operator op, double rhs, double epsilon) {
 		this.setLhsTerms(lhsTerms);
@@ -65,6 +71,7 @@ public class LinearConstraint implements NormalConstraint {
 	 * @param op      The operator used for this constraint.
 	 * @param rhs     The value on the right-hand side of the constraint.
 	 * @param epsilon A small value used for conversion if necessary.
+	 * @see Operator
 	 */
 	public LinearConstraint(Operator op, double rhs, double epsilon) {
 		this.setLhsTerms(new ArrayList<Term>());

@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * This class represents quadratic constraints.
+ * This class represents quadratic constraints. <br>
  * 
  * The terms on the left-hand side can be either linear or quadratic and are
- * summed up.
+ * summed up. <br>
+ * 
+ * <br>
  * 
  * w_1 * x_1 + w_2 * x_2 + ... (>= | > | = | != | < | <=) rhs
  */
@@ -25,6 +27,8 @@ public class QuadraticConstraint implements NormalConstraint {
 	 *                 side of the constraint.
 	 * @param op       The operator used for this constraint.
 	 * @param rhs      The value on the right-hand side of the constraint.
+	 * @see Term
+	 * @see Operator
 	 */
 	public QuadraticConstraint(List<Term> lhsTerms, Operator op, double rhs) {
 		this.setLhsTerms(lhsTerms);
@@ -37,6 +41,7 @@ public class QuadraticConstraint implements NormalConstraint {
 	 * 
 	 * @param op  The operator used for this constraint.
 	 * @param rhs The value on the right-hand side of the constraint.
+	 * @see Operator
 	 */
 	public QuadraticConstraint(Operator op, double rhs) {
 		this.setLhsTerms(new ArrayList<Term>());
@@ -52,6 +57,8 @@ public class QuadraticConstraint implements NormalConstraint {
 	 * @param op       The operator used for this constraint.
 	 * @param rhs      The value on the right-hand side of the constraint.
 	 * @param epsilon  A small value used for conversion if necessary.
+	 * @see Term
+	 * @see Operator
 	 */
 	public QuadraticConstraint(List<Term> lhsTerms, Operator op, double rhs, double epsilon) {
 		this.setLhsTerms(lhsTerms);
@@ -66,6 +73,7 @@ public class QuadraticConstraint implements NormalConstraint {
 	 * @param op      The operator used for this constraint.
 	 * @param rhs     The value on the right-hand side of the constraint.
 	 * @param epsilon A small value used for conversion if necessary.
+	 * @see Operator
 	 */
 	public QuadraticConstraint(Operator op, double rhs, double epsilon) {
 		this.setLhsTerms(new ArrayList<Term>());

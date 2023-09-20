@@ -4,7 +4,7 @@ package org.emoflon.ilp;
  * This record class represents the configuration parameters used to configure
  * the solver.
  * 
- * @param type               Solver Type (GUROBI, GLPK)
+ * @param type               Solver Type (GUROBI, GLPK, CPLEX)
  * @param timeoutEnabled     Set to true, if timeout should be set.
  * @param timeout            time until timeout
  * @param randomSeedEnabled  Set to true, if a seed should be set (if possible).
@@ -32,6 +32,12 @@ public record SolverConfig(SolverType solver, boolean timeoutEnabled, double tim
 		int randomSeed, boolean toleranceEnabled, double tolerance, boolean boundsEnabled, int lowerBound,
 		int upperBound, boolean presolveEnabled, boolean debugOutputEnabled, boolean outputEnabled, String outputPath) {
 
+	/**
+	 * Type of the Solver <br>
+	 * <br>
+	 * 
+	 * GUROBI, GLPK or CPLEX
+	 */
 	public enum SolverType {
 		GUROBI, CPLEX, GLPK
 	}

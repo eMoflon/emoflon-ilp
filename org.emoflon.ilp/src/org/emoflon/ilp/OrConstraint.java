@@ -9,6 +9,7 @@ import java.util.UUID;
  * 
  * Or(lin_constr_1, lin_constr_2, ..., lin_constr_n)
  *
+ * @see LinearConstraint
  */
 public class OrConstraint implements Constraint {
 
@@ -19,6 +20,7 @@ public class OrConstraint implements Constraint {
 	 * A constructor for an Or constraint.
 	 * 
 	 * @param constraints List of linear constraints affected by this constraint.
+	 * @see LinearConstraint
 	 */
 	public OrConstraint(List<LinearConstraint> constraints) {
 		this.setConstraints(constraints);
@@ -38,6 +40,7 @@ public class OrConstraint implements Constraint {
 	 * 
 	 * @param constraints List of linear constraints affected by this constraint.
 	 * @param epsilon     Value of epsilon, used for converting this constraint.
+	 * @see LinearConstraint
 	 */
 	public OrConstraint(List<LinearConstraint> constraints, double epsilon) {
 		this.setConstraints(constraints);
@@ -60,6 +63,7 @@ public class OrConstraint implements Constraint {
 	 * Returns the linear constraints affected by this constraint.
 	 * 
 	 * @return List of linear constraints affected by this constraint.
+	 * @see LinearConstraint
 	 */
 	public List<LinearConstraint> getConstraints() {
 		return this.constraints;
@@ -70,6 +74,7 @@ public class OrConstraint implements Constraint {
 	 * constraint.
 	 * 
 	 * @param constraints List of linear constraints to be added.
+	 * @see LinearConstraint
 	 */
 	public void setConstraints(List<LinearConstraint> constraints) {
 		this.constraints.addAll(constraints);
@@ -79,6 +84,7 @@ public class OrConstraint implements Constraint {
 	 * Returns the constraint type of this constraint.
 	 * 
 	 * @return Constraint type (OR).
+	 * @see ConstraintType
 	 */
 	public ConstraintType getType() {
 		return ConstraintType.OR;
@@ -89,6 +95,7 @@ public class OrConstraint implements Constraint {
 	 * constraint.
 	 * 
 	 * @param constr Linear constraint to be added.
+	 * @see LinearConstraint
 	 */
 	public void addConstraint(LinearConstraint constr) {
 		constraints.add(constr);
@@ -113,11 +120,13 @@ public class OrConstraint implements Constraint {
 		this.epsilon = epsilon;
 	}
 
-	// TODO: negation of constraints?
+	// TODO: (future work) negation of constraints
 	/**
 	 * Converts this Or constraint into a set of linear and SOS1 constraints.
 	 * 
 	 * @return List of constraints to substitute this Or constraint.
+	 * @see LinearConstraint
+	 * @see SOS1Constraint
 	 */
 	public List<Constraint> convert() {
 		List<Constraint> substitute = new ArrayList<Constraint>();

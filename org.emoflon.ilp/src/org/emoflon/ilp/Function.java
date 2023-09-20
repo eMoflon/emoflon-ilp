@@ -4,7 +4,10 @@ import java.util.List;
 
 /**
  * This abstract class represents functions that can be used in the objective of
- * the optimization problem.
+ * the optimization problem. <br>
+ * <br>
+ * 
+ * Sum(terms) + Sum(constants) + Sum(nestedFunctions)
  *
  */
 public abstract class Function {
@@ -81,6 +84,7 @@ public abstract class Function {
 	 * Adds a weighted function as a nested function to this function.
 	 * 
 	 * @param func Weighted function to be added to this function.
+	 * @see WeightedFunction
 	 */
 	public void addNestedFunction(WeightedFunction func) {
 		this.nestedFunctions.add(func);
@@ -91,6 +95,7 @@ public abstract class Function {
 	 * 
 	 * @param func   Function to be added.
 	 * @param weight Weight of the new weighted function.
+	 * @see Function
 	 */
 	public void addNestedFunction(Function func, double weight) {
 		this.nestedFunctions.add(new WeightedFunction(func, weight));

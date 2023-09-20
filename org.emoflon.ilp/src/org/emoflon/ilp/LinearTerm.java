@@ -1,7 +1,8 @@
 package org.emoflon.ilp;
 
 /**
- * This class represents linear terms.
+ * This class represents linear terms. <br>
+ * <br>
  * 
  * linear term = weight * variable
  *

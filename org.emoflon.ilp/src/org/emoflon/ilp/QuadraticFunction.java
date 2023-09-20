@@ -16,6 +16,9 @@ public class QuadraticFunction extends Function {
 	 * @param constantTerms   A list of constants.
 	 * @param nestedFunctions A list of nested weighted (linear or quadratic)
 	 *                        functions.
+	 * @see Term
+	 * @see Constant
+	 * @see WeightedFunction
 	 */
 	public QuadraticFunction(List<Term> terms, List<Constant> constantTerms, List<WeightedFunction> nestedFunctions) {
 		this.terms = terms;
@@ -37,6 +40,8 @@ public class QuadraticFunction extends Function {
 	 * 
 	 * @param terms         A list of (linear or quadratic) terms.
 	 * @param constantTerms A list of constants.
+	 * @see Term
+	 * @see Constant
 	 */
 	public QuadraticFunction(List<Term> terms, List<Constant> constantTerms) {
 		this.terms = terms;
