@@ -71,8 +71,8 @@ public class GlpkTest {
 
 		// Objective
 		// maximize b1 + b2 + 2*b3
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -93,21 +93,21 @@ public class GlpkTest {
 		c2.addTerm(new LinearTerm(b2, 1.0));
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		// TODO: Anmerkung zu presolve = true
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		assertEquals(1, obj.getVariables().get("b1").getValue());
+		assertEquals(1, problem.getVariables().get("b1").getValue());
 
 		solver.terminate();
 	}
@@ -117,8 +117,8 @@ public class GlpkTest {
 		System.out.println("--------- testLinearConstrLinearObj() ---------");
 		// Objective
 		// maximize i1 + 2* (r2 - i1)
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
 		nested.addTerm(r2, 1.0);
@@ -138,22 +138,22 @@ public class GlpkTest {
 		c2.addTerm(r2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
 		assertEquals(195.0, out.getObjVal(), 0.0001);
-		assertEquals(5, obj.getVariables().get("i1").getValue());
-		assertEquals(100.0, obj.getVariables().get("r2").getValue());
+		assertEquals(5, problem.getVariables().get("i1").getValue());
+		assertEquals(100.0, problem.getVariables().get("r2").getValue());
 
 		solver.terminate();
 	}
@@ -163,8 +163,8 @@ public class GlpkTest {
 		System.out.println("--------- testQuadraticConstrLinearObj() ---------");
 		// Objective
 		// maximize i1 + r1
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(i1, 1.0);
@@ -181,16 +181,16 @@ public class GlpkTest {
 		c2.addTerm(r2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		assertThrows(IllegalArgumentException.class, () -> {
-			solver.buildILPProblem(obj);
+			solver.buildILPProblem(problem);
 		});
 
 		solver.terminate();
@@ -201,8 +201,8 @@ public class GlpkTest {
 		System.out.println("--------- testLinearConstrQuadraticObj() ---------");
 		// Objective
 		// maximize i1^2 + r1
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		QuadraticFunction lin = new QuadraticFunction();
 		lin.addTerm(i1, i1, 1.0);
@@ -219,16 +219,16 @@ public class GlpkTest {
 		c2.addTerm(r2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		assertThrows(IllegalArgumentException.class, () -> {
-			solver.buildILPProblem(obj);
+			solver.buildILPProblem(problem);
 		});
 
 		solver.terminate();
@@ -239,8 +239,8 @@ public class GlpkTest {
 		System.out.println("--------- testQuadraticConstrQuadraticObj() ---------");
 		// Objective
 		// maximize i1^2 + r1
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		QuadraticFunction lin = new QuadraticFunction();
 		lin.addTerm(i1, i1, 1.0);
@@ -257,16 +257,16 @@ public class GlpkTest {
 		c2.addTerm(r2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		assertThrows(IllegalArgumentException.class, () -> {
-			solver.buildILPProblem(obj);
+			solver.buildILPProblem(problem);
 		});
 
 		solver.terminate();
@@ -277,8 +277,8 @@ public class GlpkTest {
 		System.out.println("--------- testLessLinearConstraint() ---------");
 		// Objective
 		// maximize i1 + 2* (i2 - i1)
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
 		nested.addTerm(i2, 1.0);
@@ -298,22 +298,22 @@ public class GlpkTest {
 		c2.addTerm(i2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
 		assertEquals(193.0, out.getObjVal(), 0.0001);
-		assertEquals(5, obj.getVariables().get("i1").getValue());
-		assertEquals(99, obj.getVariables().get("i2").getValue());
+		assertEquals(5, problem.getVariables().get("i1").getValue());
+		assertEquals(99, problem.getVariables().get("i2").getValue());
 
 		solver.terminate();
 	}
@@ -323,8 +323,8 @@ public class GlpkTest {
 		System.out.println("--------- testGreaterLinearConstraint() ---------");
 		// Objective
 		// maximize i1 + 2* (r2 - i1)
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
 		nested.addTerm(r2, 1.0);
@@ -344,22 +344,22 @@ public class GlpkTest {
 		c2.addTerm(r2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
 		assertEquals(194.0, out.getObjVal(), 0.0001);
-		assertEquals(6, obj.getVariables().get("i1").getValue());
-		assertEquals(100.0, obj.getVariables().get("r2").getValue());
+		assertEquals(6, problem.getVariables().get("i1").getValue());
+		assertEquals(100.0, problem.getVariables().get("r2").getValue());
 
 		solver.terminate();
 	}
@@ -369,8 +369,8 @@ public class GlpkTest {
 		System.out.println("--------- testNotEqualLinearConstraint() ---------");
 		// Objective
 		// maximize i1 + 2* (r2 - i1)
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
 		nested.addTerm(r2, 1.0);
@@ -396,22 +396,22 @@ public class GlpkTest {
 		c2.setEpsilon(1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
 		// assertEquals(195.0, out.getObjVal(), 0.0001);
-		assertEquals(6, obj.getVariables().get("i1").getValue());
-		assertEquals(99.0, obj.getVariables().get("r2").getValue().doubleValue(), 0.9999);
+		assertEquals(6, problem.getVariables().get("i1").getValue());
+		assertEquals(99.0, problem.getVariables().get("r2").getValue().doubleValue(), 0.9999);
 
 		solver.terminate();
 	}
@@ -420,8 +420,8 @@ public class GlpkTest {
 	public void testBasicSOS1Constraint() {
 		System.out.println("--------- testBasicSOS1Constr() ---------");
 		// Objective
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MIN);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MIN);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -444,23 +444,23 @@ public class GlpkTest {
 		SOS1Constraint sos1 = new SOS1Constraint(sosVars);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(sos1);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(sos1);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		assertEquals(1, obj.getVariables().get("b1").getValue());
-		assertEquals(0, obj.getVariables().get("b2").getValue());
-		assertEquals(0, obj.getVariables().get("b3").getValue());
+		assertEquals(1, problem.getVariables().get("b1").getValue());
+		assertEquals(0, problem.getVariables().get("b2").getValue());
+		assertEquals(0, problem.getVariables().get("b3").getValue());
 
 		solver.terminate();
 	}
@@ -469,8 +469,8 @@ public class GlpkTest {
 	public void testNonBinVarSOS1Constraint() {
 		System.out.println("--------- testNonBinVarSOS1Constr() ---------");
 		// Objective
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MIN);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MIN);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(i1, 1.0);
@@ -499,23 +499,23 @@ public class GlpkTest {
 		SOS1Constraint sos1 = new SOS1Constraint(sosVars);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(sos1);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(sos1);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		assertEquals(20, obj.getVariables().get("i1").getValue());
-		assertEquals(0, obj.getVariables().get("i2").getValue());
-		assertEquals(0.0, obj.getVariables().get("r1").getValue());
+		assertEquals(20, problem.getVariables().get("i1").getValue());
+		assertEquals(0, problem.getVariables().get("i2").getValue());
+		assertEquals(0.0, problem.getVariables().get("r1").getValue());
 
 		solver.terminate();
 	}
@@ -524,8 +524,8 @@ public class GlpkTest {
 	public void testBasicOrConstraint() {
 		System.out.println("--------- testBasicOrConstraint() ---------");
 		// Objective
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -547,20 +547,20 @@ public class GlpkTest {
 		or1.addConstraint(c2);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(or1);
+		problem.setObjective(lin);
+		problem.add(or1);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, true, -10, 10, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		assertEquals(1, obj.getVariables().get("b1").getValue());
-		assertEquals(1, obj.getVariables().get("b2").getValue());
+		assertEquals(1, problem.getVariables().get("b1").getValue());
+		assertEquals(1, problem.getVariables().get("b2").getValue());
 
 		solver.terminate();
 	}
@@ -569,8 +569,8 @@ public class GlpkTest {
 	public void testOrVarsConstraint() {
 		System.out.println("--------- testOrVarsConstraint() ---------");
 		// Objective
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -591,17 +591,17 @@ public class GlpkTest {
 		or1.addVariable(b2);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(or1);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(or1);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		assertThrows(IllegalArgumentException.class, () -> {
-			solver.buildILPProblem(obj);
+			solver.buildILPProblem(problem);
 		});
 
 		solver.terminate();
@@ -612,8 +612,8 @@ public class GlpkTest {
 		System.out.println("--------- testOperatorConversion() ---------");
 		// Objective
 		// max b1
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -638,27 +638,27 @@ public class GlpkTest {
 		c3.addTerm(i2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(c3);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(c3);
 
-		assertEquals(3, obj.getConstraintCount());
+		assertEquals(3, problem.getConstraintCount());
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, true, 1.0E-4, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		assertEquals(10, obj.getConstraintCount());
+		assertEquals(10, problem.getConstraintCount());
 
-		assertNotEquals(5, obj.getVariables().get("i1").getValue());
-		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() > 1);
-		assertTrue(obj.getVariables().get("i2").getValue().intValue() < 4);
+		assertNotEquals(5, problem.getVariables().get("i1").getValue());
+		assertTrue(problem.getVariables().get("r1").getValue().doubleValue() > 1);
+		assertTrue(problem.getVariables().get("i2").getValue().intValue() < 4);
 
 		solver.terminate();
 	}
@@ -667,7 +667,7 @@ public class GlpkTest {
 	public void testEmptyObjectiveFunction() {
 		System.out.println("--------- testEmptyObjectiveFunction() ---------");
 		// Objective
-		Problem obj = new Problem();
+		Problem problem = new Problem();
 
 		// Constraints
 		// i1 <= 10
@@ -683,23 +683,23 @@ public class GlpkTest {
 		c3.addTerm(i2, 2.0);
 
 		// Model
-		obj.setObjective(null);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(c3);
+		problem.setObjective(null);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(c3);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		assertTrue(obj.getVariables().get("i1").getValue().doubleValue() <= 10);
-		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() >= 1);
-		assertEquals(2, obj.getVariables().get("i2").getValue().intValue());
+		assertTrue(problem.getVariables().get("i1").getValue().doubleValue() <= 10);
+		assertTrue(problem.getVariables().get("r1").getValue().doubleValue() >= 1);
+		assertEquals(2, problem.getVariables().get("i2").getValue().intValue());
 
 		solver.terminate();
 	}
@@ -708,8 +708,8 @@ public class GlpkTest {
 	public void testConfigParameterTimeout() {
 		System.out.println("--------- testConfigParameterTimeout() ---------");
 		// Objective
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -732,24 +732,24 @@ public class GlpkTest {
 		// 2*i2 = 4
 		LinearConstraint c3 = new LinearConstraint(Operator.EQUAL, 4);
 		c3.addTerm(i2, 2.0);
-		
+
 		// r1 + 20*i1 >= 13
 		LinearConstraint c4 = new LinearConstraint(Operator.GREATER_OR_EQUAL, 13.0);
 		c4.addTerm(r1, 1.0);
 		c4.addTerm(i1, 20.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(c3);
-		obj.add(c4);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(c3);
+		problem.add(c4);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, true, 1.0E-3, false, 0, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 
 		assertEquals(SolverStatus.TIME_OUT, out.getStatus());
@@ -761,8 +761,8 @@ public class GlpkTest {
 	public void testConfigParameterBounds() {
 		System.out.println("--------- testConfigParameterBounds() ---------");
 		// Objective
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -785,33 +785,33 @@ public class GlpkTest {
 		c3.addTerm(i2, 2.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(c3);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(c3);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, false, 0, false, 0.0, true, -5, 5, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		assertEquals(-5, obj.getVariables().get("i1").getLowerBound());
-		assertEquals(5, obj.getVariables().get("i1").getUpperBound());
-		assertEquals(-5, obj.getVariables().get("i2").getLowerBound());
-		assertEquals(5, obj.getVariables().get("i2").getUpperBound());
-		assertEquals(-5.0, obj.getVariables().get("r1").getLowerBound());
-		assertEquals(5.0, obj.getVariables().get("r1").getUpperBound());
+		assertEquals(-5, problem.getVariables().get("i1").getLowerBound());
+		assertEquals(5, problem.getVariables().get("i1").getUpperBound());
+		assertEquals(-5, problem.getVariables().get("i2").getLowerBound());
+		assertEquals(5, problem.getVariables().get("i2").getUpperBound());
+		assertEquals(-5.0, problem.getVariables().get("r1").getLowerBound());
+		assertEquals(5.0, problem.getVariables().get("r1").getUpperBound());
 
-		assertTrue(obj.getVariables().get("i1").getValue().doubleValue() >= -5);
-		assertTrue(obj.getVariables().get("i1").getValue().doubleValue() <= 5);
-		assertTrue(obj.getVariables().get("i2").getValue().doubleValue() >= -5);
-		assertTrue(obj.getVariables().get("i2").getValue().doubleValue() <= 5);
-		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() >= -5.0);
-		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() <= 5.0);
+		assertTrue(problem.getVariables().get("i1").getValue().doubleValue() >= -5);
+		assertTrue(problem.getVariables().get("i1").getValue().doubleValue() <= 5);
+		assertTrue(problem.getVariables().get("i2").getValue().doubleValue() >= -5);
+		assertTrue(problem.getVariables().get("i2").getValue().doubleValue() <= 5);
+		assertTrue(problem.getVariables().get("r1").getValue().doubleValue() >= -5.0);
+		assertTrue(problem.getVariables().get("r1").getValue().doubleValue() <= 5.0);
 
 		solver.terminate();
 	}

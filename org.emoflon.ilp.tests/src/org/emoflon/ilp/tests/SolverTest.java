@@ -41,8 +41,8 @@ public class SolverTest {
 
 		// Objective
 		// maximize b1 + b2 + 2*b3
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -63,26 +63,26 @@ public class SolverTest {
 		c2.addTerm(new LinearTerm(b2, 1.0));
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(type, false, 0.0, true, 42, false, 0.0, false, 0, 0, presolve, false,
 				true, "/Users/luise/Projektseminar/cplex_mip1.lp");
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		assertEquals(1, obj.getVariables().get("b1").getValue());
+		assertEquals(1, problem.getVariables().get("b1").getValue());
 
 		System.out.println("===================");
 		System.out.println("Computation Result:");
-		System.out.println("Value for b1: " + obj.getVariables().get("b1").getValue());
-		System.out.println("Value for b2: " + obj.getVariables().get("b2").getValue());
-		System.out.println("Value for b3: " + obj.getVariables().get("b3").getValue());
+		System.out.println("Value for b1: " + problem.getVariables().get("b1").getValue());
+		System.out.println("Value for b2: " + problem.getVariables().get("b2").getValue());
+		System.out.println("Value for b3: " + problem.getVariables().get("b3").getValue());
 		System.out.println("===================");
 
 		solver.terminate();
@@ -110,8 +110,8 @@ public class SolverTest {
 
 		// Objective: maximize the total price of selected items
 		// maximize SUM(p_i * x_i)
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		for (int i = 0; i < I; i++) {
@@ -126,31 +126,31 @@ public class SolverTest {
 		}
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
+		problem.setObjective(lin);
+		problem.add(c1);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(type, false, 0.0, true, 42, false, 0.0, false, 0, 0, presolve, false,
 				true, "/Users/luise/Projektseminar/cplex_knapsack.lp");
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		assertEquals(1, obj.getVariables().get("x_0").getValue());
-		assertEquals(0, obj.getVariables().get("x_1").getValue());
-		assertEquals(0, obj.getVariables().get("x_2").getValue());
-		assertEquals(1, obj.getVariables().get("x_3").getValue());
-		assertEquals(0, obj.getVariables().get("x_4").getValue());
-		assertEquals(0, obj.getVariables().get("x_5").getValue());
+		assertEquals(1, problem.getVariables().get("x_0").getValue());
+		assertEquals(0, problem.getVariables().get("x_1").getValue());
+		assertEquals(0, problem.getVariables().get("x_2").getValue());
+		assertEquals(1, problem.getVariables().get("x_3").getValue());
+		assertEquals(0, problem.getVariables().get("x_4").getValue());
+		assertEquals(0, problem.getVariables().get("x_5").getValue());
 
 		assertEquals(42, out.getObjVal(), 0.001);
 
 		System.out.println("===================");
 		System.out.println("Computation Result:");
 		for (int i = 0; i < I; i++) {
-			System.out.println("Value for x_" + i + ": " + obj.getVariables().get("x_" + i).getValue());
+			System.out.println("Value for x_" + i + ": " + problem.getVariables().get("x_" + i).getValue());
 		}
 		System.out.println("===================");
 
@@ -206,8 +206,8 @@ public class SolverTest {
 
 		// Objective: minimize the total distance of the route
 		// minimize SUM(c[i][j] * x[i][j])
-		Problem obj = new Problem();
-		obj.setType(ObjectiveType.MIN);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MIN);
 
 		LinearFunction lin = new LinearFunction();
 		for (int i = 0; i < n; i++) {
@@ -259,18 +259,18 @@ public class SolverTest {
 		}
 
 		// Model
-		obj.setObjective(lin);
-		leaveLocOnce.forEach(it -> obj.add(it));
-		enterLocOnce.forEach(it -> obj.add(it));
-		subtourElimination.forEach(it -> obj.add(it));
+		problem.setObjective(lin);
+		leaveLocOnce.forEach(it -> problem.add(it));
+		enterLocOnce.forEach(it -> problem.add(it));
+		subtourElimination.forEach(it -> problem.add(it));
 
-		System.out.println(obj.getConstraintCount());
+		System.out.println(problem.getConstraintCount());
 
 		// Optimize
 		SolverConfig config = new SolverConfig(type, false, 120, true, 42, false, 0.0, false, 0, 0, presolve, false,
 				true, "/Users/luise/Projektseminar/cplex_salesman.lp");
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
