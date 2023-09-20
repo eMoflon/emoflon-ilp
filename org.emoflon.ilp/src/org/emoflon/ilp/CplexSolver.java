@@ -26,7 +26,7 @@ public class CplexSolver implements Solver {
 	private String outputPath;
 	final private SolverConfig config;
 	private final HashMap<String, IloNumVar> cplexVars = new HashMap<>();
-	private Objective objective;
+	private Problem problem;
 	private SolverOutput result;
 
 	/**
@@ -80,30 +80,30 @@ public class CplexSolver implements Solver {
 	}
 
 	@Override
-	public void buildILPProblem(Objective objective) {
-		this.objective = objective;
+	public void buildILPProblem(Problem problem) {
+		this.problem = problem;
 
 		// Quadratic Constraints or Functions are not yet implemented
-		if (objective.getConstraints().stream().anyMatch(QuadraticConstraint.class::isInstance)
-				|| (objective.getObjective() instanceof QuadraticFunction)) {
+		if (problem.getConstraints().stream().anyMatch(QuadraticConstraint.class::isInstance)
+				|| (problem.getObjective() instanceof QuadraticFunction)) {
 			throw new IllegalArgumentException(
 					"CPLEX does support quadratic constraints and quadratic functions but that is not yet implemented in this plug-in!");
 		}
 		// General Constraints are not supported
 		// TODO (future work): convert OrVarsConstraints to OrConstraints or remove
-		if (objective.getGenConstraintCount() != 0) {
+		if (problem.getGenConstraintCount() != 0) {
 			throw new IllegalArgumentException("General Constraints are not yet supported for CPLEX.");
 		}
 
 		// Substitute Or Constraints
-		objective.substituteOr();
+		problem.substituteOr();
 
 		// Substitute <, >, != Operators
-		objective.substituteOperators();
+		problem.substituteOperators();
 
 		// Initialize decision variables and objective
 		// Translate Variables
-		translateVariables(objective.getVariables());
+		translateVariables(problem.getVariables());
 
 		// Translate Objective to GRB
 		translateObjective();
@@ -112,7 +112,7 @@ public class CplexSolver implements Solver {
 		translateNormalConstraints();
 
 		// Translate General Constraints
-		// objective.getGeneralConstraints().forEach(it ->
+		// problem.getGeneralConstraints().forEach(it ->
 		// translateGeneralConstraint(it));
 
 		// Translate SOS Constraints
@@ -242,12 +242,12 @@ public class CplexSolver implements Solver {
 	 */
 	private void translateObjective() {
 		// Translate Objective to CPLEX
-		Function obj = objective.getObjective().expand();
+		Function obj = problem.getObjective().expand();
 		IloObjective cplexObj = null;
 
 		try {
 			// Translate objective sense
-			switch (objective.getType()) {
+			switch (problem.getType()) {
 			case MIN:
 				cplexObj = cplex.addMinimize();
 				break;
@@ -301,15 +301,15 @@ public class CplexSolver implements Solver {
 	 * model.
 	 */
 	private void translateNormalConstraints() {
-		if (objective.getConstraintCount() != objective.getTotalConstraintCount()) {
+		if (problem.getConstraintCount() != problem.getTotalConstraintCount()) {
 			throw new Error("All Constraints should be linear constraints!");
 		}
-		if (objective.getConstraintCount() == 0) {
+		if (problem.getConstraintCount() == 0) {
 			return;
 		}
 
 		try {
-			for (final NormalConstraint constraint : objective.getConstraints()) {
+			for (final NormalConstraint constraint : problem.getConstraints()) {
 
 				final IloLinearNumExpr linearNumExpr = cplex.linearNumExpr();
 
@@ -347,7 +347,7 @@ public class CplexSolver implements Solver {
 	 * model.
 	 */
 	private void translateSOSConstraints() {
-		for (SOS1Constraint constraint : objective.getSOSConstraints()) {
+		for (SOS1Constraint constraint : problem.getSOSConstraints()) {
 			try {
 				ArrayList<IloNumVar> sosVars = new ArrayList<>();
 				for (Variable<?> var : constraint.getVariables()) {
@@ -443,7 +443,7 @@ public class CplexSolver implements Solver {
 			throw new RuntimeException(
 					"The problem status is " + this.result.getStatus() + " and therefore no values were found.");
 		}
-		Map<String, Variable<?>> objVars = this.objective.getVariables();
+		Map<String, Variable<?>> objVars = this.problem.getVariables();
 
 		for (final String varName : this.cplexVars.keySet()) {
 			try {

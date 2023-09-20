@@ -22,8 +22,8 @@ public class BasicTest {
 
 		// Objective
 		// maximize x + y + 2z
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(x, 1.0);
@@ -162,8 +162,6 @@ public class BasicTest {
 		// <= -> 7 substitution constraints (5 linear, 2 SOS)
 		// 2*7 + 1 substitution constraints total
 		assertEquals(15, substitution.size());
-
-		// TODO: mehr Tests?
 	}
 
 	@Test
@@ -182,8 +180,6 @@ public class BasicTest {
 		// 2 substitution constraints for each variable
 		// -> 2*3 + 1 substitution constraints total
 		assertEquals(7, substitution.size());
-
-		// TODO: mehr Tests?
 	}
 
 	@Test

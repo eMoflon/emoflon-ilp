@@ -3,12 +3,12 @@ package org.emoflon.ilp;
 public interface Solver {
 
 	/**
-	 * Translates the problem formulation (objective) to be comprehensible for the
-	 * solver configured in SolverConfig.
+	 * Translates the problem formulation to be comprehensible for the solver
+	 * configured in SolverConfig.
 	 * 
-	 * @param objective Problem formulation to be optimized.
+	 * @param problem Problem formulation to be optimized.
 	 */
-	public abstract void buildILPProblem(Objective objective);
+	public abstract void buildILPProblem(Problem problem);
 
 	/**
 	 * Solves the problem.

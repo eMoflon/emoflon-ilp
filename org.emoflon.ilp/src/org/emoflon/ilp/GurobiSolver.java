@@ -27,7 +27,7 @@ public class GurobiSolver implements Solver {
 	private String outputPath;
 	final private SolverConfig config;
 	private final HashMap<String, GRBVar> grbVars = new HashMap<>();
-	private Objective objective;
+	private Problem problem;
 	private SolverOutput result;
 
 	/**
@@ -88,30 +88,30 @@ public class GurobiSolver implements Solver {
 	}
 
 	@Override
-	public void buildILPProblem(Objective objective) {
-		this.objective = objective;
+	public void buildILPProblem(Problem problem) {
+		this.problem = problem;
 
 		// Substitute Or Constraints
-		objective.substituteOr();
+		problem.substituteOr();
 
 		// Substitute <, >, != Operators
-		objective.substituteOperators();
+		problem.substituteOperators();
 
 		// Initialize decision variables and objective
 		// Translate Variables
-		translateVariables(objective.getVariables());
+		translateVariables(problem.getVariables());
 
 		// Translate Objective to GRB
 		translateObjective();
 
 		// Translate Normal Constraints
-		objective.getConstraints().forEach(it -> translateNormalConstraint(it));
+		problem.getConstraints().forEach(it -> translateNormalConstraint(it));
 
 		// Translate General Constraints
-		objective.getGeneralConstraints().forEach(it -> translateGeneralConstraint(it));
+		problem.getGeneralConstraints().forEach(it -> translateGeneralConstraint(it));
 
 		// Translate SOS Constraints
-		objective.getSOSConstraints().forEach(it -> translateSOSConstraint(it));
+		problem.getSOSConstraints().forEach(it -> translateSOSConstraint(it));
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class GurobiSolver implements Solver {
 		// Translate Objective to GRB
 		// TODO: (future work) nested Functions OR use "expand" in
 		// LinearFunction/QuadraticFunction, which is more efficient?
-		Function obj = objective.getObjective().expand();
+		Function obj = problem.getObjective().expand();
 		GRBQuadExpr expr = new GRBQuadExpr();
 
 		// Add Terms
@@ -171,7 +171,7 @@ public class GurobiSolver implements Solver {
 
 		// Translate objective sense
 		int sense = GRB.MINIMIZE;
-		if (objective.getType().equals(ObjectiveType.MAX)) {
+		if (problem.getType().equals(ObjectiveType.MAX)) {
 			sense = GRB.MAXIMIZE;
 		}
 
@@ -487,7 +487,7 @@ public class GurobiSolver implements Solver {
 			throw new RuntimeException(
 					"The problem status is " + this.result.getStatus() + " and therefore no values were found.");
 		}
-		Map<String, Variable<?>> objVars = this.objective.getVariables();
+		Map<String, Variable<?>> objVars = this.problem.getVariables();
 
 		for (final String name : this.grbVars.keySet()) {
 			try {

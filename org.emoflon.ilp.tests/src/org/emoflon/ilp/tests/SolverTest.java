@@ -10,7 +10,7 @@ import org.emoflon.ilp.RealVariable;
 import org.emoflon.ilp.LinearConstraint;
 import org.emoflon.ilp.LinearFunction;
 import org.emoflon.ilp.LinearTerm;
-import org.emoflon.ilp.Objective;
+import org.emoflon.ilp.Problem;
 import org.emoflon.ilp.ObjectiveType;
 import org.emoflon.ilp.Operator;
 import org.emoflon.ilp.Solver;
@@ -23,9 +23,9 @@ import org.junit.jupiter.api.Test;
 
 public class SolverTest {
 
-	SolverType type = SolverType.GUROBI;
+	// SolverType type = SolverType.GUROBI;
 	// SolverType type = SolverType.GLPK;
-	// SolverType type = SolverType.CPLEX;
+	SolverType type = SolverType.CPLEX;
 
 	boolean presolve = (type == SolverType.GLPK) ? true : false;
 
@@ -41,7 +41,7 @@ public class SolverTest {
 
 		// Objective
 		// maximize b1 + b2 + 2*b3
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
@@ -69,7 +69,7 @@ public class SolverTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(type, false, 0.0, true, 42, false, 0.0, false, 0, 0, presolve, false,
-				false, null);
+				true, "/Users/luise/Projektseminar/cplex_mip1.lp");
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -110,7 +110,7 @@ public class SolverTest {
 
 		// Objective: maximize the total price of selected items
 		// maximize SUM(p_i * x_i)
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
@@ -131,7 +131,7 @@ public class SolverTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(type, false, 0.0, true, 42, false, 0.0, false, 0, 0, presolve, false,
-				false, null);
+				true, "/Users/luise/Projektseminar/cplex_knapsack.lp");
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();
@@ -206,7 +206,7 @@ public class SolverTest {
 
 		// Objective: minimize the total distance of the route
 		// minimize SUM(c[i][j] * x[i][j])
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MIN);
 
 		LinearFunction lin = new LinearFunction();
@@ -268,7 +268,7 @@ public class SolverTest {
 
 		// Optimize
 		SolverConfig config = new SolverConfig(type, false, 120, true, 42, false, 0.0, false, 0, 0, presolve, false,
-				false, null);
+				true, "/Users/luise/Projektseminar/cplex_salesman.lp");
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(obj);
 		SolverOutput out = solver.solve();

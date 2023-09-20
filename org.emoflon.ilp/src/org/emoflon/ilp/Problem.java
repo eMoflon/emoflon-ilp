@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  * This class represents the problem to be solved.
  *
  */
-public class Objective {
+public class Problem {
 
 	private Function objective;
 	private ObjectiveType type = ObjectiveType.MIN;
@@ -22,9 +22,9 @@ public class Objective {
 	private Map<String, Variable<?>> variables = new HashMap<String, Variable<?>>();
 
 	/**
-	 * The constructor for an objective.
+	 * The constructor for a problem.
 	 */
-	public Objective() {
+	public Problem() {
 		super();
 	}
 

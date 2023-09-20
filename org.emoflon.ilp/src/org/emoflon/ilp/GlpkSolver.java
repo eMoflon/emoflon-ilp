@@ -20,7 +20,7 @@ public class GlpkSolver implements Solver {
 	private glp_iocp iocp;
 	private String outputPath;
 	final private SolverConfig config;
-	private Objective objective;
+	private Problem problem;
 	private SolverOutput result;
 	private Map<String, Integer> indexNameMap;
 
@@ -77,31 +77,31 @@ public class GlpkSolver implements Solver {
 	}
 
 	@Override
-	public void buildILPProblem(Objective objective) {
-		this.objective = objective;
+	public void buildILPProblem(Problem problem) {
+		this.problem = problem;
 
 		// Quadratic Constraints or Functions are not supported by GLPK
-		if (objective.getConstraints().stream().anyMatch(QuadraticConstraint.class::isInstance)
-				|| (objective.getObjective() instanceof QuadraticFunction)) {
+		if (problem.getConstraints().stream().anyMatch(QuadraticConstraint.class::isInstance)
+				|| (problem.getObjective() instanceof QuadraticFunction)) {
 			throw new IllegalArgumentException("GLPK does not support quadratic constraints and quadratic functions!");
 		}
 		// General Constraints are not supported
 		// TODO (future work): convert OrVarsConstraints to OrConstraints or remove
-		if (objective.getGenConstraintCount() != 0) {
+		if (problem.getGenConstraintCount() != 0) {
 			throw new IllegalArgumentException("General Constraints are not supported by GLPK.");
 		}
 
 		// Substitute Or Constraints
-		objective.substituteOr();
+		problem.substituteOr();
 
 		// Substitute <, >, != Operators
-		objective.substituteOperators();
+		problem.substituteOperators();
 
 		// Substitute SOS1 Constraints
-		objective.substituteSOS1();
+		problem.substituteSOS1();
 
 		// Translate Variables
-		translateVariables(objective.getVariables());
+		translateVariables(problem.getVariables());
 
 		// Translate Objective
 		translateObjective();
@@ -196,18 +196,18 @@ public class GlpkSolver implements Solver {
 	 * Translates the objective function and sets the glpk objective.
 	 */
 	private void translateObjective() {
-		if (objective == null) {
+		if (problem == null) {
 			return;
 		}
 
 		// Get objective function and expand nested functions
-		Function obj = objective.getObjective().expand();
+		Function obj = problem.getObjective().expand();
 		if (!obj.nestedFunctions.isEmpty()) {
 			throw new Error("There should be no nested functions left after expand().");
 		}
 
 		// Set sense of the objective (min/max)
-		switch (objective.getType()) {
+		switch (problem.getType()) {
 		case MIN:
 			GLPK.glp_set_obj_dir(model, GLPK.GLP_MIN);
 			break;
@@ -239,18 +239,18 @@ public class GlpkSolver implements Solver {
 	 * Translates the constraints and sets the row values of the glpk problem.
 	 */
 	private void translateConstraints() {
-		if (objective.getConstraintCount() != objective.getTotalConstraintCount()) {
+		if (problem.getConstraintCount() != problem.getTotalConstraintCount()) {
 			throw new Error("All Constraints should be linear constraints!");
 		}
-		if (objective.getConstraintCount() == 0) {
+		if (problem.getConstraintCount() == 0) {
 			return;
 		}
 
 		// Add rows according to the constraint count
-		GLPK.glp_add_rows(model, objective.getConstraintCount());
+		GLPK.glp_add_rows(model, problem.getConstraintCount());
 
 		int counter = 1;
-		for (final NormalConstraint constraint : objective.getConstraints()) {
+		for (final NormalConstraint constraint : problem.getConstraints()) {
 
 			Map<Variable<?>, Double> weights = new HashMap<>();
 			for (Term term : constraint.getLhsTerms()) {
@@ -392,9 +392,9 @@ public class GlpkSolver implements Solver {
 					"The problem status is " + this.result.getStatus() + " and therefore no values were found.");
 		}
 		*/
-		Map<String, Variable<?>> objVars = this.objective.getVariables();
+		Map<String, Variable<?>> objVars = this.problem.getVariables();
 
-		for (final String name : objective.getVariables().keySet()) {
+		for (final String name : problem.getVariables().keySet()) {
 
 			// Save result value // TODO: runden konfigurierbar machen?!
 			Variable<?> objVar = objVars.get(name);

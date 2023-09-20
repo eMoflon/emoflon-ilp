@@ -52,8 +52,8 @@ public class GurobiTest {
 
 		// Objective
 		// maximize b1 + b2 + 2*b3
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -74,27 +74,27 @@ public class GurobiTest {
 		c2.addTerm(new LinearTerm(b2, 1.0));
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		solver.updateValuesFromSolution();
 
-		assertEquals(1, obj.getVariables().get("b1").getValue());
+		assertEquals(1, problem.getVariables().get("b1").getValue());
 		assertEquals(3.0, out.getObjVal(), 0.1);
 
 		/*
 		 * System.out.println("===================");
 		 * System.out.println(out.toString());
 		 * System.out.println("Computation Result:"); for (String varName :
-		 * obj.getVariables().keySet()) { System.out.println("Value for " + varName +
-		 * ": " + obj.getVariables().get(varName).getValue()); }
+		 * problem.getVariables().keySet()) { System.out.println("Value for " + varName +
+		 * ": " + problem.getVariables().get(varName).getValue()); }
 		 * System.out.println("===================");
 		 */
 
@@ -105,8 +105,8 @@ public class GurobiTest {
 	public void testLinearConstrLinearObj() {
 		// Objective
 		// maximize i1 + 2* (r2 - i1)
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
 		nested.addTerm(r2, 1.0);
@@ -126,21 +126,21 @@ public class GurobiTest {
 		c2.addTerm(r2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		solver.updateValuesFromSolution();
 
 		assertEquals(195.0, out.getObjVal(), 0.0001);
-		assertEquals(5, obj.getVariables().get("i1").getValue());
-		assertEquals(100.0, obj.getVariables().get("r2").getValue());
+		assertEquals(5, problem.getVariables().get("i1").getValue());
+		assertEquals(100.0, problem.getVariables().get("r2").getValue());
 
 		solver.terminate();
 	}
@@ -149,8 +149,8 @@ public class GurobiTest {
 	public void testQuadraticConstrLinearObj() {
 		// Objective
 		// maximize i1 + 2* (r2 - i1)
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
 		nested.addTerm(r2, 1.0);
@@ -170,21 +170,21 @@ public class GurobiTest {
 		c2.addTerm(r2, r2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		solver.updateValuesFromSolution();
 
 		assertEquals(15.0, out.getObjVal(), 0.0001);
-		assertEquals(5, obj.getVariables().get("i1").getValue());
-		assertEquals(10.0, obj.getVariables().get("r2").getValue());
+		assertEquals(5, problem.getVariables().get("i1").getValue());
+		assertEquals(10.0, problem.getVariables().get("r2").getValue());
 
 		solver.terminate();
 	}
@@ -193,8 +193,8 @@ public class GurobiTest {
 	public void testLinearConstrQuadraticObj() {
 		// Objective
 		// maximize i1 + 2* (r2 - i1^2)
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		QuadraticFunction nested = new QuadraticFunction();
 		nested.addTerm(r2, 1.0);
@@ -214,21 +214,21 @@ public class GurobiTest {
 		c2.addTerm(r2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		solver.updateValuesFromSolution();
 
 		assertEquals(155.0, out.getObjVal(), 0.0001);
-		assertEquals(5, obj.getVariables().get("i1").getValue());
-		assertEquals(100.0, obj.getVariables().get("r2").getValue());
+		assertEquals(5, problem.getVariables().get("i1").getValue());
+		assertEquals(100.0, problem.getVariables().get("r2").getValue());
 
 		solver.terminate();
 	}
@@ -237,8 +237,8 @@ public class GurobiTest {
 	public void testQuadraticConstrQuadraticObj() {
 		// Objective
 		// maximize i1 + 2* (r2 - i1^2)
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		QuadraticFunction nested = new QuadraticFunction();
 		nested.addTerm(r2, 1.0);
@@ -258,21 +258,21 @@ public class GurobiTest {
 		c2.addTerm(r2, r2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		solver.updateValuesFromSolution();
 
 		assertEquals(-25.0, out.getObjVal(), 0.0001);
-		assertEquals(5, obj.getVariables().get("i1").getValue());
-		assertEquals(10.0, obj.getVariables().get("r2").getValue());
+		assertEquals(5, problem.getVariables().get("i1").getValue());
+		assertEquals(10.0, problem.getVariables().get("r2").getValue());
 
 		solver.terminate();
 	}
@@ -281,8 +281,8 @@ public class GurobiTest {
 	public void testLessLinearConstraint() {
 		// Objective
 		// maximize i1 + 2* (i2 - i1)
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
 		nested.addTerm(i2, 1.0);
@@ -302,21 +302,21 @@ public class GurobiTest {
 		c2.addTerm(i2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		solver.updateValuesFromSolution();
 
 		assertEquals(193.0, out.getObjVal(), 0.0001);
-		assertEquals(5, obj.getVariables().get("i1").getValue());
-		assertEquals(99, obj.getVariables().get("i2").getValue());
+		assertEquals(5, problem.getVariables().get("i1").getValue());
+		assertEquals(99, problem.getVariables().get("i2").getValue());
 
 		solver.terminate();
 	}
@@ -325,8 +325,8 @@ public class GurobiTest {
 	public void testGreaterLinearConstraint() {
 		// Objective
 		// maximize i1 + 2* (r2 - i1)
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
 		nested.addTerm(r2, 1.0);
@@ -346,21 +346,21 @@ public class GurobiTest {
 		c2.addTerm(r2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		solver.updateValuesFromSolution();
 
 		assertEquals(194.0, out.getObjVal(), 0.0001);
-		assertEquals(6, obj.getVariables().get("i1").getValue());
-		assertEquals(100.0, obj.getVariables().get("r2").getValue());
+		assertEquals(6, problem.getVariables().get("i1").getValue());
+		assertEquals(100.0, problem.getVariables().get("r2").getValue());
 
 		solver.terminate();
 	}
@@ -369,8 +369,8 @@ public class GurobiTest {
 	public void testNotEqualLinearConstraint() {
 		// Objective
 		// maximize i1 + 2* (r2 - i1)
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
 		nested.addTerm(r2, 1.0);
@@ -392,21 +392,21 @@ public class GurobiTest {
 		c2.addTerm(r2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 1.0E-4, false, 0, 0,
 				false, false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		solver.updateValuesFromSolution();
 
 		assertEquals(193.99, out.getObjVal(), 0.01);
-		assertEquals(6, obj.getVariables().get("i1").getValue());
-		assertEquals(99.99, obj.getVariables().get("r2").getValue().doubleValue(), 0.01);
+		assertEquals(6, problem.getVariables().get("i1").getValue());
+		assertEquals(99.99, problem.getVariables().get("r2").getValue().doubleValue(), 0.01);
 
 		solver.terminate();
 	}
@@ -415,8 +415,8 @@ public class GurobiTest {
 	public void testLessQuadraticConstraint() {
 		// Objective
 		// maximize i1 + 2* (i2 - i1)
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
 		nested.addTerm(i2, 1.0);
@@ -436,21 +436,21 @@ public class GurobiTest {
 		c2.addTerm(i2, i2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		solver.updateValuesFromSolution();
 
 		assertEquals(13, out.getObjVal(), 0.0001);
-		assertEquals(5, obj.getVariables().get("i1").getValue());
-		assertEquals(9, obj.getVariables().get("i2").getValue());
+		assertEquals(5, problem.getVariables().get("i1").getValue());
+		assertEquals(9, problem.getVariables().get("i2").getValue());
 
 		solver.terminate();
 	}
@@ -459,8 +459,8 @@ public class GurobiTest {
 	public void testGreaterQuadraticConstraint() {
 		// Objective
 		// maximize i1 + 2* (i2 - i1)
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
 		nested.addTerm(i2, 1.0);
@@ -481,21 +481,21 @@ public class GurobiTest {
 		c2.addTerm(i2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		solver.updateValuesFromSolution();
 
 		assertEquals(194.0, out.getObjVal(), 0.0001);
-		assertEquals(6, obj.getVariables().get("i1").getValue());
-		assertEquals(100, obj.getVariables().get("i2").getValue());
+		assertEquals(6, problem.getVariables().get("i1").getValue());
+		assertEquals(100, problem.getVariables().get("i2").getValue());
 
 		solver.terminate();
 	}
@@ -509,8 +509,8 @@ public class GurobiTest {
 	@Test
 	public void testBasicSOS1Constraint() {
 		// Objective
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MIN);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MIN);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -533,22 +533,22 @@ public class GurobiTest {
 		SOS1Constraint sos1 = new SOS1Constraint(sosVars);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(sos1);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(sos1);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		solver.solve();
 		solver.updateValuesFromSolution();
 
-		assertEquals(1, obj.getVariables().get("b1").getValue());
-		assertEquals(0, obj.getVariables().get("b2").getValue());
-		assertEquals(0, obj.getVariables().get("b3").getValue());
+		assertEquals(1, problem.getVariables().get("b1").getValue());
+		assertEquals(0, problem.getVariables().get("b2").getValue());
+		assertEquals(0, problem.getVariables().get("b3").getValue());
 
 		solver.terminate();
 	}
@@ -556,8 +556,8 @@ public class GurobiTest {
 	@Test
 	public void testCompareSOS1toSubstitution() {
 		// Objective
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MIN);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MIN);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -580,16 +580,16 @@ public class GurobiTest {
 		SOS1Constraint sos1 = new SOS1Constraint(sosVars);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(sos1);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(sos1);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		solver.solve();
 		solver.updateValuesFromSolution();
 
@@ -602,7 +602,7 @@ public class GurobiTest {
 		BinaryVariable b3_sub = new BinaryVariable("b3_sub");
 
 		// Objective
-		Objective obj_sub = new Objective();
+		Problem obj_sub = new Problem();
 		obj_sub.setType(ObjectiveType.MIN);
 
 		LinearFunction lin_sub = new LinearFunction();
@@ -641,9 +641,9 @@ public class GurobiTest {
 		solver_sub.solve();
 		solver_sub.updateValuesFromSolution();
 
-		assertEquals(obj.getVariables().get("b1").getValue(), obj_sub.getVariables().get("b1_sub").getValue());
-		assertEquals(obj.getVariables().get("b2").getValue(), obj_sub.getVariables().get("b2_sub").getValue());
-		assertEquals(obj.getVariables().get("b3").getValue(), obj_sub.getVariables().get("b3_sub").getValue());
+		assertEquals(problem.getVariables().get("b1").getValue(), obj_sub.getVariables().get("b1_sub").getValue());
+		assertEquals(problem.getVariables().get("b2").getValue(), obj_sub.getVariables().get("b2_sub").getValue());
+		assertEquals(problem.getVariables().get("b3").getValue(), obj_sub.getVariables().get("b3_sub").getValue());
 
 		solver.terminate();
 	}
@@ -652,8 +652,8 @@ public class GurobiTest {
 	public void testNonBinVarSOS1Constraint() {
 		System.out.println("--------- testNonBinVarSOS1Constr() ---------");
 		// Objective
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MIN);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MIN);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(i1, 1.0);
@@ -682,22 +682,22 @@ public class GurobiTest {
 		SOS1Constraint sos1 = new SOS1Constraint(sosVars);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(sos1);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(sos1);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		solver.solve();
 		solver.updateValuesFromSolution();
 
-		assertEquals(20, obj.getVariables().get("i1").getValue());
-		assertEquals(0, obj.getVariables().get("i2").getValue());
-		assertEquals(0.0, obj.getVariables().get("r1").getValue());
+		assertEquals(20, problem.getVariables().get("i1").getValue());
+		assertEquals(0, problem.getVariables().get("i2").getValue());
+		assertEquals(0.0, problem.getVariables().get("r1").getValue());
 
 		solver.terminate();
 	}
@@ -705,8 +705,8 @@ public class GurobiTest {
 	@Test
 	public void testGurobiSOS() {
 		// Objective
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		// In Gurobi example without objective
 		// Here objective to get max values for r2 and r3, zero for r1
@@ -735,23 +735,23 @@ public class GurobiTest {
 		sos2.setWeights(weights);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(sos1);
-		obj.add(sos2);
-		// obj.add(l1);
+		problem.setObjective(lin);
+		problem.add(sos1);
+		problem.add(sos2);
+		// problem.add(l1);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		solver.updateValuesFromSolution();
 
 		assertEquals(20000.0, out.getObjVal(), 0.0001);
-		assertEquals(0.0, obj.getVariables().get("r1").getValue().doubleValue(), 0.0001);
-		assertEquals(10000.0, obj.getVariables().get("r2").getValue().doubleValue(), 0.0001);
-		assertEquals(10000.0, obj.getVariables().get("r3").getValue().doubleValue(), 0.0001);
+		assertEquals(0.0, problem.getVariables().get("r1").getValue().doubleValue(), 0.0001);
+		assertEquals(10000.0, problem.getVariables().get("r2").getValue().doubleValue(), 0.0001);
+		assertEquals(10000.0, problem.getVariables().get("r3").getValue().doubleValue(), 0.0001);
 
 		solver.terminate();
 	}
@@ -759,8 +759,8 @@ public class GurobiTest {
 	@Test
 	public void testBasicOrConstraint() {
 		// Objective
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		// max b1 + b2
 		LinearFunction lin = new LinearFunction();
@@ -783,19 +783,19 @@ public class GurobiTest {
 		or1.addConstraint(c2);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(or1);
+		problem.setObjective(lin);
+		problem.add(or1);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, true, -10, 10,
 				false, false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		solver.solve();
 		solver.updateValuesFromSolution();
 
-		assertEquals(1, obj.getVariables().get("b1").getValue());
-		assertEquals(1, obj.getVariables().get("b2").getValue());
+		assertEquals(1, problem.getVariables().get("b1").getValue());
+		assertEquals(1, problem.getVariables().get("b2").getValue());
 
 		solver.terminate();
 	}
@@ -803,8 +803,8 @@ public class GurobiTest {
 	@Test
 	public void testBasicOrVarsConstraint() {
 		// Objective
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -825,22 +825,22 @@ public class GurobiTest {
 		or1.addVariable(b2);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(or1);
-		obj.add(c1);
-		obj.add(c2);
+		problem.setObjective(lin);
+		problem.add(or1);
+		problem.add(c1);
+		problem.add(c2);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		solver.solve();
 		solver.updateValuesFromSolution();
 
-		assertEquals(1, obj.getVariables().get("b1").getValue());
-		assertEquals(1, obj.getVariables().get("b2").getValue());
-		assertEquals(1, obj.getVariables().get("b3").getValue());
+		assertEquals(1, problem.getVariables().get("b1").getValue());
+		assertEquals(1, problem.getVariables().get("b2").getValue());
+		assertEquals(1, problem.getVariables().get("b3").getValue());
 
 		solver.terminate();
 	}
@@ -849,8 +849,8 @@ public class GurobiTest {
 	public void testOperatorConversion() {
 		// Objective
 		// max b1
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -872,27 +872,27 @@ public class GurobiTest {
 		c3.addTerm(i2, i2, 1.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(c3);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(c3);
 
-		assertEquals(3, obj.getConstraintCount());
+		assertEquals(3, problem.getConstraintCount());
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		solver.solve();
 		solver.updateValuesFromSolution();
 
-		assertEquals(5, obj.getConstraintCount());
+		assertEquals(5, problem.getConstraintCount());
 
-		assertNotEquals(i1.getUpperBound(), obj.getVariables().get("i1").getValue());
-		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() > 1);
-		assertTrue(obj.getVariables().get("i2").getValue().intValue() < 2
-				&& obj.getVariables().get("i2").getValue().intValue() > -2);
+		assertNotEquals(i1.getUpperBound(), problem.getVariables().get("i1").getValue());
+		assertTrue(problem.getVariables().get("r1").getValue().doubleValue() > 1);
+		assertTrue(problem.getVariables().get("i2").getValue().intValue() < 2
+				&& problem.getVariables().get("i2").getValue().intValue() > -2);
 
 		solver.terminate();
 	}
@@ -900,7 +900,7 @@ public class GurobiTest {
 	@Test
 	public void testEmptyObjectiveFunction() {
 		// Objective
-		Objective obj = new Objective();
+		Problem problem = new Problem();
 
 		// Constraints
 		// i1 <= 10
@@ -916,23 +916,23 @@ public class GurobiTest {
 		c3.addTerm(i2, 2.0);
 
 		// Model
-		obj.setObjective(null);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(c3);
+		problem.setObjective(null);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(c3);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 		solver.updateValuesFromSolution();
 
 		assertEquals(1, out.getSolCount());
-		assertTrue(obj.getVariables().get("i1").getValue().doubleValue() <= 10);
-		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() >= 1);
-		assertEquals(2, obj.getVariables().get("i2").getValue().intValue());
+		assertTrue(problem.getVariables().get("i1").getValue().doubleValue() <= 10);
+		assertTrue(problem.getVariables().get("r1").getValue().doubleValue() >= 1);
+		assertEquals(2, problem.getVariables().get("i2").getValue().intValue());
 
 		solver.terminate();
 	}
@@ -940,8 +940,8 @@ public class GurobiTest {
 	@Test
 	public void testConfigParameterTimeout() {
 		// Objective
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -964,16 +964,16 @@ public class GurobiTest {
 		c3.addTerm(i2, 2.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(c3);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(c3);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, true, 1.0E-8, false, 0, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
 
 		assertEquals(SolverStatus.TIME_OUT, out.getStatus());
@@ -984,8 +984,8 @@ public class GurobiTest {
 	@Test
 	public void testConfigParameterBounds() {
 		// Objective
-		Objective obj = new Objective();
-		obj.setType(ObjectiveType.MAX);
+		Problem problem = new Problem();
+		problem.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
 		lin.addTerm(b1, 1.0);
@@ -1008,32 +1008,32 @@ public class GurobiTest {
 		c3.addTerm(i2, 2.0);
 
 		// Model
-		obj.setObjective(lin);
-		obj.add(c1);
-		obj.add(c2);
-		obj.add(c3);
+		problem.setObjective(lin);
+		problem.add(c1);
+		problem.add(c2);
+		problem.add(c3);
 
 		// Optimize
 		SolverConfig config = new SolverConfig(SolverType.GUROBI, false, 0.0, false, 0, false, 0.0, true, -5, 5, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
-		solver.buildILPProblem(obj);
+		solver.buildILPProblem(problem);
 		solver.solve();
 		solver.updateValuesFromSolution();
 
-		assertEquals(-5, obj.getVariables().get("i1").getLowerBound());
-		assertEquals(5, obj.getVariables().get("i1").getUpperBound());
-		assertEquals(-5, obj.getVariables().get("i2").getLowerBound());
-		assertEquals(5, obj.getVariables().get("i2").getUpperBound());
-		assertEquals(-5.0, obj.getVariables().get("r1").getLowerBound());
-		assertEquals(5.0, obj.getVariables().get("r1").getUpperBound());
+		assertEquals(-5, problem.getVariables().get("i1").getLowerBound());
+		assertEquals(5, problem.getVariables().get("i1").getUpperBound());
+		assertEquals(-5, problem.getVariables().get("i2").getLowerBound());
+		assertEquals(5, problem.getVariables().get("i2").getUpperBound());
+		assertEquals(-5.0, problem.getVariables().get("r1").getLowerBound());
+		assertEquals(5.0, problem.getVariables().get("r1").getUpperBound());
 
-		assertTrue(obj.getVariables().get("i1").getValue().doubleValue() >= -5);
-		assertTrue(obj.getVariables().get("i1").getValue().doubleValue() <= 5);
-		assertTrue(obj.getVariables().get("i2").getValue().doubleValue() >= -5);
-		assertTrue(obj.getVariables().get("i2").getValue().doubleValue() <= 5);
-		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() >= -5.0);
-		assertTrue(obj.getVariables().get("r1").getValue().doubleValue() <= 5.0);
+		assertTrue(problem.getVariables().get("i1").getValue().doubleValue() >= -5);
+		assertTrue(problem.getVariables().get("i1").getValue().doubleValue() <= 5);
+		assertTrue(problem.getVariables().get("i2").getValue().doubleValue() >= -5);
+		assertTrue(problem.getVariables().get("i2").getValue().doubleValue() <= 5);
+		assertTrue(problem.getVariables().get("r1").getValue().doubleValue() >= -5.0);
+		assertTrue(problem.getVariables().get("r1").getValue().doubleValue() <= 5.0);
 
 		solver.terminate();
 	}

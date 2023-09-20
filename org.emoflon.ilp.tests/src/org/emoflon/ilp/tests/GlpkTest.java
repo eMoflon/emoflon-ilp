@@ -15,7 +15,7 @@ import org.emoflon.ilp.QuadraticConstraint;
 import org.emoflon.ilp.LinearFunction;
 import org.emoflon.ilp.QuadraticFunction;
 import org.emoflon.ilp.LinearTerm;
-import org.emoflon.ilp.Objective;
+import org.emoflon.ilp.Problem;
 import org.emoflon.ilp.ObjectiveType;
 import org.emoflon.ilp.Operator;
 import org.emoflon.ilp.OrConstraint;
@@ -71,7 +71,7 @@ public class GlpkTest {
 
 		// Objective
 		// maximize b1 + b2 + 2*b3
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
@@ -117,7 +117,7 @@ public class GlpkTest {
 		System.out.println("--------- testLinearConstrLinearObj() ---------");
 		// Objective
 		// maximize i1 + 2* (r2 - i1)
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
@@ -163,7 +163,7 @@ public class GlpkTest {
 		System.out.println("--------- testQuadraticConstrLinearObj() ---------");
 		// Objective
 		// maximize i1 + r1
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
@@ -201,7 +201,7 @@ public class GlpkTest {
 		System.out.println("--------- testLinearConstrQuadraticObj() ---------");
 		// Objective
 		// maximize i1^2 + r1
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		QuadraticFunction lin = new QuadraticFunction();
@@ -239,7 +239,7 @@ public class GlpkTest {
 		System.out.println("--------- testQuadraticConstrQuadraticObj() ---------");
 		// Objective
 		// maximize i1^2 + r1
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		QuadraticFunction lin = new QuadraticFunction();
@@ -277,7 +277,7 @@ public class GlpkTest {
 		System.out.println("--------- testLessLinearConstraint() ---------");
 		// Objective
 		// maximize i1 + 2* (i2 - i1)
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
@@ -323,7 +323,7 @@ public class GlpkTest {
 		System.out.println("--------- testGreaterLinearConstraint() ---------");
 		// Objective
 		// maximize i1 + 2* (r2 - i1)
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
@@ -369,7 +369,7 @@ public class GlpkTest {
 		System.out.println("--------- testNotEqualLinearConstraint() ---------");
 		// Objective
 		// maximize i1 + 2* (r2 - i1)
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction nested = new LinearFunction();
@@ -420,7 +420,7 @@ public class GlpkTest {
 	public void testBasicSOS1Constraint() {
 		System.out.println("--------- testBasicSOS1Constr() ---------");
 		// Objective
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MIN);
 
 		LinearFunction lin = new LinearFunction();
@@ -469,7 +469,7 @@ public class GlpkTest {
 	public void testNonBinVarSOS1Constraint() {
 		System.out.println("--------- testNonBinVarSOS1Constr() ---------");
 		// Objective
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MIN);
 
 		LinearFunction lin = new LinearFunction();
@@ -524,7 +524,7 @@ public class GlpkTest {
 	public void testBasicOrConstraint() {
 		System.out.println("--------- testBasicOrConstraint() ---------");
 		// Objective
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
@@ -569,7 +569,7 @@ public class GlpkTest {
 	public void testOrVarsConstraint() {
 		System.out.println("--------- testOrVarsConstraint() ---------");
 		// Objective
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
@@ -612,7 +612,7 @@ public class GlpkTest {
 		System.out.println("--------- testOperatorConversion() ---------");
 		// Objective
 		// max b1
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
@@ -667,7 +667,7 @@ public class GlpkTest {
 	public void testEmptyObjectiveFunction() {
 		System.out.println("--------- testEmptyObjectiveFunction() ---------");
 		// Objective
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 
 		// Constraints
 		// i1 <= 10
@@ -708,7 +708,7 @@ public class GlpkTest {
 	public void testConfigParameterTimeout() {
 		System.out.println("--------- testConfigParameterTimeout() ---------");
 		// Objective
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
@@ -761,7 +761,7 @@ public class GlpkTest {
 	public void testConfigParameterBounds() {
 		System.out.println("--------- testConfigParameterBounds() ---------");
 		// Objective
-		Objective obj = new Objective();
+		Problem obj = new Problem();
 		obj.setType(ObjectiveType.MAX);
 
 		LinearFunction lin = new LinearFunction();
