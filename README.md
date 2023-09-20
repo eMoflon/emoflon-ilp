@@ -62,8 +62,8 @@ for (int i = 0; i < I; i++) {
 
 // Objective: maximize the total price of selected items
 // maximize SUM(p_i * x_i)
-Objective obj = new Objective();
-obj.setType(ObjectiveType.MAX);
+Problem problem = new Problem();
+problem.setType(ObjectiveType.MAX);
 
 LinearFunction lin = new LinearFunction();
 for (int i = 0; i < I; i++) {
@@ -78,13 +78,13 @@ for (int i = 0; i < I; i++) {
 }
 
 // Model
-obj.setObjective(lin);
-obj.add(c1);
+problem.setObjective(lin);
+problem.add(c1);
 
 // Optimize
 SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true, false, false, null);
 Solver solver = (new SolverHelper(config)).getSolver();
-solver.buildILPProblem(obj);
+solver.buildILPProblem(problem);
 SolverOutput out = solver.solve();
 // Prints the result of the objective
 System.out.println(out.toString());
