@@ -87,7 +87,7 @@ public class GlpkSolver implements Solver {
 			throw new IllegalArgumentException("GLPK does not support quadratic constraints and quadratic functions!");
 		}
 		// General Constraints are not supported
-		// TODO (future work): convert OrVarsConstraints to OrConstraints or remove
+		// TODO: (future work) convert OrVarsConstraints to OrConstraints or remove
 		if (problem.getGenConstraintCount() != 0) {
 			throw new IllegalArgumentException("General Constraints are not supported by GLPK.");
 		}
@@ -316,6 +316,10 @@ public class GlpkSolver implements Solver {
 		// solve MIP problem with the branch-and-cut method
 		// returns 0, GLP_EBOUND, GLP_EROOT, GLP_ENOPFS, GLP_ENODFS, GLP_EFAIL,
 		// GLP_EMIPGAP, GLP_ETMLIM, GLP_ESTOP
+
+		// For GLPK all SolverConfigs have to set presolve to true.
+		// If set to false, an error occurs because glpk expects the problem object
+		// (model) to contain an optimal solution to the LP relaxation.
 		final int solveStatus = GLPK.glp_intopt(model, iocp);
 
 		// MIP problem instance successfully solved (does not have to be the optimal
@@ -325,7 +329,6 @@ public class GlpkSolver implements Solver {
 		final boolean timeOut = solveStatus == GLPK.GLP_ETMLIM;
 
 		// not a return value that glp_intopt returns
-		// TODO
 		// invalid basis
 		final boolean invalid = solveStatus == GLPK.GLP_EBADB;
 		// no primal feasible solution
@@ -387,17 +390,12 @@ public class GlpkSolver implements Solver {
 	@Override
 	public void updateValuesFromSolution() {
 
-		/*
-		if (this.result.getStatus() == SolverStatus.INFEASIBLE || this.result.getStatus() == SolverStatus.INF_OR_UNBD) {
-			throw new RuntimeException(
-					"The problem status is " + this.result.getStatus() + " and therefore no values were found.");
-		}
-		*/
 		Map<String, Variable<?>> objVars = this.problem.getVariables();
 
 		for (final String name : problem.getVariables().keySet()) {
 
-			// Save result value // TODO: runden konfigurierbar machen?!
+			// Save result value
+			// TODO: (future work) configuration for round in SolverConfig
 			Variable<?> objVar = objVars.get(name);
 			if (objVar instanceof BinaryVariable) {
 				long val = Math.round(GLPK.glp_mip_col_val(model, indexNameMap.get(objVar.getName())));

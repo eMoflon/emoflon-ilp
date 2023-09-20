@@ -47,8 +47,6 @@ public class SOS1Constraint implements Constraint {
 	 * A constructor for a SOS1 constraint.
 	 */
 	public SOS1Constraint() {
-		double[] arr_weights = new double[0];
-		this.addVariables(new ArrayList<Variable<?>>(), arr_weights);
 	}
 
 	/**
@@ -60,9 +58,7 @@ public class SOS1Constraint implements Constraint {
 	 *                  constraints.
 	 */
 	public SOS1Constraint(List<Variable<?>> variables, double[] weights, int bound) {
-		double[] arr_weights = new double[variables.size()];
-		Arrays.fill(arr_weights, 1);
-		this.addVariables(variables, arr_weights);
+		this(variables, weights);
 		this.setBound(bound);
 	}
 
@@ -77,9 +73,7 @@ public class SOS1Constraint implements Constraint {
 	 *                  constraints.
 	 */
 	public SOS1Constraint(List<Variable<?>> variables, int bound) {
-		double[] arr_weights = new double[variables.size()];
-		Arrays.fill(arr_weights, 1);
-		this.addVariables(variables, arr_weights);
+		this(variables);
 		this.setBound(bound);
 	}
 
@@ -90,8 +84,7 @@ public class SOS1Constraint implements Constraint {
 	 *              constraints.
 	 */
 	public SOS1Constraint(int bound) {
-		double[] arr_weights = new double[0];
-		this.addVariables(new ArrayList<Variable<?>>(), arr_weights);
+		this();
 		this.setBound(bound);
 	}
 

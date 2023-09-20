@@ -43,7 +43,7 @@ public class OrConstraint implements Constraint {
 	 * @see LinearConstraint
 	 */
 	public OrConstraint(List<LinearConstraint> constraints, double epsilon) {
-		this.setConstraints(constraints);
+		this(constraints);
 		this.setEpsilon(epsilon);
 	}
 
@@ -55,7 +55,7 @@ public class OrConstraint implements Constraint {
 	 * @param epsilon Value of epsilon, used for converting this constraint.
 	 */
 	public OrConstraint(double epsilon) {
-		this.constraints = new ArrayList<LinearConstraint>();
+		this();
 		this.setEpsilon(epsilon);
 	}
 

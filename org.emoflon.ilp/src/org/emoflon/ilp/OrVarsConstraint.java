@@ -78,7 +78,9 @@ public class OrVarsConstraint implements GeneralConstraint {
 		}
 	}
 
-	// TODO: Translate to normal constraint
+	// TODO: (future work) Translate to normal constraints. OrVarsConstraints is
+	// currently only syntactic sugar for Gurobi and can't be used with other
+	// solvers.
 	public List<LinearConstraint> convert() {
 		throw new Error("Not yet implemented!");
 	}

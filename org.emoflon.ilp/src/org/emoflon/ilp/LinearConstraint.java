@@ -42,9 +42,7 @@ public class LinearConstraint implements NormalConstraint {
 	 * @see Operator
 	 */
 	public LinearConstraint(Operator op, double rhs) {
-		this.setLhsTerms(new ArrayList<Term>());
-		this.setOp(op);
-		this.setRhs(rhs);
+		this(new ArrayList<Term>(), op, rhs);
 	}
 
 	/**
@@ -59,9 +57,7 @@ public class LinearConstraint implements NormalConstraint {
 	 * @see Operator
 	 */
 	public LinearConstraint(List<Term> lhsTerms, Operator op, double rhs, double epsilon) {
-		this.setLhsTerms(lhsTerms);
-		this.setOp(op);
-		this.setRhs(rhs);
+		this(lhsTerms, op, rhs);
 		this.setEpsilon(epsilon);
 	}
 
@@ -74,9 +70,7 @@ public class LinearConstraint implements NormalConstraint {
 	 * @see Operator
 	 */
 	public LinearConstraint(Operator op, double rhs, double epsilon) {
-		this.setLhsTerms(new ArrayList<Term>());
-		this.setOp(op);
-		this.setRhs(rhs);
+		this(op, rhs);
 		this.setEpsilon(epsilon);
 	}
 
@@ -86,10 +80,10 @@ public class LinearConstraint implements NormalConstraint {
 	 * @param linConst The linear constraint to be copied.
 	 */
 	public LinearConstraint(LinearConstraint linConst) {
-		this.setLhsTerms(linConst.lhsTerms);
-		this.setOp(linConst.op);
-		this.setRhs(linConst.rhs);
-		this.setEpsilon(linConst.epsilon);
+		this.setLhsTerms(linConst.getLhsTerms());
+		this.setOp(linConst.getOp());
+		this.setRhs(linConst.getRhs());
+		this.setEpsilon(linConst.getEpsilon());
 	}
 
 	@Override

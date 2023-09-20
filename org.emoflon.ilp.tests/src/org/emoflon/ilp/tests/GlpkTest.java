@@ -35,6 +35,10 @@ import org.junit.jupiter.api.Test;
 
 public class GlpkTest {
 
+	// For GLPK all SolverConfigs set presolve to true.
+	// If set to false, an error occurs because glpk expects the problem object to
+	// contain an optimal solution to the LP relaxation.
+
 	// Create variables
 	BinaryVariable b1 = new BinaryVariable("b1");
 	BinaryVariable b2 = new BinaryVariable("b2");
@@ -98,7 +102,6 @@ public class GlpkTest {
 		problem.add(c2);
 
 		// Optimize
-		// TODO: Anmerkung zu presolve = true
 		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
@@ -364,6 +367,14 @@ public class GlpkTest {
 		solver.terminate();
 	}
 
+	// Espilon and the tolerance had to be changed for this test case.
+	// The values for psi and psi_prime in the substitution of != otherwise
+	// were so close to zero, that the constraints didn't work as intended.
+	// The optimized value for i1 was 5 (c1: i1 != 5) and for r2 was 100 (c2: r2 !=
+	// 100).
+	// Experimental values that worked:
+	// (1) tolerance = 1.0E-8
+	// (2) tolerance = 1.0E-6 and epsilon = 9.9999E-2
 	@Test
 	public void testNotEqualLinearConstraint() {
 		System.out.println("--------- testNotEqualLinearConstraint() ---------");
@@ -386,14 +397,14 @@ public class GlpkTest {
 		LinearConstraint c1 = new LinearConstraint(Operator.NOT_EQUAL, 5.0);
 		c1.addTerm(i1, 1.0);
 
-		c1.setEpsilon(1.0);
+		c1.setEpsilon(9.9999E-2);
 
 		// r2 != 100 (upper bound)
 		r2.setUpperBound(100.0);
 		LinearConstraint c2 = new LinearConstraint(Operator.NOT_EQUAL, 100.0);
 		c2.addTerm(r2, 1.0);
 
-		c2.setEpsilon(1.0);
+		c2.setEpsilon(9.9999E-2);
 
 		// Model
 		problem.setObjective(lin);
@@ -401,7 +412,7 @@ public class GlpkTest {
 		problem.add(c2);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, false, 0.0, false, 0, 0, true,
+		SolverConfig config = new SolverConfig(SolverType.GLPK, false, 0.0, true, 42, true, 1.0E-6, false, 0, 0, true,
 				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(problem);
@@ -409,7 +420,6 @@ public class GlpkTest {
 		System.out.println(out.toString());
 		solver.updateValuesFromSolution();
 
-		// assertEquals(195.0, out.getObjVal(), 0.0001);
 		assertEquals(6, problem.getVariables().get("i1").getValue());
 		assertEquals(99.0, problem.getVariables().get("r2").getValue().doubleValue(), 0.9999);
 

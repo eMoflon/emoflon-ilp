@@ -94,7 +94,7 @@ public class CplexSolver implements Solver {
 		}
 		*/
 		// General Constraints are not supported
-		// TODO (future work): convert OrVarsConstraints to OrConstraints or remove
+		// TODO: (future work) convert OrVarsConstraints to OrConstraints or remove
 		if (problem.getGenConstraintCount() != 0) {
 			throw new IllegalArgumentException("General Constraints are not yet supported for CPLEX.");
 		}
@@ -283,7 +283,10 @@ public class CplexSolver implements Solver {
 				cplex.setLinearCoef(cplexObj, lin_coefficients.get(varName), cplexVars.get(varName));
 			}
 			// Quadratic Terms
-			// TODO: sum up coefficients?!
+			// TODO: (future work) coefficients of quadratic terms are not summed up before
+			// adding them to the cplex problem. cplex adds them up in presolve, so there is
+			// no issue with this solution. but adding them up manually might be a good
+			// idea.
 			for (QuadraticTerm term : obj.terms.stream().filter(QuadraticTerm.class::isInstance)
 					.map(QuadraticTerm.class::cast).collect(Collectors.toList())) {
 				// Get name of the variable in term
@@ -484,7 +487,7 @@ public class CplexSolver implements Solver {
 		for (final String varName : this.cplexVars.keySet()) {
 			try {
 				// Save result value
-				// TODO: (future work) configuration for round in SolverConfig?
+				// TODO: (future work) configuration for round in SolverConfig
 				Variable<?> objVar = objVars.get(varName);
 				if (objVar instanceof BinaryVariable) {
 					long val = Math.round(cplex.getValue(cplexVars.get(varName)));

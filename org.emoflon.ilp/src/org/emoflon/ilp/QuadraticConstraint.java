@@ -44,9 +44,7 @@ public class QuadraticConstraint implements NormalConstraint {
 	 * @see Operator
 	 */
 	public QuadraticConstraint(Operator op, double rhs) {
-		this.setLhsTerms(new ArrayList<Term>());
-		this.setOp(op);
-		this.setRhs(rhs);
+		this(new ArrayList<Term>(), op, rhs);
 	}
 
 	/**
@@ -61,9 +59,7 @@ public class QuadraticConstraint implements NormalConstraint {
 	 * @see Operator
 	 */
 	public QuadraticConstraint(List<Term> lhsTerms, Operator op, double rhs, double epsilon) {
-		this.setLhsTerms(lhsTerms);
-		this.setOp(op);
-		this.setRhs(rhs);
+		this(lhsTerms, op, rhs);
 		this.setEpsilon(epsilon);
 	}
 
@@ -76,10 +72,7 @@ public class QuadraticConstraint implements NormalConstraint {
 	 * @see Operator
 	 */
 	public QuadraticConstraint(Operator op, double rhs, double epsilon) {
-		this.setLhsTerms(new ArrayList<Term>());
-		this.setOp(op);
-		this.setRhs(rhs);
-		this.setEpsilon(epsilon);
+		this(new ArrayList<Term>(), op, rhs, epsilon);
 	}
 
 	/**
@@ -88,10 +81,10 @@ public class QuadraticConstraint implements NormalConstraint {
 	 * @param quadConst The quadratic constraint to be copied.
 	 */
 	public QuadraticConstraint(QuadraticConstraint quadConst) {
-		this.setLhsTerms(quadConst.lhsTerms);
-		this.setOp(quadConst.op);
-		this.setRhs(quadConst.rhs);
-		this.setEpsilon(quadConst.epsilon);
+		this.setLhsTerms(quadConst.getLhsTerms());
+		this.setOp(quadConst.getOp());
+		this.setRhs(quadConst.getRhs());
+		this.setEpsilon(quadConst.getEpsilon());
 	}
 
 	@Override

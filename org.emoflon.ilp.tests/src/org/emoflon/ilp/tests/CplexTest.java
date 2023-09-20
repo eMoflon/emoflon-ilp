@@ -308,8 +308,8 @@ public class CplexTest {
 		problem.add(c2);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.CPLEX, false, 0.0, true, 42, false, 1.0E-6, false, 0, 0,
-				false, false, false, null);
+		SolverConfig config = new SolverConfig(SolverType.CPLEX, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
@@ -442,8 +442,8 @@ public class CplexTest {
 		problem.add(c2);
 
 		// Optimize
-		SolverConfig config = new SolverConfig(SolverType.CPLEX, false, 0.0, true, 42, false, 1.0E-4, false, 0, 0,
-				false, false, false, null);
+		SolverConfig config = new SolverConfig(SolverType.CPLEX, false, 0.0, true, 42, false, 0.0, false, 0, 0, false,
+				false, false, null);
 		Solver solver = (new SolverHelper(config)).getSolver();
 		solver.buildILPProblem(problem);
 		SolverOutput out = solver.solve();
@@ -456,6 +456,8 @@ public class CplexTest {
 		solver.terminate();
 	}
 
+	// For this testcase the tolerance of the solver had to be changed.
+	// tolerance = 1.0E-6
 	@Test
 	public void testLessQuadraticConstraint() {
 		// Objective
@@ -500,6 +502,8 @@ public class CplexTest {
 		solver.terminate();
 	}
 
+	// For this testcase the tolerance of the solver had to be changed.
+	// tolerance = 1.0E-6
 	@Test
 	public void testGreaterQuadraticConstraint() {
 		// Objective

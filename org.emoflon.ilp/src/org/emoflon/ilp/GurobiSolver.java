@@ -178,10 +178,12 @@ public class GurobiSolver implements Solver {
 
 		// Set model objective
 		if (obj instanceof LinearFunction) {
-			// Wenn Objective Linear, darf die GRBQuadExpr keinen quadratischen Anteil haben
-			// TODO: testen
+			// When the objective is linear, there are no quadratic terms and therefore
+			// GRBQuadExpr has no quadratic part. The linear part is retrieved by using
+			// expr.getLinExpr()
 			if (expr.size() != 0) {
-				throw new Error();
+				throw new Error(
+						"GRBQuadExpr should not have a quadratic part because the objective is a linear function.");
 			}
 			try {
 				model.setObjective(expr.getLinExpr(), sense);
@@ -267,7 +269,6 @@ public class GurobiSolver implements Solver {
 		case OR:
 			throw new Error("Or Constraints are not general constraints!");
 		case GUROBI_OR:
-			// TODO: add Gurobi OR constraints
 			GRBVar[] grbVars = new GRBVar[var.size()];
 			try {
 				for (int i = 0; i < var.size(); i++) {
@@ -493,7 +494,7 @@ public class GurobiSolver implements Solver {
 		for (final String name : this.grbVars.keySet()) {
 			try {
 				// Save result value
-				// TODO: runden konfigurierbar machen?!
+				// TODO: (future work) configuration for round in SolverConfig
 				Variable<?> objVar = objVars.get(name);
 				if (objVar instanceof BinaryVariable) {
 					long val = Math.round(this.grbVars.get(name).get(DoubleAttr.X));
