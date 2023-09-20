@@ -5,11 +5,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import ilog.concert.IloException;
 import ilog.concert.IloIntVar;
-import ilog.concert.IloLinearNumExpr;
+import ilog.concert.IloNumExpr;
 import ilog.concert.IloNumVar;
 import ilog.concert.IloObjective;
 import ilog.cplex.IloCplex;
@@ -83,12 +84,14 @@ public class CplexSolver implements Solver {
 	public void buildILPProblem(Problem problem) {
 		this.problem = problem;
 
+		/*
 		// Quadratic Constraints or Functions are not yet implemented
 		if (problem.getConstraints().stream().anyMatch(QuadraticConstraint.class::isInstance)
 				|| (problem.getObjective() instanceof QuadraticFunction)) {
 			throw new IllegalArgumentException(
 					"CPLEX does support quadratic constraints and quadratic functions but that is not yet implemented in this plug-in!");
 		}
+		*/
 		// General Constraints are not supported
 		// TODO (future work): convert OrVarsConstraints to OrConstraints or remove
 		if (problem.getGenConstraintCount() != 0) {
@@ -125,25 +128,22 @@ public class CplexSolver implements Solver {
 	 * @param vars A map of the variables to be translated.
 	 */
 	private void translateVariables(Map<String, Variable<?>> variables) {
-		IloNumVar temp = null;
 		for (final String name : variables.keySet()) {
 			Variable<?> var = variables.get(name);
 
 			switch (var.getType()) {
 			case BINARY:
-				temp = translateBinaryVariable((BinaryVariable) var);
+				cplexVars.put(name, translateBinaryVariable((BinaryVariable) var));
 				break;
 			case INTEGER:
-				temp = translateIntegerVariable((IntegerVariable) var);
+				cplexVars.put(name, translateIntegerVariable((IntegerVariable) var));
 				break;
 			case REAL:
-				temp = translateRealVariable((RealVariable) var);
+				cplexVars.put(name, translateRealVariable((RealVariable) var));
 				break;
 			default:
 				throw new UnsupportedOperationException("This variable type is not known.");
 			}
-
-			cplexVars.put(name, temp);
 		}
 	}
 
@@ -154,7 +154,7 @@ public class CplexSolver implements Solver {
 	 * @param variable Binary variable to be translated and added.
 	 * @return Translated CPLEX variable.
 	 */
-	private IloNumVar translateBinaryVariable(BinaryVariable binaryVariable) {
+	private IloIntVar translateBinaryVariable(BinaryVariable binaryVariable) {
 		try {
 			if (binaryVariable.getLowerBound() > binaryVariable.getUpperBound()) {
 				throw new IllegalArgumentException(
@@ -177,7 +177,7 @@ public class CplexSolver implements Solver {
 	 * @param variable Integer variable to be translated and added.
 	 * @return Translated CPLEX variable.
 	 */
-	private IloNumVar translateIntegerVariable(IntegerVariable integerVariable) {
+	private IloIntVar translateIntegerVariable(IntegerVariable integerVariable) {
 		try {
 			int lb = integerVariable.getLowerBound();
 			int ub = integerVariable.getUpperBound();
@@ -259,21 +259,37 @@ public class CplexSolver implements Solver {
 			// Add Terms
 			// No nested functions because of expand() call above
 
-			// get the coefficients
-			HashMap<String, Double> coefficients = new HashMap<>();
-			for (Term term : obj.terms) {
-				// TODO: (future work) quadratic terms
+			// Linear Terms
+			// get the coefficients of linear terms
+			HashMap<String, Double> lin_coefficients = new HashMap<>();
+			for (Term term : obj.terms.stream().filter(LinearTerm.class::isInstance).toList()) {
 				// Get name of the variable in term
 				String varName = term.getVar1().getName();
 
 				// Get previous coefficient (if there is one)
 				double prevCoef = 0.0;
-				if (coefficients.containsKey(varName)) {
-					prevCoef = coefficients.remove(varName);
+				if (lin_coefficients.containsKey(varName)) {
+					prevCoef = lin_coefficients.remove(varName);
 				}
 
 				// Set new coefficient for the variable (replaces old value)
-				coefficients.put(varName, prevCoef + term.getWeight());
+				lin_coefficients.put(varName, prevCoef + term.getWeight());
+			}
+
+			// Set Objective Function
+			// Linear Terms
+			for (String varName : lin_coefficients.keySet()) {
+				cplex.setLinearCoef(cplexObj, lin_coefficients.get(varName), cplexVars.get(varName));
+			}
+			// Quadratic Terms
+			// TODO: sum up coefficients?!
+			for (QuadraticTerm term : obj.terms.stream().filter(QuadraticTerm.class::isInstance)
+					.map(QuadraticTerm.class::cast).collect(Collectors.toList())) {
+				// Get name of the variable in term
+				String varName1 = term.getVar1().getName();
+				String varName2 = term.getVar2().getName();
+
+				cplex.setQuadCoef(cplexObj, term.getWeight(), cplexVars.get(varName1), cplexVars.get(varName2));
 			}
 
 			// Add Constant (sum of constants)
@@ -282,11 +298,6 @@ public class CplexSolver implements Solver {
 				constant += cons.weight();
 			}
 
-			// Set Objective Function
-			// TODO: (future work) Quadratic Functions?!
-			for (String varName : coefficients.keySet()) {
-				cplex.setLinearCoef(cplexObj, coefficients.get(varName), cplexVars.get(varName));
-			}
 			// Set constant
 			cplexObj.setExpr(cplex.sum(cplexObj.getExpr(), cplex.constant(constant)));
 
@@ -301,8 +312,8 @@ public class CplexSolver implements Solver {
 	 * model.
 	 */
 	private void translateNormalConstraints() {
-		if (problem.getConstraintCount() != problem.getTotalConstraintCount()) {
-			throw new Error("All Constraints should be linear constraints!");
+		if (problem.getConstraintCount() + problem.getSOSConstraintCount() != problem.getTotalConstraintCount()) {
+			throw new Error("All Constraints should be linear or SOS constraints!");
 		}
 		if (problem.getConstraintCount() == 0) {
 			return;
@@ -311,21 +322,45 @@ public class CplexSolver implements Solver {
 		try {
 			for (final NormalConstraint constraint : problem.getConstraints()) {
 
-				final IloLinearNumExpr linearNumExpr = cplex.linearNumExpr();
+				IloNumExpr constraintExpr = cplex.numExpr();
 
-				for (Term term : constraint.getLhsTerms()) {
-					linearNumExpr.addTerm(term.getWeight(), cplexVars.get(term.getVar1().getName()));
+				if (constraint instanceof LinearConstraint) {
+					IloNumExpr[] numExprs = new IloNumExpr[constraint.getLhsTerms().size()];
+
+					int i = 0;
+					for (Term term : constraint.getLhsTerms()) {
+						numExprs[i] = cplex.prod(term.getWeight(), cplexVars.get(term.getVar1().getName()));
+						i++;
+					}
+
+					constraintExpr = cplex.sum(numExprs);
+
+				} else if (constraint instanceof QuadraticConstraint) {
+					IloNumExpr[] numExprs = new IloNumExpr[constraint.getLhsTerms().size()];
+
+					int i = 0;
+					for (Term term : constraint.getLhsTerms()) {
+						if (term instanceof LinearTerm) {
+							numExprs[i] = cplex.prod(term.getWeight(), cplexVars.get(term.getVar1().getName()));
+						} else if (term instanceof QuadraticTerm) {
+							numExprs[i] = cplex.prod(term.getWeight(), cplexVars.get(term.getVar1().getName()),
+									cplexVars.get(((QuadraticTerm) term).getVar2().getName()));
+						}
+						i++;
+					}
+
+					constraintExpr = cplex.sum(numExprs);
 				}
 
 				switch (constraint.getOp()) {
 				case LESS_OR_EQUAL:
-					cplex.addGe(constraint.getRhs(), linearNumExpr);
+					cplex.addLe(constraintExpr, constraint.getRhs());
 					break;
 				case GREATER_OR_EQUAL:
-					cplex.addLe(constraint.getRhs(), linearNumExpr);
+					cplex.addGe(constraintExpr, constraint.getRhs());
 					break;
 				case EQUAL:
-					cplex.addEq(constraint.getRhs(), linearNumExpr);
+					cplex.addEq(constraintExpr, constraint.getRhs());
 					break;
 				case LESS:
 					throw new Error("All constraints with this operator should already have been converted!");
