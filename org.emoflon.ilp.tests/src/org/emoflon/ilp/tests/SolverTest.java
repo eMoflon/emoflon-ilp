@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 public class SolverTest {
 
 	// SolverType type = SolverType.GUROBI;
-	// SolverType type = SolverType.GLPK;
-	SolverType type = SolverType.CPLEX;
+	// SolverType type = SolverType.CPLEX;
+	SolverType type = SolverType.GLPK;
 
 	boolean presolve = (type == SolverType.GLPK) ? true : false;
 

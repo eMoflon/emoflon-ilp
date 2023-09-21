@@ -44,4 +44,4 @@ jobs:
         with:
           maven-version: 3.9.4
       - name: Test with Maven
-        run: mvn --batch-mode --update-snapshots clean -Dtest=GlpkTest -DfailIfNoTests=false verify
+        run: mvn --batch-mode --update-snapshots clean -Dtest=BasicTest,GlpkTest,SolverTest -DfailIfNoTests=false verify
