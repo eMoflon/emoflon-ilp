@@ -1,12 +1,14 @@
 # Tests
 
+
 ## Some notes about specific test cases
 
 ### GLPK Tests
 
 #### All GLPK tests
+
 For GLPK all SolverConfigs set presolve to true. 
-If set to false, an error occurs because glpk expects the problem object to contain an optimal solution to the LP relaxation.
+If set to false, an error occurs because GLPK expects the problem object to contain an optimal solution to the LP relaxation.
 
 See GLPK documentation of glp_intopt:
 
@@ -26,7 +28,7 @@ See GLPK documentation of glp_intopt:
 
 Espilon and the tolerance had to be changed for this test case.  
 
-The values for psi and psi_prime in the substitution of != otherwise were so close to zero, that the constraints didn't work as intended.  
+The values for psi and psi_prime in the substitution of != otherwise were so close to zero, that the constraints did not work as intended.  
 The optimized value for i1 was 5 (c1: i1 != 5) and for r2 was 100 (c2: r2 != 100).  
 
 Experimental values that worked:
@@ -36,27 +38,34 @@ Experimental values that worked:
 ### CPLEX Tests
 
 #### testLessQuadraticConstraint
+
 For this testcase the tolerance of the solver had to be changed.  
 tolerance = 1.0E-6
 
 #### testGreaterQuadraticConstraint
+
 For this testcase the tolerance of the solver had to be changed.  
 tolerance = 1.0E-6
 
+
 ## How to run tests
-Remember: Depending on the solver a license is necessary (e.g. for Gurobi).
+
+Remember: Depending on the solver a license is necessary (e.g., for Gurobi).
 
 - Run all tests:  
   `$ mvn clean verify`
-- Run a specific test class (e.g. GlpkTest.java):  
+- Run a specific test class (e.g., [GlpkTest.java](/org.emoflon.ilp.tests/src/org/emoflon/ilp/tests/GlpkTest.java)):  
   `$ mvn -Dtest=GlpkTest -DfailIfNoTests=false verify`
 
-Before running tests with the Cplex solver, it might be necessary to add the following Run Configuration to the VM Arguments (Eclipse: right click on the project -> `Run as` -> `Run Configurations` -> `Arguments` tab), replace with the appropriate path:  
-`-Djava.library.path=/opt/ibm/ILOG/CPLEX_Studioxxx/cplex/bin/x86-64_xxx`
+Before running tests with the CPLEX solver, it might be necessary to add the following Run Configuration to the VM Arguments (Eclipse: right click on the project -> `Run as` -> `Run Configurations` -> `Arguments` tab), replace with the appropriate path, for example:  
+`-Djava.library.path=/opt/ibm/ILOG/CPLEX_Studio2211/cplex/bin/x86-64_linux`
+
 
 ## Example Problem
+
 ### Knapsack Problem
-This example can be found in the Test Class SolverTest.java.
+
+This example can be found in the Test Class [SolverTest.java](org.emoflon.ilp.tests/src/org/emoflon/ilp/tests/SolverTest.java).
 
 There is a set of items, which all have a weight and a value.
 The goal is to determine a collection of items, for which the profit is maximized but the capacity constraint is satisfied.
