@@ -1,7 +1,7 @@
 package org.emoflon.ilp;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represents quadratic constraints. <br>

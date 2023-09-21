@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.emoflon.ilp.BinaryVariable;
-import org.emoflon.ilp.RealVariable;
 import org.emoflon.ilp.LinearConstraint;
 import org.emoflon.ilp.LinearFunction;
 import org.emoflon.ilp.LinearTerm;
-import org.emoflon.ilp.Problem;
 import org.emoflon.ilp.ObjectiveType;
 import org.emoflon.ilp.Operator;
+import org.emoflon.ilp.Problem;
+import org.emoflon.ilp.RealVariable;
 import org.emoflon.ilp.Solver;
 import org.emoflon.ilp.SolverConfig;
 import org.emoflon.ilp.SolverConfig.SolverType;
@@ -24,14 +24,13 @@ import org.junit.jupiter.api.Test;
 public class SolverTest {
 
 	// SolverType type = SolverType.GUROBI;
-	// SolverType type = SolverType.GLPK;
-	SolverType type = SolverType.CPLEX;
+	// SolverType type = SolverType.CPLEX;
+	SolverType type = SolverType.GLPK;
 
 	boolean presolve = (type == SolverType.GLPK) ? true : false;
 
 	@Test
 	public void mip1() {
-
 		// Create variables
 		BinaryVariable b1 = new BinaryVariable("b1");
 		BinaryVariable b2 = new BinaryVariable("b2");
@@ -90,7 +89,6 @@ public class SolverTest {
 
 	@Test
 	public void knapsackProblem() {
-
 		// Amount of items
 		int I = 6;
 		// Profit
@@ -155,12 +153,10 @@ public class SolverTest {
 		System.out.println("===================");
 
 		solver.terminate();
-
 	}
 
 	@Test
 	public void travelingSalesman() {
-
 		// Locations
 		String[] locations = { "Antwerp", "Bruges", "C-Mine", "Dinant", "Ghent", "Grand-Place de Bruxelles", "Hasselt",
 				"Leuven", "Mechelen", "Mons", "Montagne de Bueren", "Namur", "Remouchamps", "Waterloo" };
@@ -300,7 +296,6 @@ public class SolverTest {
 		System.out.println("===================");
 
 		solver.terminate();
-
 	}
 
 }

@@ -1,7 +1,7 @@
 package org.emoflon.ilp;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.gnu.glpk.GLPK;
 import org.gnu.glpk.SWIGTYPE_p_double;

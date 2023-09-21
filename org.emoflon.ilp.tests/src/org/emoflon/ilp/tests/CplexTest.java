@@ -1,19 +1,36 @@
 package org.emoflon.ilp.tests;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.emoflon.ilp.*;
+import org.emoflon.ilp.BinaryVariable;
+import org.emoflon.ilp.IntegerVariable;
+import org.emoflon.ilp.LinearConstraint;
+import org.emoflon.ilp.LinearFunction;
+import org.emoflon.ilp.LinearTerm;
+import org.emoflon.ilp.ObjectiveType;
+import org.emoflon.ilp.Operator;
+import org.emoflon.ilp.OrConstraint;
+import org.emoflon.ilp.Problem;
+import org.emoflon.ilp.QuadraticConstraint;
+import org.emoflon.ilp.QuadraticFunction;
+import org.emoflon.ilp.RealVariable;
+import org.emoflon.ilp.SOS1Constraint;
+import org.emoflon.ilp.Solver;
+import org.emoflon.ilp.SolverConfig;
 import org.emoflon.ilp.SolverConfig.SolverType;
+import org.emoflon.ilp.SolverHelper;
+import org.emoflon.ilp.SolverOutput;
+import org.emoflon.ilp.SolverStatus;
+import org.emoflon.ilp.Term;
+import org.emoflon.ilp.Variable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class CplexTest {
 
@@ -1036,4 +1053,5 @@ public class CplexTest {
 
 		solver.terminate();
 	}
+
 }

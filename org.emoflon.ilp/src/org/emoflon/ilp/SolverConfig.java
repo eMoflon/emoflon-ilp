@@ -1,5 +1,7 @@
 package org.emoflon.ilp;
 
+import org.emoflon.ilp.SolverConfig.SolverType;
+
 /**
  * This record class represents the configuration parameters used to configure
  * the solver.
