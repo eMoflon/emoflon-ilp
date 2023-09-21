@@ -13,6 +13,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.5
+        with:
+          maven-version: 3.9.4
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots package
       - name: Upload build artifact
@@ -35,5 +39,9 @@ jobs:
         run: |
           sudo apt-get install -yq glpk-utils libglpk-dev glpk-doc libglpk-java libglpk40
           sudo cp /usr/lib/x86_64-linux-gnu/jni/libglpk_java.* /usr/lib/
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.5
+        with:
+          maven-version: 3.9.4
       - name: Test with Maven
         run: mvn --batch-mode --update-snapshots clean -Dtest=GlpkTest -DfailIfNoTests=false verify
