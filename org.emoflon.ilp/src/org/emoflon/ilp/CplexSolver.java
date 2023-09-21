@@ -86,13 +86,13 @@ public class CplexSolver implements Solver {
 		this.problem = problem;
 
 		/*
-		// Quadratic Constraints or Functions are not yet implemented
-		if (problem.getConstraints().stream().anyMatch(QuadraticConstraint.class::isInstance)
-				|| (problem.getObjective() instanceof QuadraticFunction)) {
-			throw new IllegalArgumentException(
-					"CPLEX does support quadratic constraints and quadratic functions but that is not yet implemented in this plug-in!");
-		}
-		*/
+		 * // Quadratic Constraints or Functions are not yet implemented if
+		 * (problem.getConstraints().stream().anyMatch(QuadraticConstraint.class::
+		 * isInstance) || (problem.getObjective() instanceof QuadraticFunction)) { throw
+		 * new IllegalArgumentException(
+		 * "CPLEX does support quadratic constraints and quadratic functions but that is not yet implemented in this plug-in!"
+		 * ); }
+		 */
 		// General Constraints are not supported
 		// TODO: (future work) convert OrVarsConstraints to OrConstraints or remove
 		if (problem.getGenConstraintCount() != 0) {

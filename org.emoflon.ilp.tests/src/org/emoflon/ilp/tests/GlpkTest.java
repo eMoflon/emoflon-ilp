@@ -11,15 +11,15 @@ import java.util.List;
 import org.emoflon.ilp.BinaryVariable;
 import org.emoflon.ilp.IntegerVariable;
 import org.emoflon.ilp.LinearConstraint;
-import org.emoflon.ilp.QuadraticConstraint;
 import org.emoflon.ilp.LinearFunction;
-import org.emoflon.ilp.QuadraticFunction;
 import org.emoflon.ilp.LinearTerm;
-import org.emoflon.ilp.Problem;
 import org.emoflon.ilp.ObjectiveType;
 import org.emoflon.ilp.Operator;
 import org.emoflon.ilp.OrConstraint;
 import org.emoflon.ilp.OrVarsConstraint;
+import org.emoflon.ilp.Problem;
+import org.emoflon.ilp.QuadraticConstraint;
+import org.emoflon.ilp.QuadraticFunction;
 import org.emoflon.ilp.RealVariable;
 import org.emoflon.ilp.SOS1Constraint;
 import org.emoflon.ilp.Solver;
@@ -825,4 +825,5 @@ public class GlpkTest {
 
 		solver.terminate();
 	}
+
 }

@@ -1,8 +1,8 @@
 package org.emoflon.ilp;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * This class represents SOS1 Constraints. At most one variable contained in

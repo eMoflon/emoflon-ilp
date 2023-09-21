@@ -1,7 +1,7 @@
 package org.emoflon.ilp;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 // Currently only used for Gurobi OrConstraints
 // b_result = or(var1, var2, ..., var_n)

@@ -1,14 +1,26 @@
 package org.emoflon.ilp.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.emoflon.ilp.*;
+import org.emoflon.ilp.BinaryVariable;
+import org.emoflon.ilp.Constraint;
+import org.emoflon.ilp.LinearConstraint;
+import org.emoflon.ilp.LinearFunction;
+import org.emoflon.ilp.LinearTerm;
+import org.emoflon.ilp.ObjectiveType;
+import org.emoflon.ilp.Operator;
+import org.emoflon.ilp.OrConstraint;
+import org.emoflon.ilp.Problem;
+import org.emoflon.ilp.QuadraticFunction;
+import org.emoflon.ilp.QuadraticTerm;
+import org.emoflon.ilp.SOS1Constraint;
+import org.emoflon.ilp.Term;
 import org.junit.jupiter.api.Test;
 
 public class BasicTest {
@@ -132,7 +144,6 @@ public class BasicTest {
 		assertEquals(84, expanded.getConstants().get(0).weight(), 0.01);
 		assertEquals(0, expanded.getNestedFunctions().size());
 		assertEquals(5, expanded.getTerms().size());
-
 	}
 
 	@Test
@@ -217,4 +228,5 @@ public class BasicTest {
 		assertEquals(4, sub_neq.size());
 		assertTrue(sub_neq.get(1) instanceof SOS1Constraint);
 	}
+
 }
