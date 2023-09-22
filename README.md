@@ -8,7 +8,7 @@ Switching between solvers is done by changing one parameter in the solver config
 ## How to install the plug-in
 
 * Install at least one of the supported ILP solvers:
-    * Install [Gurobi](https://www.gurobi.com/) in version `10.0.2` and activate a license for your computer.
+    * Install [Gurobi](https://www.gurobi.com/) in version `10.0.3` and activate a license for your computer.
     * Install [GLPK](https://www.gnu.org/software/glpk/) (free and open-source) in the newest version (`4.65`) and add it to your path.
     * Install [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) in version `22.1.1` and activate a license for your computer (if necessary).
  
@@ -19,7 +19,7 @@ Switching between solvers is done by changing one parameter in the solver config
 ## How to build the plugin
 
 * Install at least one of the supported ILP solvers:
-    * Install [Gurobi](https://www.gurobi.com/) in version `10.0.2` and activate a license for your computer.
+    * Install [Gurobi](https://www.gurobi.com/) in version `10.0.3` and activate a license for your computer.
     * Install [GLPK](https://www.gnu.org/software/glpk/) (free and open-source) in the newest version (`4.65`) and add it to your path.
     * Install [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) in version `22.1.1` and activate a license for your computer (if necessary).
  
