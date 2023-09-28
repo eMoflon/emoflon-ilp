@@ -16,4 +16,18 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
 
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.6.0</version>
+				<configuration>
+					<show>private</show>
+					<nohelp>true</nohelp>
+					<doclint>none</doclint>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
