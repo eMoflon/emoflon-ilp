@@ -57,31 +57,31 @@ public class GurobiSolver implements Solver {
 
 		// set configuration parameters
 		// Presolve?
-		env.set(IntParam.Presolve, config.presolveEnabled() ? 1 : 0);
+		env.set(IntParam.Presolve, config.isPresolveEnabled() ? 1 : 0);
 		// Random Seed?
-		if (config.randomSeedEnabled()) {
-			env.set(IntParam.Seed, config.randomSeed());
+		if (config.isRandomSeedEnabled()) {
+			env.set(IntParam.Seed, config.getRandomSeed());
 		}
 		// Output?
-		if (!config.debugOutputEnabled()) {
+		if (!config.isDebugOutputEnabled()) {
 			env.set(IntParam.OutputFlag, 0);
 		}
 		// Tolerance?
-		if (config.toleranceEnabled()) {
-			env.set(DoubleParam.OptimalityTol, config.tolerance());
-			env.set(DoubleParam.IntFeasTol, config.tolerance());
+		if (config.isToleranceEnabled()) {
+			env.set(DoubleParam.OptimalityTol, config.getTolerance());
+			env.set(DoubleParam.IntFeasTol, config.getTolerance());
 		}
 		// Timeout?
-		if (config.timeoutEnabled()) {
-			env.set(DoubleParam.TimeLimit, config.timeout());
+		if (config.isTimeoutEnabled()) {
+			env.set(DoubleParam.TimeLimit, config.getTimeout());
 		}
 
 		// create new Gurobi Model/Problem
 		model = new GRBModel(env);
 
 		// set output path, if configured
-		if (config.outputEnabled()) {
-			this.outputPath = config.outputPath();
+		if (config.isOutputEnabled()) {
+			this.outputPath = config.getOutputPath();
 		}
 
 		grbVars.clear();
@@ -353,13 +353,13 @@ public class GurobiSolver implements Solver {
 			int lb = variable.getLowerBound();
 			int ub = variable.getUpperBound();
 
-			if (config.boundsEnabled()) {
+			if (config.isBoundsEnabled()) {
 				if (variable.isDefaultLowerBound()) {
-					lb = config.lowerBound();
+					lb = config.getLowerBound();
 					variable.setLowerBound((int) lb);
 				}
 				if (variable.isDefaultUpperBound()) {
-					ub = config.upperBound();
+					ub = config.getUpperBound();
 					variable.setUpperBound((int) ub);
 				}
 			}
@@ -386,13 +386,13 @@ public class GurobiSolver implements Solver {
 			double lb = variable.getLowerBound();
 			double ub = variable.getUpperBound();
 
-			if (config.boundsEnabled()) {
+			if (config.isBoundsEnabled()) {
 				if (variable.isDefaultLowerBound()) {
-					lb = config.lowerBound();
+					lb = config.getLowerBound();
 					variable.setLowerBound(lb);
 				}
 				if (variable.isDefaultUpperBound()) {
-					ub = config.upperBound();
+					ub = config.getUpperBound();
 					variable.setUpperBound(ub);
 				}
 			}

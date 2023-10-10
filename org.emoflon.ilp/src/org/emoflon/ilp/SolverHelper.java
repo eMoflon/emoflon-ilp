@@ -18,7 +18,7 @@ public class SolverHelper {
 	 * @see SolverConfig
 	 */
 	public SolverHelper(SolverConfig config) {
-		switch (config.solver()) {
+		switch (config.getSolver()) {
 		case GUROBI:
 			this.solver = new GurobiSolver(config);
 			break;

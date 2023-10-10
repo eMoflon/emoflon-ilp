@@ -50,28 +50,28 @@ public class CplexSolver implements Solver {
 
 			// set configuration parameters
 			// Presolve?
-			cplex.setParam(IloCplex.Param.Preprocessing.Presolve, config.presolveEnabled());
+			cplex.setParam(IloCplex.Param.Preprocessing.Presolve, config.isPresolveEnabled());
 			// Random Seed?
-			if (config.randomSeedEnabled()) {
-				cplex.setParam(IloCplex.Param.RandomSeed, config.randomSeed());
+			if (config.isRandomSeedEnabled()) {
+				cplex.setParam(IloCplex.Param.RandomSeed, config.getRandomSeed());
 			}
 			// Output?
-			if (!config.debugOutputEnabled()) {
+			if (!config.isDebugOutputEnabled()) {
 				cplex.setOut(null);
 			}
 			// Tolerance?
-			if (config.toleranceEnabled()) {
-				cplex.setParam(IloCplex.Param.MIP.Tolerances.Integrality, config.tolerance());
-				cplex.setParam(IloCplex.Param.MIP.Tolerances.AbsMIPGap, config.tolerance());
+			if (config.isToleranceEnabled()) {
+				cplex.setParam(IloCplex.Param.MIP.Tolerances.Integrality, config.getTolerance());
+				cplex.setParam(IloCplex.Param.MIP.Tolerances.AbsMIPGap, config.getTolerance());
 			}
 			// Timeout?
-			if (config.timeoutEnabled()) {
-				cplex.setParam(IloCplex.Param.TimeLimit, config.timeout());
+			if (config.isTimeoutEnabled()) {
+				cplex.setParam(IloCplex.Param.TimeLimit, config.getTimeout());
 			}
 
 			// set output path, if configured
-			if (config.outputEnabled()) {
-				this.outputPath = config.outputPath();
+			if (config.isOutputEnabled()) {
+				this.outputPath = config.getOutputPath();
 			}
 		} catch (final IloException e) {
 			throw new RuntimeException(e);
@@ -183,13 +183,13 @@ public class CplexSolver implements Solver {
 			int lb = integerVariable.getLowerBound();
 			int ub = integerVariable.getUpperBound();
 
-			if (config.boundsEnabled()) {
+			if (config.isBoundsEnabled()) {
 				if (integerVariable.isDefaultLowerBound()) {
-					lb = config.lowerBound();
+					lb = config.getLowerBound();
 					integerVariable.setLowerBound((int) lb);
 				}
 				if (integerVariable.isDefaultUpperBound()) {
-					ub = config.upperBound();
+					ub = config.getUpperBound();
 					integerVariable.setUpperBound((int) ub);
 				}
 			}
@@ -216,13 +216,13 @@ public class CplexSolver implements Solver {
 			double lb = realVariable.getLowerBound();
 			double ub = realVariable.getUpperBound();
 
-			if (config.boundsEnabled()) {
+			if (config.isBoundsEnabled()) {
 				if (realVariable.isDefaultLowerBound()) {
-					lb = config.lowerBound();
+					lb = config.getLowerBound();
 					realVariable.setLowerBound(lb);
 				}
 				if (realVariable.isDefaultUpperBound()) {
-					ub = config.upperBound();
+					ub = config.getUpperBound();
 					realVariable.setUpperBound(ub);
 				}
 			}
