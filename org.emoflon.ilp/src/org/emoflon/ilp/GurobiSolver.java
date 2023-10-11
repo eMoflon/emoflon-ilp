@@ -91,6 +91,7 @@ public class GurobiSolver implements Solver {
 	@Override
 	public void buildILPProblem(Problem problem) {
 		this.problem = problem;
+		problem.validateConstraints();
 
 		// Substitute Or Constraints
 		problem.substituteOr();
@@ -217,7 +218,7 @@ public class GurobiSolver implements Solver {
 				tempLin.addTerm(term.getWeight(), grbVars.get(term.getVar1().getName()));
 			}
 			try {
-				model.addConstr(tempLin, op, rhs, constraint.toString());
+				model.addConstr(tempLin, op, rhs, constraint.getName());
 			} catch (GRBException e) {
 				throw new RuntimeException(e);
 			}
@@ -233,7 +234,7 @@ public class GurobiSolver implements Solver {
 				}
 			}
 			try {
-				model.addQConstr(tempQuad, op, rhs, constraint.toString());
+				model.addQConstr(tempQuad, op, rhs, constraint.getName());
 			} catch (GRBException e) {
 				throw new RuntimeException(e);
 			}
@@ -280,7 +281,7 @@ public class GurobiSolver implements Solver {
 					}
 				}
 				model.addGenConstrOr(model.addVar(0.0, 1.0, 0.0, GRB.BINARY, res.getName()), grbVars,
-						constraint.toString());
+						constraint.getName());
 			} catch (GRBException e) {
 				throw new RuntimeException(e);
 			}

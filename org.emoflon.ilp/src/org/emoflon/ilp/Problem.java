@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.AssumptionViolatedException;
+
 /**
  * This class represents the problem to be solved.
  *
@@ -14,12 +16,14 @@ public class Problem {
 
 	private Function objective;
 	private ObjectiveType type = ObjectiveType.MIN;
-	private List<NormalConstraint> constraints = new ArrayList<NormalConstraint>();
-	private List<GeneralConstraint> genConstraints = new ArrayList<GeneralConstraint>();
-	private List<SOS1Constraint> sosConstraints = new ArrayList<SOS1Constraint>();
-	private List<OrConstraint> orConstraints = new ArrayList<OrConstraint>();
+	private Map<String, NormalConstraint> constraints = new HashMap<String, NormalConstraint>();
+	private Map<String, GeneralConstraint> genConstraints = new HashMap<String, GeneralConstraint>();
+	private Map<String, SOS1Constraint> sosConstraints = new HashMap<String, SOS1Constraint>();
+	private Map<String, OrConstraint> orConstraints = new HashMap<String, OrConstraint>();
 
 	private Map<String, Variable<?>> variables = new HashMap<String, Variable<?>>();
+
+	private int constraintNameGenCounter = 0;
 
 	/**
 	 * The constructor for a problem.
@@ -105,7 +109,7 @@ public class Problem {
 	 * @see QuadraticConstraint
 	 */
 	public List<NormalConstraint> getConstraints() {
-		return constraints;
+		return new ArrayList<NormalConstraint>(this.constraints.values());
 	}
 
 	/**
@@ -114,7 +118,7 @@ public class Problem {
 	 * @return List of all general constraints.
 	 */
 	public List<GeneralConstraint> getGeneralConstraints() {
-		return genConstraints;
+		return new ArrayList<GeneralConstraint>(this.genConstraints.values());
 	}
 
 	/**
@@ -124,7 +128,7 @@ public class Problem {
 	 * @see SOS1Constraint
 	 */
 	public List<SOS1Constraint> getSOSConstraints() {
-		return sosConstraints;
+		return new ArrayList<SOS1Constraint>(this.sosConstraints.values());
 	}
 
 	/**
@@ -134,7 +138,7 @@ public class Problem {
 	 * @see OrConstraint
 	 */
 	public List<OrConstraint> getOrConstraints() {
-		return orConstraints;
+		return new ArrayList<OrConstraint>(this.orConstraints.values());
 	}
 
 	/**
@@ -196,7 +200,7 @@ public class Problem {
 	 * Sets the objective function of this problem to an empty linear function.
 	 */
 	public void setObjective() {
-		if (objective.getTerms().isEmpty()) {
+		if (objective != null && objective.getTerms().isEmpty()) {
 			System.out.println("WARNING: The objective function of this problem is empty.");
 		}
 		this.objective = new LinearFunction();
@@ -258,6 +262,19 @@ public class Problem {
 	}
 
 	/**
+	 * If the given constraint does not have a name, yet, this method sets a generic
+	 * (unique) name.
+	 * 
+	 * @param constraint Constraint to set a generic (unique) name for.
+	 */
+	private void genConstraintNameIfAbsent(final Constraint constraint) {
+		// If constraint has no name, generate one
+		if (constraint.getName() == null || constraint.getName().isBlank()) {
+			constraint.setName("cnstr_" + constraintNameGenCounter++);
+		}
+	}
+
+	/**
 	 * Adds a normal constraint to the current constraints.
 	 * 
 	 * @param constraint Normal constraint to be added to this problem.
@@ -265,16 +282,14 @@ public class Problem {
 	 * @see QuadraticConstraint
 	 */
 	public void add(NormalConstraint constraint) {
-		if (constraint.getLhsTerms().isEmpty()) {
-			throw new IllegalArgumentException("The left-hand side of a Constraint must not be empty!");
-		}
+		genConstraintNameIfAbsent(constraint);
 		for (Term term : constraint.getLhsTerms()) {
 			variables.put(term.getVar1().getName(), term.getVar1());
 			if (term instanceof QuadraticTerm) {
 				variables.put(((QuadraticTerm) term).getVar2().getName(), ((QuadraticTerm) term).getVar2());
 			}
 		}
-		constraints.add(constraint);
+		constraints.put(constraint.getName(), constraint);
 	}
 
 	/**
@@ -283,14 +298,12 @@ public class Problem {
 	 * @param constraint General constraint to be added to this problem.
 	 */
 	public void add(GeneralConstraint constraint) {
-		if (constraint.getVariables().isEmpty()) {
-			throw new IllegalArgumentException("The variables of a General Constraint must not be empty!");
-		}
+		genConstraintNameIfAbsent(constraint);
 		for (Variable<?> var : constraint.getVariables()) {
 			variables.put(var.getName(), var);
 		}
 		variables.put(constraint.getResult().getName(), constraint.getResult());
-		genConstraints.add(constraint);
+		genConstraints.put(constraint.getName(), constraint);
 	}
 
 	/**
@@ -300,15 +313,11 @@ public class Problem {
 	 * @see SOS1Constraint
 	 */
 	public void add(SOS1Constraint constraint) {
-		if (constraint.getVariables().isEmpty()) {
-			throw new IllegalArgumentException("The variables of a SOS Constraint must not be empty!");
-		} else if (constraint.getVariables().size() != constraint.getWeights().length) {
-			throw new IllegalArgumentException("Every variable in a SOS Constraint should be assigned with a weight!");
-		}
+		genConstraintNameIfAbsent(constraint);
 		for (Variable<?> var : constraint.getVariables()) {
 			variables.put(var.getName(), var);
 		}
-		sosConstraints.add(constraint);
+		sosConstraints.put(constraint.getName(), constraint);
 	}
 
 	/**
@@ -318,15 +327,13 @@ public class Problem {
 	 * @see OrConstraint
 	 */
 	public void add(OrConstraint constraint) {
-		if (constraint.getConstraints().isEmpty()) {
-			throw new IllegalArgumentException("The constraints of a Or Constraint must not be empty!");
-		}
+		genConstraintNameIfAbsent(constraint);
 		for (LinearConstraint lin : constraint.getConstraints()) {
 			for (Term term : lin.getLhsTerms()) {
 				variables.put(term.getVar1().getName(), term.getVar1());
 			}
 		}
-		orConstraints.add(constraint);
+		orConstraints.put(constraint.getName(), constraint);
 	}
 
 	/**
@@ -338,7 +345,7 @@ public class Problem {
 	 *         problem formulation.
 	 */
 	public boolean remove(NormalConstraint constraint) {
-		return constraints.remove(constraint);
+		return constraints.remove(constraint.getName()) != null;
 	}
 
 	/**
@@ -350,7 +357,7 @@ public class Problem {
 	 *         problem formulation.
 	 */
 	public boolean remove(GeneralConstraint constraint) {
-		return genConstraints.remove(constraint);
+		return genConstraints.remove(constraint.getName()) != null;
 	}
 
 	/**
@@ -362,7 +369,7 @@ public class Problem {
 	 *         problem formulation.
 	 */
 	public boolean remove(SOS1Constraint constraint) {
-		return sosConstraints.remove(constraint);
+		return sosConstraints.remove(constraint.getName()) != null;
 	}
 
 	/**
@@ -374,7 +381,7 @@ public class Problem {
 	 *         problem formulation.
 	 */
 	public boolean remove(OrConstraint constraint) {
-		return orConstraints.remove(constraint);
+		return orConstraints.remove(constraint.getName()) != null;
 	}
 
 	/**
@@ -437,7 +444,9 @@ public class Problem {
 					.map(SOS1Constraint.class::cast).collect(Collectors.toList()));
 		}
 		// delete converted constraints
-		this.constraints.removeAll(delete);
+		for (final NormalConstraint toDelete : delete) {
+			this.constraints.remove(toDelete.getName());
+		}
 		delete.forEach(it -> this.remove(it));
 
 		// add substitutions
@@ -465,6 +474,71 @@ public class Problem {
 
 		// remove all SOS Constraints
 		sosConstraints.clear();
+	}
+
+	/**
+	 * Returns the constraint for the given name or throws an error if there is no
+	 * constraint with a matching name.
+	 * 
+	 * @param name Constraint name to search for.
+	 * @return Constraint for the given name.
+	 */
+	public Constraint getConstraintByName(final String name) {
+		if (this.constraints.containsKey(name)) {
+			return this.constraints.get(name);
+		} else if (this.genConstraints.containsKey(name)) {
+			return this.genConstraints.get(name);
+		} else if (this.sosConstraints.containsKey(name)) {
+			return this.sosConstraints.get(name);
+		} else if (this.orConstraints.containsKey(name)) {
+			return this.orConstraints.get(name);
+		} else {
+			throw new Error("Constraint with name " + name + " not found.");
+		}
+	}
+
+	/**
+	 * Returns true if the problem contains a constraint with the given name.
+	 * 
+	 * @param name Name to check the constraint existence for.
+	 * @return True if the problem contains a constraint with the given name.
+	 */
+	public boolean hasConstraintWithName(final String name) {
+		return this.constraints.containsKey(name) || this.genConstraints.containsKey(name)
+				|| this.sosConstraints.containsKey(name) || this.orConstraints.containsKey(name);
+	}
+
+	/**
+	 * Validates all constraints that are part of this problem instance.
+	 */
+	public void validateConstraints() {
+		this.constraints.values().forEach(v -> {
+			if (v.getLhsTerms().isEmpty()) {
+				throw new AssumptionViolatedException("The constraint " + v.getName() + " has no LHS terms.");
+			}
+		});
+
+		this.genConstraints.values().forEach(v -> {
+			if (v.getVariables().isEmpty()) {
+				throw new AssumptionViolatedException("The generic constraint " + v.getName() + " has no variables.");
+			}
+		});
+
+		this.sosConstraints.values().forEach(v -> {
+			if (v.getVariables().isEmpty()) {
+				throw new AssumptionViolatedException("The SOS1 constraint " + v.getName() + " has no variables.");
+			}
+			if (v.getVariables().size() != v.getWeights().length) {
+				throw new AssumptionViolatedException("The SOS1 constraint " + v.getName()
+						+ " does not contain the correct amount of weights for the number of variables.");
+			}
+		});
+
+		this.orConstraints.values().forEach(v -> {
+			if (v.getConstraints().isEmpty()) {
+				throw new AssumptionViolatedException("The Or constraint " + v.getName() + " has no sub constraints.");
+			}
+		});
 	}
 
 }

@@ -80,6 +80,7 @@ public class GlpkSolver implements Solver {
 	@Override
 	public void buildILPProblem(Problem problem) {
 		this.problem = problem;
+		problem.validateConstraints();
 
 		// Quadratic Constraints or Functions are not supported by GLPK
 		if (problem.getConstraints().stream().anyMatch(QuadraticConstraint.class::isInstance)

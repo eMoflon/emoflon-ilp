@@ -11,7 +11,7 @@ import java.util.UUID;
  *
  * @see LinearConstraint
  */
-public class OrConstraint implements Constraint {
+public class OrConstraint extends Constraint {
 
 	private List<LinearConstraint> constraints;
 	private double epsilon = 1.0E-4;

@@ -84,6 +84,7 @@ public class CplexSolver implements Solver {
 	@Override
 	public void buildILPProblem(Problem problem) {
 		this.problem = problem;
+		problem.validateConstraints();
 
 		/*
 		 * // Quadratic Constraints or Functions are not yet implemented if

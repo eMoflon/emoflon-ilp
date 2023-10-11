@@ -5,7 +5,7 @@ import java.util.List;
 
 // Currently only used for Gurobi OrConstraints
 // b_result = or(var1, var2, ..., var_n)
-public class OrVarsConstraint implements GeneralConstraint {
+public class OrVarsConstraint extends GeneralConstraint {
 
 	private List<BinaryVariable> variables;
 	private BinaryVariable result;

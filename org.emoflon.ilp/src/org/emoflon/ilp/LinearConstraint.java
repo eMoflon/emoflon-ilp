@@ -11,7 +11,7 @@ import java.util.List;
  * 
  * w_1 * x_1 + w_2 * x_2 + ... (>= | > | = | != | < | <=) rhs
  */
-public class LinearConstraint implements NormalConstraint {
+public class LinearConstraint extends NormalConstraint {
 
 	private List<Term> lhsTerms = new ArrayList<Term>();
 	private Operator op;
