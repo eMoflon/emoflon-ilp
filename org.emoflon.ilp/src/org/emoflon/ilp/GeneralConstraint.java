@@ -2,8 +2,10 @@ package org.emoflon.ilp;
 
 import java.util.List;
 
-// Class that is currently only used for Gurobi OrConstraints
-// Could be extended for other general constraints (min, max, ...)
+/**
+ * Class that is currently only used for Gurobi OrConstraints. Could be extended
+ * for other general constraints (min, max, ...).
+ */
 public abstract class GeneralConstraint extends Constraint {
 	/**
 	 * Returns all variables that are part of the constraint.
@@ -46,4 +48,5 @@ public abstract class GeneralConstraint extends Constraint {
 	 * @return Type of the constraint.
 	 */
 	public abstract ConstraintType getType();
+
 }
