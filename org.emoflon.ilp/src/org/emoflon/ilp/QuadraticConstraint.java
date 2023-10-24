@@ -13,7 +13,7 @@ import java.util.List;
  * 
  * w_1 * x_1 + w_2 * x_2 + ... (>= | > | = | != | < | <=) rhs
  */
-public class QuadraticConstraint implements NormalConstraint {
+public class QuadraticConstraint extends NormalConstraint {
 
 	private List<Term> lhsTerms;
 	private Operator op;

@@ -2,7 +2,7 @@ package org.emoflon.ilp;
 
 import java.util.List;
 
-public interface NormalConstraint extends Constraint {
+public abstract class NormalConstraint extends Constraint {
 
 	/**
 	 * Returns a list of the terms on the left-hand side of the constraint.
@@ -10,7 +10,7 @@ public interface NormalConstraint extends Constraint {
 	 * @return Current list of terms on the left-hand side of the constraint.
 	 * @see Term
 	 */
-	public List<Term> getLhsTerms();
+	public abstract List<Term> getLhsTerms();
 
 	/**
 	 * Sets the terms of the constraint.
@@ -18,7 +18,7 @@ public interface NormalConstraint extends Constraint {
 	 * @param lhsTerms New list of terms to be set for the constraint.
 	 * @see Term
 	 */
-	public void setLhsTerms(List<Term> lhsTerms);
+	public abstract void setLhsTerms(final List<Term> lhsTerms);
 
 	/**
 	 * Adds a term to the existing terms on the left-hand side of the constraint.
@@ -26,7 +26,7 @@ public interface NormalConstraint extends Constraint {
 	 * @param term New term to be added to the constraint.
 	 * @see Term
 	 */
-	public void addTerm(Term term);
+	public abstract void addTerm(final Term term);
 
 	/**
 	 * Returns the operator of the constraint.
@@ -34,7 +34,7 @@ public interface NormalConstraint extends Constraint {
 	 * @return Current operator of the constraint.
 	 * @see Operator
 	 */
-	public Operator getOp();
+	public abstract Operator getOp();
 
 	/**
 	 * Sets the operator of the constraint.
@@ -42,21 +42,21 @@ public interface NormalConstraint extends Constraint {
 	 * @param op Operator to be set for the constraint.
 	 * @see Operator
 	 */
-	public void setOp(Operator op);
+	public abstract void setOp(final Operator op);
 
 	/**
 	 * Returns the value on the right-hand side of the constraint.
 	 * 
 	 * @return Current Value on the right-hand side.
 	 */
-	public double getRhs();
+	public abstract double getRhs();
 
 	/**
 	 * Sets the value on the right-hand side of the constraint.
 	 * 
 	 * @param rhs New value on the right-hand side.
 	 */
-	public void setRhs(double rhs);
+	public abstract void setRhs(final double rhs);
 
 	/**
 	 * Returns the type of the constraint.
@@ -64,7 +64,7 @@ public interface NormalConstraint extends Constraint {
 	 * @return Type of the constraint.
 	 * @see ConstraintType
 	 */
-	public ConstraintType getType();
+	public abstract ConstraintType getType();
 
 	/**
 	 * Converts the constraint to a list of new constraints, if needed. Only
@@ -72,6 +72,6 @@ public interface NormalConstraint extends Constraint {
 	 * 
 	 * @return List of substitution constraints or empty list.
 	 */
-	public List<Constraint> convertOperator();
+	public abstract List<Constraint> convertOperator();
 
 }

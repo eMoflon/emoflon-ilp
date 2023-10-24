@@ -51,28 +51,28 @@ public class GlpkSolver implements Solver {
 		GLPK.glp_init_iocp(iocp);
 		// Set configuration parameters
 		// Presolve?
-		iocp.setPresolve(config.presolveEnabled() ? GLPK.GLP_ON : GLPK.GLP_OFF);
+		iocp.setPresolve(config.isPresolveEnabled() ? GLPK.GLP_ON : GLPK.GLP_OFF);
 		// Random Seed?
 		// not supported in glpk for Java
 		// --seed value is option fo glpsol
 		// Debug Output?
-		if (!config.debugOutputEnabled()) {
+		if (!config.isDebugOutputEnabled()) {
 			GLPK.glp_term_out(GLPK.GLP_OFF);
 		}
 		// Output?
-		if (config.outputEnabled()) {
-			this.outputPath = config.outputPath();
+		if (config.isOutputEnabled()) {
+			this.outputPath = config.getOutputPath();
 		}
 		// Tolerance?
-		if (config.toleranceEnabled()) {
-			iocp.setTol_int(config.tolerance());
-			iocp.setTol_obj(config.tolerance());
-			iocp.setMip_gap(config.tolerance());
+		if (config.isToleranceEnabled()) {
+			iocp.setTol_int(config.getTolerance());
+			iocp.setTol_obj(config.getTolerance());
+			iocp.setMip_gap(config.getTolerance());
 		}
 		// Timeout?
-		if (config.timeoutEnabled()) {
+		if (config.isTimeoutEnabled()) {
 			// GLPK expects milliseconds
-			iocp.setTm_lim((int) config.timeout() * 1000);
+			iocp.setTm_lim((int) config.getTimeout() * 1000);
 		}
 
 	}
@@ -80,6 +80,7 @@ public class GlpkSolver implements Solver {
 	@Override
 	public void buildILPProblem(Problem problem) {
 		this.problem = problem;
+		problem.validateConstraints();
 
 		// Quadratic Constraints or Functions are not supported by GLPK
 		if (problem.getConstraints().stream().anyMatch(QuadraticConstraint.class::isInstance)
@@ -139,13 +140,13 @@ public class GlpkSolver implements Solver {
 				break;
 			case INTEGER:
 				// Check if other bounds are defined in the solver config
-				if (config.boundsEnabled()) {
+				if (config.isBoundsEnabled()) {
 					if (((IntegerVariable) var).isDefaultLowerBound()) {
-						lb = config.lowerBound();
+						lb = config.getLowerBound();
 						((IntegerVariable) var).setLowerBound((int) lb);
 					}
 					if (((IntegerVariable) var).isDefaultUpperBound()) {
-						ub = config.upperBound();
+						ub = config.getUpperBound();
 						((IntegerVariable) var).setUpperBound((int) ub);
 					}
 				}
@@ -153,13 +154,13 @@ public class GlpkSolver implements Solver {
 				break;
 			case REAL:
 				// Check if other bounds are defined in the solver config
-				if (config.boundsEnabled()) {
+				if (config.isBoundsEnabled()) {
 					if (((RealVariable) var).isDefaultLowerBound()) {
-						lb = config.lowerBound();
+						lb = config.getLowerBound();
 						((RealVariable) var).setLowerBound(lb);
 					}
 					if (((RealVariable) var).isDefaultUpperBound()) {
-						ub = config.upperBound();
+						ub = config.getUpperBound();
 						((RealVariable) var).setUpperBound(ub);
 					}
 				}

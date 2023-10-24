@@ -12,7 +12,7 @@ import java.util.List;
  * SOS1(var_1, var_2, ..., var_n) with weights w = [w_1, w_2, ..., w_n]
  *
  */
-public class SOS1Constraint implements Constraint {
+public class SOS1Constraint extends Constraint {
 
 	private List<Variable<?>> variables = new ArrayList<Variable<?>>();
 	private List<Double> weights = new ArrayList<Double>();
