@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.AssumptionViolatedException;
-
 /**
  * This class represents the problem to be solved.
  *
@@ -514,29 +512,29 @@ public class Problem {
 	public void validateConstraints() {
 		this.constraints.values().forEach(v -> {
 			if (v.getLhsTerms().isEmpty()) {
-				throw new AssumptionViolatedException("The constraint " + v.getName() + " has no LHS terms.");
+				throw new UnsupportedOperationException("The constraint " + v.getName() + " has no LHS terms.");
 			}
 		});
 
 		this.genConstraints.values().forEach(v -> {
 			if (v.getVariables().isEmpty()) {
-				throw new AssumptionViolatedException("The generic constraint " + v.getName() + " has no variables.");
+				throw new UnsupportedOperationException("The generic constraint " + v.getName() + " has no variables.");
 			}
 		});
 
 		this.sosConstraints.values().forEach(v -> {
 			if (v.getVariables().isEmpty()) {
-				throw new AssumptionViolatedException("The SOS1 constraint " + v.getName() + " has no variables.");
+				throw new UnsupportedOperationException("The SOS1 constraint " + v.getName() + " has no variables.");
 			}
 			if (v.getVariables().size() != v.getWeights().length) {
-				throw new AssumptionViolatedException("The SOS1 constraint " + v.getName()
+				throw new UnsupportedOperationException("The SOS1 constraint " + v.getName()
 						+ " does not contain the correct amount of weights for the number of variables.");
 			}
 		});
 
 		this.orConstraints.values().forEach(v -> {
 			if (v.getConstraints().isEmpty()) {
-				throw new AssumptionViolatedException("The Or constraint " + v.getName() + " has no sub constraints.");
+				throw new UnsupportedOperationException("The Or constraint " + v.getName() + " has no sub constraints.");
 			}
 		});
 	}
