@@ -7,9 +7,9 @@ jobs:
     runs-on: [ubuntu-22.04]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -20,7 +20,7 @@ jobs:
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots package
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: org.emoflon.ilp.updatesite
           path: org.emoflon.ilp.updatesite/target/org.emoflon.ilp.updatesite-*.zip
@@ -29,9 +29,9 @@ jobs:
     runs-on: [ubuntu-22.04]
     needs: [build]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -42,7 +42,7 @@ jobs:
       - name: Create JavaDoc with Maven
         run: mvn --batch-mode --update-snapshots site
       - name: Upload doc artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: javadoc
           path: org.emoflon.ilp/target/site
@@ -51,9 +51,9 @@ jobs:
     runs-on: [ubuntu-22.04]
     needs: [build]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
