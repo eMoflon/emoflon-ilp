@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests
 Bundle-SymbolicName: org.emoflon.ilp.tests
-Bundle-Version: 0.0.1.qualifier
+Bundle-Version: 0.0.1
 Require-Bundle: org.junit,
  junit-jupiter-api,
  org.emoflon.ilp;bundle-version="0.0.1",

@@ -8,12 +8,12 @@
 	<parent>
 		<groupId>org.emoflon.ilp.group</groupId>
 		<artifactId>org.emoflon.ilp.parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 
 	<groupId>org.emoflon.ilp.group</groupId>
 	<artifactId>org.emoflon.ilp.tests</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<packaging>eclipse-test-plugin</packaging>
 
 </project>

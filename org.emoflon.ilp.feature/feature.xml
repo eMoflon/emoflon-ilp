@@ -2,7 +2,7 @@
 <feature
       id="org.emoflon.ilp.feature"
       label="eMoflon-ILP"
-      version="0.0.1.qualifier">
+      version="0.0.1">
 
    <description>
       eMoflon-ILP plug-in
@@ -674,15 +674,10 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 
    <plugin
          id="org.emoflon.ilp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.emoflon.ilp.dependencies"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
 </feature>
