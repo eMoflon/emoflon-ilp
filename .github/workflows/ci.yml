@@ -97,11 +97,17 @@ jobs:
     # Only run on pushed tags (and explicitely ignore scheduled runs)
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') && github.event_name != 'schedule'
     steps:
+      - name: Install dependencies
+        run: sudo apt-get install -yq zip unzip
       - name: Collect artifacts
         uses: actions/download-artifact@master
+      - name: Create javadoc site ZIP archive
+        run: |
+          zip -qr javadoc.zip javadoc
       - name: Release emoflon-ilp
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            org.emoflon.ilp.updatesite/target/org.emoflon.ilp.updatesite-*.zip
-            org.emoflon.ilp.updatesite/target/repository/plugins/org.emoflon.ilp*.jar
+            org.emoflon.ilp.updatesite/org.emoflon.ilp.updatesite-*.zip
+            org.emoflon.ilp/org.emoflon.ilp*.jar
+            javadoc.zip
