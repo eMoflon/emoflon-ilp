@@ -659,7 +659,9 @@ public class CplexTest {
 		solver.solve();
 		solver.updateValuesFromSolution();
 
-		solver.terminate();
+		// No termination because we use the same solver again for the second half of
+		// this test
+		// solver.terminate();
 
 		// Now with substitution instead of Gurobi SOS1 Constraints
 
