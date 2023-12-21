@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: org.emoflon.ilp
-          path: org.emoflon.ilp.updatesite/target/repository/org.emoflon.ilp*.jar
+          path: org.emoflon.ilp.updatesite/target/repository/plugins/org.emoflon.ilp*.jar
 
   doc:
     runs-on: [ubuntu-22.04]
@@ -104,4 +104,4 @@ jobs:
         with:
           files: |
             org.emoflon.ilp.updatesite/target/org.emoflon.ilp.updatesite-*.zip
-            org.emoflon.ilp.updatesite/target/repository/org.emoflon.ilp*.jar
+            org.emoflon.ilp.updatesite/target/repository/plugins/org.emoflon.ilp*.jar
