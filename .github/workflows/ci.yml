@@ -1,6 +1,24 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+      - 'testing/**'
+      - 'feature/**'
+      - 'hotfix/**'
+    # Run pipeline for release tags
+    tags:
+      - 'v*.*.*'
+
+  schedule:
+    # Weekly builds on Monday morning 5:42
+    # Github doc:
+    # "The schedule event can be delayed during periods of high loads of GitHub Actions workflow runs.
+    # High load times include the start of every hour.
+    # To decrease the chance of delay, schedule your workflow to run at a different time of the hour."
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
+    - cron: '42 5 * * 1'
 
 jobs:
   build:
@@ -19,11 +37,16 @@ jobs:
           maven-version: 3.9.6
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots package
-      - name: Upload build artifact
+      - name: Upload updatesite artifact
         uses: actions/upload-artifact@v4
         with:
           name: org.emoflon.ilp.updatesite
           path: org.emoflon.ilp.updatesite/target/org.emoflon.ilp.updatesite-*.zip
+      - name: Upload plugin artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: org.emoflon.ilp
+          path: org.emoflon.ilp.updatesite/target/repository/org.emoflon.ilp*.jar
 
   doc:
     runs-on: [ubuntu-22.04]
@@ -67,3 +90,18 @@ jobs:
           maven-version: 3.9.6
       - name: Test with Maven
         run: mvn --batch-mode --update-snapshots clean -Dtest=BasicTest,GlpkTest,SolverTest -DfailIfNoTests=false verify
+
+  create-release:
+    runs-on: [ubuntu-22.04]
+    needs: [build, test, doc]
+    # Only run on pushed tags (and explicitely ignore scheduled runs)
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') && github.event_name != 'schedule'
+    steps:
+      - name: Collect artifacts
+        uses: actions/download-artifact@master
+      - name: Release emoflon-ilp
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            org.emoflon.ilp.updatesite/target/org.emoflon.ilp.updatesite-*.zip
+            org.emoflon.ilp.updatesite/target/repository/org.emoflon.ilp*.jar
