@@ -14,6 +14,7 @@
 		<tycho.version>4.0.4</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.resource.version>3.3.1</maven.resource.version>
+		<ld.library.path>/opt/gurobi1003/linux64/lib/:/opt/ibm/ILOG/CPLEX_Studio2211/cplex/bin/x86-64_linux/</ld.library.path>
 	</properties>
 
 	<modules>
@@ -69,6 +70,16 @@
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>${maven.resource.version}</version>
 			</plugin>
+			<plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-surefire-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <configuration combine.self="override">
+                    <environmentVariables>
+                        <LD_LIBRARY_PATH>${ld.library.path}</LD_LIBRARY_PATH>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 
