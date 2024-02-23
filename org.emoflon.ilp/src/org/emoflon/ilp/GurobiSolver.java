@@ -4,16 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gurobi.GRB;
-import gurobi.GRB.DoubleAttr;
-import gurobi.GRB.DoubleParam;
-import gurobi.GRB.IntParam;
-import gurobi.GRBEnv;
-import gurobi.GRBException;
-import gurobi.GRBLinExpr;
-import gurobi.GRBModel;
-import gurobi.GRBQuadExpr;
-import gurobi.GRBVar;
+import com.gurobi.gurobi.GRB;
+import com.gurobi.gurobi.GRB.DoubleAttr;
+import com.gurobi.gurobi.GRB.DoubleParam;
+import com.gurobi.gurobi.GRB.IntParam;
+import com.gurobi.gurobi.GRBEnv;
+import com.gurobi.gurobi.GRBException;
+import com.gurobi.gurobi.GRBLinExpr;
+import com.gurobi.gurobi.GRBModel;
+import com.gurobi.gurobi.GRBQuadExpr;
+import com.gurobi.gurobi.GRBVar;
 
 /**
  * This class represents the Gurobi Solver. Here the problem formulation gets
