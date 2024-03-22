@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Dependencies
 Bundle-SymbolicName: org.emoflon.ilp.dependencies
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
 Bundle-ClassPath: cplex-22.1.1.jar,
  glpk-java-4.65.jar,
  glpk-java-javadoc-4.65.jar,
