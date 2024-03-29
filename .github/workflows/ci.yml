@@ -105,7 +105,7 @@ jobs:
         run: |
           zip -qr javadoc.zip javadoc
       - name: Release emoflon-ilp
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             org.emoflon.ilp.updatesite/org.emoflon.ilp.updatesite-*.zip
