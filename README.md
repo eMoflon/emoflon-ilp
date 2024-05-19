@@ -10,6 +10,11 @@ Switching between solvers is done by changing one parameter in the solver config
 * Install at least one of the supported ILP solvers:
     * Install [Gurobi](https://www.gurobi.com/) in version `11.0.2` and activate a license for your computer.
     * Install [GLPK](https://www.gnu.org/software/glpk/) (free and open-source) in the newest version (`4.65`) and add it to your path.
+      * For Windows-based systems, follow these steps to install GLPK:
+        * Download [winglpk](https://sourceforge.net/projects/winglpk/files/winglpk/GLPK-4.65/).
+        * Extract the archive, e.g., to `C:\Program Files\GLPK\glpk-4.65`.
+        * Add `C:\Program Files\GLPK\glpk-4.65\w64` to the system-wide environment variable `path`.
+        * Restart your Eclipse IDE.
     * Install [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) in version `22.1.1` and activate a license for your computer (if necessary).
  
 - Build + install the project to the local `.m2/` folder:  
@@ -21,6 +26,11 @@ Switching between solvers is done by changing one parameter in the solver config
 * Install at least one of the supported ILP solvers:
     * Install [Gurobi](https://www.gurobi.com/) in version `11.0.2` and activate a license for your computer.
     * Install [GLPK](https://www.gnu.org/software/glpk/) (free and open-source) in the newest version (`4.65`) and add it to your path.
+      * For Windows-based systems, follow these steps to install GLPK:
+        * Download [winglpk](https://sourceforge.net/projects/winglpk/files/winglpk/GLPK-4.65/).
+        * Extract the archive, e.g., to `C:\Program Files\GLPK\glpk-4.65`.
+        * Add `C:\Program Files\GLPK\glpk-4.65\w64` to the system-wide environment variable `path`.
+        * Restart your Eclipse IDE.
     * Install [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) in version `22.1.1` and activate a license for your computer (if necessary).
  
 - Build the project + feature + update site:  
@@ -38,6 +48,24 @@ Remember: Depending on the solver a license is necessary (e.g., for Gurobi).
 
 Before running tests with the CPLEX solver, it might be necessary to add the following Run Configuration to the VM Arguments (Eclipse: right click on the project -> `Run as` -> `Run Configurations` -> `Arguments` tab), replace with the appropriate path, for example:  
 `-Djava.library.path=/opt/ibm/ILOG/CPLEX_Studio2211/cplex/bin/x86-64_linux`
+
+
+## How to use the plugin
+
+When using the plugin within the Eclipse IDE, the following environment variables may be necessary for your runtime configuration:
+```
+# Linux/macOS
+GRB_LICENSE_FILE=/home/mkratz/gurobi.lic
+GUROBI_HOME=/opt/gurobi1102/linux64/
+LD_LIBRARY_PATH=/opt/gurobi1102/linux64/lib/
+PATH=/opt/gurobi1102/linux64/bin/:/opt/ibm/ILOG/CPLEX_Studio2211/cplex/bin/x86-64_linux/:$PATH
+
+# Windows
+GRB_LICENSE_FILE=C:\Users\mkratz\gurobi.lic
+GUROBI_HOME=C:\gurobi1102\win64
+LD_LIBRARY_PATH=C:\gurobi1102\win64\lib
+PATH=C:\gurobi1102\win64\bin;C:\Program Files\IBM\ILOG\CPLEX_Studio2211\cplex\bin\x64_win64\
+```
 
 
 ## Example Problem
