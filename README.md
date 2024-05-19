@@ -10,6 +10,11 @@ Switching between solvers is done by changing one parameter in the solver config
 * Install at least one of the supported ILP solvers:
     * Install [Gurobi](https://www.gurobi.com/) in version `11.0.2` and activate a license for your computer.
     * Install [GLPK](https://www.gnu.org/software/glpk/) (free and open-source) in the newest version (`4.65`) and add it to your path.
+      * For Windows-based systems, follow these steps to install GLPK:
+        * Download [winglpk](https://sourceforge.net/projects/winglpk/files/winglpk/GLPK-4.65/).
+        * Extract the archive, e.g., to `C:\Program Files\GLPK\glpk-4.65`.
+        * Add `C:\Program Files\GLPK\glpk-4.65\w64` to the system-wide environment variable `path`.
+        * Restart your Eclipse IDE.
     * Install [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) in version `22.1.1` and activate a license for your computer (if necessary).
  
 - Build + install the project to the local `.m2/` folder:  
@@ -21,6 +26,11 @@ Switching between solvers is done by changing one parameter in the solver config
 * Install at least one of the supported ILP solvers:
     * Install [Gurobi](https://www.gurobi.com/) in version `11.0.2` and activate a license for your computer.
     * Install [GLPK](https://www.gnu.org/software/glpk/) (free and open-source) in the newest version (`4.65`) and add it to your path.
+      * For Windows-based systems, follow these steps to install GLPK:
+        * Download [winglpk](https://sourceforge.net/projects/winglpk/files/winglpk/GLPK-4.65/).
+        * Extract the archive, e.g., to `C:\Program Files\GLPK\glpk-4.65`.
+        * Add `C:\Program Files\GLPK\glpk-4.65\w64` to the system-wide environment variable `path`.
+        * Restart your Eclipse IDE.
     * Install [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) in version `22.1.1` and activate a license for your computer (if necessary).
  
 - Build the project + feature + update site:  
