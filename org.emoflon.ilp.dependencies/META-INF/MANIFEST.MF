@@ -3,14 +3,14 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Dependencies
 Bundle-SymbolicName: org.emoflon.ilp.dependencies
 Bundle-Version: 0.0.2
-Bundle-ClassPath: cplex-22.1.1.jar,
+Bundle-ClassPath: cplex-22.1.2.jar,
  glpk-java-4.65.jar,
  glpk-java-javadoc-4.65.jar,
  gurobi-12.0.1.jar,
  gurobi-javadoc-12.0.1.jar
 Export-Package: com.gurobi.gurobi;version="12.0.1",
- ilog.concert;version="22.1.1",
- ilog.cplex;version="22.1.1",
+ ilog.concert;version="22.1.2",
+ ilog.cplex;version="22.1.2",
  org.gnu.glpk;version="4.65.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: org.emoflon.ilp.dependencies

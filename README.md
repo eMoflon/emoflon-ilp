@@ -15,7 +15,7 @@ Switching between solvers is done by changing one parameter in the solver config
         * Extract the archive, e.g., to `C:\Program Files\GLPK\glpk-4.65`.
         * Add `C:\Program Files\GLPK\glpk-4.65\w64` to the system-wide environment variable `path`.
         * Restart your Eclipse IDE.
-    * Install [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) in version `22.1.1` and activate a license for your computer (if necessary).
+    * Install [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) in version `22.1.2` and activate a license for your computer (if necessary).
  
 - Build + install the project to the local `.m2/` folder:  
   `$ mvn clean install`
@@ -31,7 +31,7 @@ Switching between solvers is done by changing one parameter in the solver config
         * Extract the archive, e.g., to `C:\Program Files\GLPK\glpk-4.65`.
         * Add `C:\Program Files\GLPK\glpk-4.65\w64` to the system-wide environment variable `path`.
         * Restart your Eclipse IDE.
-    * Install [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) in version `22.1.1` and activate a license for your computer (if necessary).
+    * Install [CPLEX](https://www.ibm.com/analytics/cplex-optimizer) in version `22.1.2` and activate a license for your computer (if necessary).
  
 - Build the project + feature + update site:  
   `$ mvn clean package`
@@ -47,7 +47,7 @@ Remember: Depending on the solver a license is necessary (e.g., for Gurobi).
   `$ mvn -Dtest=GlpkTest -DfailIfNoTests=false verify`
 
 Before running tests with the CPLEX solver, it might be necessary to add the following Run Configuration to the VM Arguments (Eclipse: right click on the project -> `Run as` -> `Run Configurations` -> `Arguments` tab), replace with the appropriate path, for example:  
-`-Djava.library.path=/opt/ibm/ILOG/CPLEX_Studio2211/cplex/bin/x86-64_linux`
+`-Djava.library.path=/opt/ibm/ILOG/CPLEX_Studio2212/cplex/bin/x86-64_linux`
 
 
 ## How to use the plugin
@@ -57,14 +57,14 @@ When using the plugin within the Eclipse IDE, the following environment variable
 # Linux/macOS
 GRB_LICENSE_FILE=/home/mkratz/gurobi.lic
 GUROBI_HOME=/opt/gurobi1201/linux64/
-LD_LIBRARY_PATH=/opt/gurobi1201/linux64/lib/:/opt/ibm/ILOG/CPLEX_Studio2211/cplex/bin/x86-64_linux/
-PATH=/opt/gurobi1201/linux64/bin/:/opt/ibm/ILOG/CPLEX_Studio2211/cplex/bin/x86-64_linux/:$PATH
+LD_LIBRARY_PATH=/opt/gurobi1201/linux64/lib/:/opt/ibm/ILOG/CPLEX_Studio2212/cplex/bin/x86-64_linux/
+PATH=/opt/gurobi1201/linux64/bin/:/opt/ibm/ILOG/CPLEX_Studio2212/cplex/bin/x86-64_linux/:$PATH
 
 # Windows
 GRB_LICENSE_FILE=C:\Users\mkratz\gurobi.lic
 GUROBI_HOME=C:\gurobi1201\win64
-LD_LIBRARY_PATH=C:\gurobi1201\win64\lib;C:\Program Files\IBM\ILOG\CPLEX_Studio2211\cplex\bin\x64_win64\
-PATH=C:\gurobi1201\win64\bin;C:\Program Files\IBM\ILOG\CPLEX_Studio2211\cplex\bin\x64_win64\
+LD_LIBRARY_PATH=C:\gurobi1201\win64\lib;C:\Program Files\IBM\ILOG\CPLEX_Studio2212\cplex\bin\x64_win64\
+PATH=C:\gurobi1201\win64\bin;C:\Program Files\IBM\ILOG\CPLEX_Studio2212\cplex\bin\x64_win64\
 ```
 
 
@@ -136,7 +136,7 @@ solver.terminate();
 | **Name**                        | **Description**                                                        |
 | ------------------------------- | ---------------------------------------------------------------------- |
 | `org.emoflon.ilp`               | Contains the implementation of the plug-in.                            |
-| `org.emoflon.ilp.feature`       | Contains the information for the feature to export.                    | 
+| `org.emoflon.ilp.feature`       | Contains the information for the feature to export.                    |
 | `org.emoflon.ilp.updatesite`    | Contains the update site configuration (to include the feature above). |
 | `org.emoflon.ilp.dependencies`  | Contains all necessary dependencies (JARs of each solver).             |
 | `org.emoflon.ilp.tests`         | Contains all tests and test-related content.                           |
