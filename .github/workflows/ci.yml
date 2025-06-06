@@ -34,7 +34,7 @@ jobs:
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
         with:
-          maven-version: 3.9.9
+          maven-version: 3.9.10
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots package
       - name: Upload updatesite artifact
@@ -61,7 +61,7 @@ jobs:
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
         with:
-          maven-version: 3.9.9
+          maven-version: 3.9.10
       - name: Create JavaDoc with Maven
         run: mvn --batch-mode --update-snapshots site
       - name: Upload doc artifact
@@ -87,7 +87,7 @@ jobs:
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
         with:
-          maven-version: 3.9.9
+          maven-version: 3.9.10
       - name: Test with Maven
         run: mvn --batch-mode --update-snapshots clean -Dtest=BasicTest,GlpkTest,SolverTest -DfailIfNoTests=false verify
 
