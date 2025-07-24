@@ -8,7 +8,7 @@ Switching between solvers is done by changing one parameter in the solver config
 ## How to install the plug-in
 
 * Install at least one of the supported ILP solvers:
-    * Install [Gurobi](https://www.gurobi.com/) in version `12.0.2` and activate a license for your computer.
+    * Install [Gurobi](https://www.gurobi.com/) in version `12.0.3` and activate a license for your computer.
     * Install [GLPK](https://www.gnu.org/software/glpk/) (free and open-source) in the newest version (`4.65`) and add it to your path.
       * For Windows-based systems, follow these steps to install GLPK:
         * Download [winglpk](https://sourceforge.net/projects/winglpk/files/winglpk/GLPK-4.65/).
@@ -24,7 +24,7 @@ Switching between solvers is done by changing one parameter in the solver config
 ## How to build the plugin
 
 * Install at least one of the supported ILP solvers:
-    * Install [Gurobi](https://www.gurobi.com/) in version `12.0.2` and activate a license for your computer.
+    * Install [Gurobi](https://www.gurobi.com/) in version `12.0.3` and activate a license for your computer.
     * Install [GLPK](https://www.gnu.org/software/glpk/) (free and open-source) in the newest version (`4.65`) and add it to your path.
       * For Windows-based systems, follow these steps to install GLPK:
         * Download [winglpk](https://sourceforge.net/projects/winglpk/files/winglpk/GLPK-4.65/).
@@ -56,15 +56,15 @@ When using the plugin within the Eclipse IDE, the following environment variable
 ```
 # Linux/macOS
 GRB_LICENSE_FILE=/home/mkratz/gurobi.lic
-GUROBI_HOME=/opt/gurobi1202/linux64/
-LD_LIBRARY_PATH=/opt/gurobi1202/linux64/lib/:/opt/ibm/ILOG/CPLEX_Studio2212/cplex/bin/x86-64_linux/
-PATH=/opt/gurobi1202/linux64/bin/:/opt/ibm/ILOG/CPLEX_Studio2212/cplex/bin/x86-64_linux/:$PATH
+GUROBI_HOME=/opt/gurobi1203/linux64/
+LD_LIBRARY_PATH=/opt/gurobi1203/linux64/lib/:/opt/ibm/ILOG/CPLEX_Studio2212/cplex/bin/x86-64_linux/
+PATH=/opt/gurobi1203/linux64/bin/:/opt/ibm/ILOG/CPLEX_Studio2212/cplex/bin/x86-64_linux/:$PATH
 
 # Windows
 GRB_LICENSE_FILE=C:\Users\mkratz\gurobi.lic
-GUROBI_HOME=C:\gurobi1202\win64
-LD_LIBRARY_PATH=C:\gurobi1202\win64\lib;C:\Program Files\IBM\ILOG\CPLEX_Studio2212\cplex\bin\x64_win64\
-PATH=C:\gurobi1202\win64\bin;C:\Program Files\IBM\ILOG\CPLEX_Studio2212\cplex\bin\x64_win64\
+GUROBI_HOME=C:\gurobi1203\win64
+LD_LIBRARY_PATH=C:\gurobi1203\win64\lib;C:\Program Files\IBM\ILOG\CPLEX_Studio2212\cplex\bin\x64_win64\
+PATH=C:\gurobi1203\win64\bin;C:\Program Files\IBM\ILOG\CPLEX_Studio2212\cplex\bin\x64_win64\
 ```
 
 
