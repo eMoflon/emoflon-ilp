@@ -14,7 +14,7 @@
 		<tycho.version>5.0.0</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.resource.version>3.3.1</maven.resource.version>
-		<ld.library.path>/opt/gurobi1201/linux64/lib/:/opt/ibm/ILOG/CPLEX_Studio2212/cplex/bin/x86-64_linux/</ld.library.path>
+		<ld.library.path>/opt/gurobi1203/linux64/lib/:/opt/ibm/ILOG/CPLEX_Studio2212/cplex/bin/x86-64_linux/</ld.library.path>
 	</properties>
 
 	<modules>
