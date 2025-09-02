@@ -26,10 +26,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
@@ -53,10 +53,10 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v5
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
@@ -75,10 +75,10 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v5
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - name: Install GLPK
         run: |
