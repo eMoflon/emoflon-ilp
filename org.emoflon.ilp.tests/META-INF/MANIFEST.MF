@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Tests
 Bundle-SymbolicName: org.emoflon.ilp.tests
 Bundle-Version: 0.0.2
-Require-Bundle: org.junit,
- junit-jupiter-api,
+Require-Bundle: junit-jupiter-api;bundle-version="[0.0.0,6.0.0)",
  org.emoflon.ilp;bundle-version="0.0.2",
  org.emoflon.ilp.dependencies;bundle-version="0.0.2"
 Automatic-Module-Name: org.emoflon.ilp.tests
