@@ -100,7 +100,7 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install -yq zip unzip
       - name: Collect artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
       - name: Create javadoc site ZIP archive
         run: |
           zip -qr javadoc.zip javadoc
