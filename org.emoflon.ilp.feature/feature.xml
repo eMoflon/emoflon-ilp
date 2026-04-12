@@ -2,7 +2,7 @@
 <feature
       id="org.emoflon.ilp.feature"
       label="eMoflon-ILP"
-      version="0.0.2">
+      version="0.0.3">
 
    <description>
       eMoflon-ILP plug-in
