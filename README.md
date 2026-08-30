@@ -8,7 +8,7 @@ Switching between solvers is done by changing one parameter in the solver config
 ## How to install the plug-in
 
 * Install at least one of the supported ILP solvers:
-    * Install [Gurobi](https://www.gurobi.com/) in version `13.0.2` and activate a license for your computer.
+    * Install [Gurobi](https://www.gurobi.com/) in version `13.0.3` and activate a license for your computer.
     * Install [GLPK](https://www.gnu.org/software/glpk/) (free and open-source) in the newest version (`4.65`) and add it to your path.
       * For Windows-based systems, follow these steps to install GLPK:
         * Download [winglpk](https://sourceforge.net/projects/winglpk/files/winglpk/GLPK-4.65/).
@@ -24,7 +24,7 @@ Switching between solvers is done by changing one parameter in the solver config
 ## How to build the plugin
 
 * Install at least one of the supported ILP solvers:
-    * Install [Gurobi](https://www.gurobi.com/) in version `13.0.2` and activate a license for your computer.
+    * Install [Gurobi](https://www.gurobi.com/) in version `13.0.3` and activate a license for your computer.
     * Install [GLPK](https://www.gnu.org/software/glpk/) (free and open-source) in the newest version (`4.65`) and add it to your path.
       * For Windows-based systems, follow these steps to install GLPK:
         * Download [winglpk](https://sourceforge.net/projects/winglpk/files/winglpk/GLPK-4.65/).
